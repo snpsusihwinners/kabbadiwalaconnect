@@ -8,6 +8,7 @@ import {
   ArrowUpRight
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
+import { MaterialBadge } from '../../components/ui/MaterialBadge';
 
 const Earnings: React.FC = () => {
   const { transactions, materials, language } = useAppContext();
@@ -16,6 +17,8 @@ const Earnings: React.FC = () => {
   const filteredTransactions = transactions.filter(t => filter === 'All' || t.status === filter);
   
   const totalEarned = transactions.filter(t => t.status === 'Paid').reduce((sum, t) => sum + t.amount, 0);
+  const upiTotal = transactions.filter(t => t.status === 'Paid' && t.method === 'UPI').reduce((sum, t) => sum + t.amount, 0);
+  const cashTotal = transactions.filter(t => t.status === 'Paid' && t.method === 'Cash').reduce((sum, t) => sum + t.amount, 0);
   const totalPending = transactions.filter(t => t.status === 'Pending').reduce((sum, t) => sum + t.amount, 0);
 
   return (
@@ -168,3 +171,4 @@ const Earnings: React.FC = () => {
 };
 
 export default Earnings;
+

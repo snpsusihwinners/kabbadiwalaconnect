@@ -7,23 +7,34 @@ import {
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import type { Lot } from '../../data/mockData';
+import { MaterialBadge } from '../../components/ui/MaterialBadge';
 
 const IncomingLots: React.FC = () => {
   const { lots, materials, updateLot } = useAppContext();
   const [selectedLot, setSelectedLot] = useState<Lot | null>(null);
   const [offerPrice, setOfferPrice] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'All' | 'Created' | 'Offer Accepted' | 'Handover Completed'>('All');
 
-  const filteredLots = lots.filter(l => 
-    l.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    l.collectorId.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredLots = lots.filter(lot => {
+    const matchesStatus = statusFilter === 'All' || lot.status === statusFilter;
+    const material = materials.find(m => m.id === lot.materialId);
+    const matchesSearch = searchQuery === '' ||
+      lot.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lot.manifestNo.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (material && material.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      lot.collectorName.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesStatus && matchesSearch;
+  });
 
   const handleMakeOffer = () => {
     if (selectedLot && offerPrice) {
+      const rate = parseFloat(offerPrice);
       updateLot(selectedLot.id, { 
         status: 'Offer Accepted',
-        finalPrice: Math.round(parseFloat(offerPrice) * selectedLot.weight)
+        finalPrice: Math.round(rate * selectedLot.weight),
+        ratePerKg: rate,
+        recyclerId: 'r1'
       });
       setSelectedLot(null);
       alert('ऑफर यशस्वीरित्या सबमिट केली! कलेक्टरला त्वरित संदेश पाठवला आहे.');
@@ -69,7 +80,6 @@ const IncomingLots: React.FC = () => {
             <tbody className="divide-y divide-slate-100 text-slate-700">
               {filteredLots.map((lot) => {
                 const material = materials.find(m => m.id === lot.materialId);
-                const isPending = lot.status === 'Created';
 
                 return (
                   <tr key={lot.id} className="hover:bg-slate-50/80 transition-colors">
@@ -102,8 +112,23 @@ const IncomingLots: React.FC = () => {
                         <span>{lot.status}</span>
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      {isPending ? (
+
+                    {/* Status */}
+                    <td className="px-6 py-4 whitespace-nowrap font-mono">
+                      <span className={`px-2.5 py-1 inline-flex text-[10px] leading-4 font-bold rounded-full border ${
+                        lot.status === 'Created' ? 'bg-amber-50 text-amber-800 border-amber-200' :
+                        lot.status === 'Offer Accepted' ? 'bg-blue-50 text-blue-800 border-blue-200' :
+                        'bg-emerald-50 text-emerald-800 border-emerald-200'
+                      }`}>
+                        {lot.status === 'Created' ? 'AWAITING BID' :
+                         lot.status === 'Offer Accepted' ? 'EN ROUTE' :
+                         'GATE-IN SETTLED'}
+                      </span>
+                    </td>
+
+                    {/* Action */}
+                    <td className="px-6 py-4 whitespace-nowrap text-right font-display font-bold">
+                      {lot.status === 'Created' ? (
                         <button 
                           onClick={() => {
                             setSelectedLot(lot);
@@ -111,7 +136,8 @@ const IncomingLots: React.FC = () => {
                           }}
                           className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition-all shadow-sm"
                         >
-                          Make Offer
+                          <span>Place B2B Bid</span>
+                          <ArrowRight className="w-3 h-3" />
                         </button>
                       ) : (
                         <span className="text-slate-400 text-[11px]">
@@ -192,9 +218,9 @@ const IncomingLots: React.FC = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };
 
 export default IncomingLots;
+

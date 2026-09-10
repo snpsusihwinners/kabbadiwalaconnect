@@ -1,41 +1,50 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { 
-  Building2,
-  MapPin, 
-  Star, 
   ShieldCheck, 
-  Truck,
-  Phone,
+  MapPin, 
+  Truck, 
+  Phone, 
+  Star, 
+  ChevronRight, 
   ArrowRight,
-  Sparkles
+  Building2,
+  CheckCircle2
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
+import type { Recycler } from '../../data/mockData';
+import { MaterialBadge } from '../../components/ui/MaterialBadge';
 
 const Recyclers: React.FC = () => {
+  const { recyclers, lots, materials, updateLot } = useAppContext();
+  const location = useLocation();
   const navigate = useNavigate();
-  const { recyclers, materials, lots, updateLot, language } = useAppContext();
-  const [filterType, setFilterType] = useState<'rate'|'distance'|'pickup'>('rate');
+  
+  const currentLotId = location.state?.lotId;
+  const currentLot = lots.find(l => l.id === currentLotId);
+  const material = materials.find(m => m.id === currentLot?.materialId);
 
   const pendingLots = lots.filter(l => l.status === 'Created');
   const currentLot = pendingLots.length > 0 ? pendingLots[0] : null;
   const currentMaterial = currentLot ? materials.find(m => m.id === currentLot.materialId) : materials[0];
   const materialId = currentLot ? currentLot.materialId : 'm3';
 
-  const sortedRecyclers = [...recyclers].sort((a, b) => {
-    if (filterType === 'rate') return (b.offers[materialId] || 0) - (a.offers[materialId] || 0);
-    if (filterType === 'distance') return a.distance - b.distance;
-    if (filterType === 'pickup') return (b.pickup ? 1 : 0) - (a.pickup ? 1 : 0);
-    return 0;
+  const filteredRecyclers = recyclers.filter(r => {
+    if (selectedFilter === 'pickup') return r.pickup;
+    if (selectedFilter === 'authorized') return r.authorized;
+    return true;
   });
 
-  const handleAcceptOffer = (recycler: any) => {
+  const handleAcceptOffer = (recycler: Recycler) => {
     if (currentLot) {
-      const offerPerKg = recycler.offers[materialId] || 220;
-      updateLot(currentLot.id, {
-        recyclerId: recycler.id,
-        finalPrice: offerPerKg * currentLot.weight,
-        status: 'Offer Accepted'
+      const offeredRate = recycler.offers[currentLot.materialId] || 200;
+      const finalPrice = Math.round(offeredRate * currentLot.weight);
+      
+      updateLot(currentLot.id, { 
+        recyclerId: recycler.id, 
+        status: 'Offer Accepted',
+        finalPrice,
+        ratePerKg: offeredRate
       });
       navigate(`/collector/handover/${currentLot.id}`);
     } else {
@@ -206,3 +215,4 @@ const Recyclers: React.FC = () => {
 };
 
 export default Recyclers;
+

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  ArrowRight, 
+  ShieldCheck, 
+  Smartphone, 
   Building2, 
   Smartphone,
   ShieldCheck,
@@ -11,8 +12,10 @@ import {
   Globe2
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
+import { MandiTicker } from '../../components/ui/MandiTicker';
 
 const RoleSelector: React.FC = () => {
+  const { setRole, setLanguage, language, speak, isSpeaking } = useAppContext();
   const navigate = useNavigate();
   const { language, setLanguage, setRole } = useAppContext();
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
@@ -156,7 +159,66 @@ const RoleSelector: React.FC = () => {
               <span>{language === 'mr' ? 'सुरू करा (Start)' : 'Enter Collector App'}</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </div>
-          </button>
+
+            <button
+              onClick={() => handleStart('collector')}
+              className="w-full bg-forest-800 hover:bg-forest-900 active:scale-[0.98] text-white font-display font-bold text-base py-4 px-6 rounded-2xl shadow-tactile transition-all flex items-center justify-center gap-2 group-hover:bg-forest-900"
+            >
+              <span>{language === 'hi' ? 'कलेक्टर ऐप शुरू करें' : language === 'mr' ? 'कलेक्टर सुरू करा' : 'Open Collector Portal'}</span>
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            </button>
+          </div>
+
+          {/* PORTAL 2: Recycler / Industrial Operations Workstation */}
+          <div className="group relative bg-gradient-to-b from-white to-industrial-50 rounded-3xl p-7 sm:p-8 border border-paper-300 shadow-tactile-md hover:shadow-tactile-lg transition-all duration-300 flex flex-col justify-between overflow-hidden">
+            <div className="absolute top-0 right-0 transform translate-x-4 -translate-y-4 w-32 h-32 bg-amber-100/50 rounded-full blur-2xl pointer-events-none group-hover:bg-amber-200/60 transition-all"></div>
+
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <div className="w-14 h-14 rounded-2xl bg-amber-100 border border-amber-200 flex items-center justify-center text-amber-900 shadow-tactile">
+                  <Building2 className="w-7 h-7" />
+                </div>
+                <span className="font-mono text-xs font-bold uppercase tracking-wider text-amber-900 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+                  CPCB Certified
+                </span>
+              </div>
+
+              <h2 className="text-2xl font-bold font-display text-industrial-950 mb-2">
+                {language === 'hi' ? 'प्रमाणित औद्योगिक रिसाइक्लर' : language === 'mr' ? 'औद्योगिक रिसायकलर' : 'Certified Industrial Recycler'}
+              </h2>
+              <p className="text-sm text-industrial-600 leading-relaxed mb-6 font-medium">
+                {language === 'hi'
+                  ? 'कलेक्टरों से आने वाले स्क्रैप लॉट्स की डिजिटल बोली लगाएं, गेट-इन वे-ब्रिज पर वजन प्रमाणित करें, CPCB फॉर्म-6 ट्रैसेबिलिटी बनाए रखें और ईपीआर क्रेडिट प्राप्त करें।'
+                  : language === 'mr'
+                  ? 'येणाऱ्या स्क्रॅप लॉट्सचे परीक्षण करा, डिजिटल वे-ब्रिज स्कॅनरने पडताळणी करा आणि CPCB फॉर्म-६ चे नियम पाळा.'
+                  : 'B2B procurement suite: inspect incoming collector scrap batches, manage gate-in weighbridge scales, configure rate masters, and issue CPCB Form-6 manifests.'}
+              </p>
+
+              {/* Feature Highlights */}
+              <div className="space-y-3 mb-8">
+                <div className="flex items-center text-xs font-semibold text-industrial-700 gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span>CPCB Form-6 Manifest & Chain of Custody</span>
+                </div>
+                <div className="flex items-center text-xs font-semibold text-industrial-700 gap-2.5">
+                  <Scale className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span>Digital Gate-In Weighbridge Scale Verification</span>
+                </div>
+                <div className="flex items-center text-xs font-semibold text-industrial-700 gap-2.5">
+                  <TrendingUp className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span>Dynamic Rate Master & Mass Balance Intake</span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => handleStart('recycler')}
+              className="w-full bg-industrial-900 hover:bg-industrial-950 active:scale-[0.98] text-white font-display font-bold text-base py-4 px-6 rounded-2xl shadow-tactile transition-all flex items-center justify-center gap-2"
+            >
+              <span>{language === 'hi' ? 'रिसाइक्लर कंसोल खोलें' : language === 'mr' ? 'रिसायकलर पोर्टल' : 'Open Recycler Console'}</span>
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            </button>
+          </div>
 
           {/* Recycler Card */}
           <button
@@ -206,3 +268,4 @@ const RoleSelector: React.FC = () => {
 };
 
 export default RoleSelector;
+

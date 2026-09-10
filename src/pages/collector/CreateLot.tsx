@@ -13,66 +13,75 @@ import {
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import type { Material } from '../../data/mockData';
+import { MaterialBadge } from '../../components/ui/MaterialBadge';
 
 const CreateLot: React.FC = () => {
   const navigate = useNavigate();
-  const { materials, addLot, isOnline, addToSyncQueue, language } = useAppContext();
+  const { materials, recyclers, addLot, isOnline, addToSyncQueue, language } = useAppContext();
   
-  const [step, setStep] = useState(1);
-  const [photoTaken, setPhotoTaken] = useState(false);
-  const [analyzing, setAnalyzing] = useState(false);
-  const [selectedMaterial, setSelectedMaterial] = useState<Material>(
-    materials.find(m => m.id === 'm3') || materials[0]
-  );
-  const [weight, setWeight] = useState<string>('8.2');
-  const [condition, setCondition] = useState('Used');
-  const [source, setSource] = useState('Shop Scrap');
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [flashlightOn, setFlashlightOn] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
+  const [selectedMaterial, setSelectedMaterial] = useState<Material>(materials[0]);
+  
+  // Scale weights
+  const [grossWeight, setGrossWeight] = useState<string>('12.5');
+  const [tarePreset, setTarePreset] = useState<number>(0.6); // 0.6 kg gunny bag
+  const [customTare, setCustomTare] = useState<string>('');
+  const [condition, setCondition] = useState<'Good' | 'Used' | 'Damaged' | 'Mixed'>('Good');
+  const [source, setSource] = useState<'Household' | 'Commercial' | 'Industrial' | 'Mandi Collection'>('Commercial');
 
-  const handleTakePhoto = () => {
-    setPhotoTaken(true);
-    setAnalyzing(true);
+  // Compute weights
+  const grossNum = parseFloat(grossWeight) || 0;
+  const tareNum = customTare !== '' ? parseFloat(customTare) || 0 : tarePreset;
+  const netWeight = Math.max(0, parseFloat((grossNum - tareNum).toFixed(2)));
+
+  const handleSimulateScan = () => {
+    setIsScanning(true);
     setTimeout(() => {
-      setAnalyzing(false);
-      setSelectedMaterial(materials.find(m => m.id === 'm3') || materials[0]);
+      setIsScanning(false);
+      setSelectedMaterial(materials[1]); // e.g. Copper
       setStep(2);
     }, 1400);
   };
 
-  const handleGetEstimate = () => {
-    if (!selectedMaterial || !weight) return;
-    setStep(3);
-  };
-
-  const handleViewOffers = () => {
-    if (!selectedMaterial || !weight) return;
+  const handleCreateAndMatch = (chosenRecyclerId?: string) => {
+    if (!selectedMaterial || netWeight <= 0) return;
     
-    const estValue = selectedMaterial.basePrice * parseFloat(weight);
+    const recycler = recyclers.find(r => r.id === chosenRecyclerId) || recyclers[0];
+    const offeredRate = recycler.offers[selectedMaterial.id] || selectedMaterial.basePrice;
+    const finalAmount = Math.round(offeredRate * netWeight);
+    const estMin = Math.round(selectedMaterial.basePrice * netWeight * 0.95);
+    const estMax = Math.round(selectedMaterial.basePrice * netWeight * 1.05);
+
     const newLot = {
       id: `l${Math.floor(100 + Math.random() * 900)}`,
+      manifestNo: `FORM-6/MH/2026/${Math.floor(8000 + Math.random() * 1000)}`,
       materialId: selectedMaterial.id,
-      weight: parseFloat(weight),
+      grossWeight: grossNum,
+      tareWeight: tareNum,
+      weight: netWeight,
       condition,
       source,
-      estimatedValueRange: [Math.round(estValue * 0.95), Math.round(estValue * 1.05)] as [number, number],
-      status: 'Created' as const,
+      estimatedValueRange: [estMin, estMax] as [number, number],
+      status: 'Offer Accepted' as const,
       createdAt: new Date().toISOString(),
-      collectorId: 'COL-1028'
+      collectorId: 'COL-1028',
+      collectorName: 'Raju Scrap Co.',
+      recyclerId: recycler.id,
+      finalPrice: finalAmount,
+      ratePerKg: offeredRate,
+      gpsLocation: '18.5204° N, 73.8567° E (Pune Central)',
     };
 
     if (isOnline) {
       addLot(newLot);
-      navigate('/collector/recyclers', { state: { lotId: newLot.id } });
+      navigate(`/collector/handover/${newLot.id}`);
     } else {
       addToSyncQueue({ type: 'ADD_LOT', payload: newLot });
       alert('लॉट ऑफलाईन सेव्ह झाला! इंटरनेट आल्यावर आपोआप सिंक होईल.');
       navigate('/collector');
     }
-  };
-
-  const addWeight = (delta: number) => {
-    const current = parseFloat(weight) || 0;
-    const updated = Math.max(0.1, Math.round((current + delta) * 10) / 10);
-    setWeight(updated.toString());
   };
 
   return (
@@ -85,7 +94,7 @@ const CreateLot: React.FC = () => {
             onClick={() => step > 1 ? setStep(step - 1) : navigate('/collector')}
             className="p-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
             <h2 className="text-base font-extrabold text-slate-900 leading-tight">
@@ -377,3 +386,4 @@ const CreateLot: React.FC = () => {
 };
 
 export default CreateLot;
+

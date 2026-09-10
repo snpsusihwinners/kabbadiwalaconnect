@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
-  User, 
   LogOut, 
   ShieldAlert, 
   Volume2, 
-  BadgeCheck, 
+  ShieldCheck, 
   MapPin, 
   Calendar, 
   Award,
@@ -15,9 +14,8 @@ import { useAppContext } from '../../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 
 const Profile: React.FC = () => {
-  const { setRole, language, setLanguage } = useAppContext();
+  const { setRole, language, speak } = useAppContext();
   const navigate = useNavigate();
-  const [playingItem, setPlayingItem] = useState<number | null>(null);
 
   const handleLogout = () => {
     setRole(null);
@@ -161,3 +159,4 @@ const Profile: React.FC = () => {
 };
 
 export default Profile;
+

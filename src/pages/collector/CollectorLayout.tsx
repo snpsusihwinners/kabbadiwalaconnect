@@ -1,8 +1,8 @@
 import React from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Home, 
-  Wallet,
+  IndianRupee, 
   Building2, 
   TrendingUp, 
   WifiOff,
@@ -15,9 +15,18 @@ import {
 import { useAppContext } from '../../context/AppContext';
 
 const CollectorLayout: React.FC = () => {
-  const { language, setLanguage, isOnline, setIsOnline, syncQueue } = useAppContext();
-  const location = useLocation();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { 
+    isOnline, 
+    setIsOnline, 
+    syncQueue, 
+    processSyncQueue, 
+    language, 
+    setLanguage, 
+    speak, 
+    isSpeaking 
+  } = useAppContext();
 
   const navItems = [
     { id: 'home', path: '/collector', icon: Home, labelEn: 'Home', labelHi: 'मुख्य' },
@@ -167,6 +176,7 @@ const CollectorLayout: React.FC = () => {
         <nav className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 px-2 py-1.5 flex justify-around items-center z-40">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path || (item.path !== '/collector' && location.pathname.startsWith(item.path));
+            
             return (
               <button
                 key={item.id}
@@ -186,9 +196,9 @@ const CollectorLayout: React.FC = () => {
           })}
         </nav>
       </div>
-
     </div>
   );
 };
 
 export default CollectorLayout;
+
