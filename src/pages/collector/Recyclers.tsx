@@ -1,107 +1,223 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ShieldCheck, MapPin, Truck, ChevronRight } from 'lucide-react';
+import { 
+  ShieldCheck, 
+  MapPin, 
+  Truck, 
+  ChevronRight, 
+  Star, 
+  Phone, 
+  ArrowRight,
+  Filter,
+  CheckCircle2,
+  Sparkles
+} from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import type { Recycler } from '../../data/mockData';
 
 const Recyclers: React.FC = () => {
-  const { recyclers, lots, updateLot } = useAppContext();
+  const { recyclers, lots, updateLot, materials } = useAppContext();
   const location = useLocation();
   const navigate = useNavigate();
   
   const currentLotId = location.state?.lotId;
   const currentLot = lots.find(l => l.id === currentLotId);
-  const materialId = currentLot?.materialId;
+  const materialId = currentLot?.materialId || 'm3';
+  const currentMaterial = materials.find(m => m.id === materialId);
 
-  // Removed selectedRecycler
+  const [filterType, setFilterType] = useState<'rate' | 'distance' | 'pickup'>('rate');
 
-  // Filter recyclers that accept the material, or show all if no lot
-  const displayRecyclers = materialId 
-    ? recyclers.filter(r => r.acceptedMaterials.includes(materialId)).sort((a, b) => b.offers[materialId] - a.offers[materialId])
-    : recyclers;
+  const sortedRecyclers = [...recyclers].sort((a, b) => {
+    if (filterType === 'rate') {
+      return (b.offers[materialId] || 0) - (a.offers[materialId] || 0);
+    }
+    if (filterType === 'distance') {
+      return a.distance - b.distance;
+    }
+    return (b.pickup ? 1 : 0) - (a.pickup ? 1 : 0);
+  });
 
   const handleAcceptOffer = (recycler: Recycler) => {
-    if (currentLot) {
-      updateLot(currentLot.id, { 
+    const targetLotId = currentLot?.id || lots[0]?.id;
+    if (targetLotId) {
+      const offeredRate = recycler.offers[materialId] || 230;
+      const weightVal = currentLot?.weight || 8.2;
+      updateLot(targetLotId, { 
         recyclerId: recycler.id, 
         status: 'Offer Accepted',
-        finalPrice: (recycler.offers[currentLot.materialId] || 0) * currentLot.weight
+        finalPrice: Math.round(offeredRate * weightVal)
       });
-      navigate(`/collector/handover/${currentLot.id}`);
+      navigate(`/collector/handover/${targetLotId}`);
     }
   };
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 pb-20 relative">
-      <div className="bg-white p-4 border-b border-gray-100 flex items-center shadow-sm sticky top-0 z-10">
-        <h1 className="text-xl font-bold text-gray-900">{currentLot ? 'Match Found' : 'Nearby Recyclers'}</h1>
-      </div>
+    <div className="flex flex-col min-h-full bg-[#fbf8f1] text-[#13261e] pb-10">
+      
+      {/* Header */}
+      <div className="bg-[#0b241a] text-white px-5 pt-4 pb-5 rounded-b-[30px] shadow-md relative overflow-hidden">
+        <div className="relative z-10">
+          <div className="flex items-center space-x-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-300 font-bold">
+              CERTIFIED RECYCLER NETWORK
+            </span>
+          </div>
+          <h1 className="text-xl font-black text-white">
+            {currentLot ? 'आपके लॉट के लिए ऑफर' : 'पास के अधिकृत रीसाइक्लर'}
+          </h1>
+          <p className="text-xs text-emerald-200/80 mt-0.5">
+            CPCB व प्रदूषण नियंत्रण बोर्ड द्वारा प्रमाणित
+          </p>
+        </div>
 
-      <div className="p-4 space-y-4">
+        {/* Current Lot Badge if matched */}
         {currentLot && (
-          <div className="bg-green-600 text-white p-4 rounded-2xl shadow-md mb-6">
-            <p className="text-green-100 text-sm mb-1">Looking for offers for:</p>
-            <div className="flex justify-between items-end">
-              <h2 className="text-xl font-bold">{currentLot.weight} kg E-Waste</h2>
-              <div className="text-right">
-                <p className="text-xs text-green-200">Est. Value</p>
-                <p className="font-bold">₹{currentLot.estimatedValueRange[0]} - ₹{currentLot.estimatedValueRange[1]}</p>
+          <div className="mt-3 bg-gradient-to-r from-emerald-950 to-[#072418] border border-emerald-500/30 rounded-2xl p-3 flex items-center justify-between">
+            <div className="flex items-center space-x-2.5">
+              <span className="text-2xl">{currentMaterial?.icon}</span>
+              <div>
+                <p className="text-xs font-black text-white">{currentLot.weight} KG {currentMaterial?.name}</p>
+                <p className="text-[10px] font-mono text-emerald-300">लॉट ID #{currentLot.id.toUpperCase()}</p>
               </div>
+            </div>
+            <div className="text-right">
+              <span className="text-[10px] text-slate-400 font-mono">अनुमानित भाव</span>
+              <p className="text-sm font-black text-amber-300 font-mono">
+                ₹{currentLot.estimatedValueRange[0]} - ₹{currentLot.estimatedValueRange[1]}
+              </p>
             </div>
           </div>
         )}
+      </div>
 
-        <div className="space-y-4">
-          {displayRecyclers.map((r, i) => (
-            <div key={r.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-              <div className="p-4 border-b border-gray-100">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h3 className="font-bold text-gray-900 text-lg flex items-center">
-                      {r.name}
-                      {r.authorized && <ShieldCheck className="w-5 h-5 text-blue-500 ml-1" />}
-                    </h3>
-                    <div className="flex items-center text-sm text-gray-500 mt-1">
-                      <MapPin className="w-4 h-4 mr-1" />
-                      {r.distance} km away
-                    </div>
-                  </div>
-                  {i === 0 && currentLot && (
-                    <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-md">Best Match</span>
-                  )}
-                </div>
-                
-                {r.pickup && (
-                  <div className="flex items-center text-sm text-gray-600 bg-gray-50 inline-flex px-2 py-1 rounded-md mt-2 border border-gray-100">
-                    <Truck className="w-4 h-4 mr-1 text-gray-400" />
-                    Pickup Available
-                  </div>
-                )}
-              </div>
-
-              {currentLot && (
-                <div className="bg-green-50 p-4 flex justify-between items-center">
-                  <div>
-                    <p className="text-xs text-green-700 font-medium">Offered Rate</p>
-                    <p className="text-xl font-black text-gray-900">₹{r.offers[currentLot.materialId]}/kg</p>
-                  </div>
-                  <button 
-                    onClick={() => handleAcceptOffer(r)}
-                    className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-xl transition-colors shadow-sm"
-                  >
-                    Accept
-                  </button>
-                </div>
-              )}
-
-              {!currentLot && (
-                <button className="w-full p-3 text-center text-sm font-medium text-gray-600 flex justify-center items-center hover:bg-gray-50 transition-colors">
-                  View Details <ChevronRight className="w-4 h-4 ml-1" />
-                </button>
-              )}
-            </div>
+      <div className="p-4 space-y-3.5 flex-1">
+        
+        {/* Filter Chips */}
+        <div className="flex space-x-2">
+          {[
+            { id: 'rate', label: 'उच्चतम भाव (Highest Rate)' },
+            { id: 'distance', label: 'निकटतम (Nearest)' },
+            { id: 'pickup', label: 'पिकअप उपलब्ध' },
+          ].map((f) => (
+            <button
+              key={f.id}
+              onClick={() => setFilterType(f.id as any)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold font-mono transition-all ${
+                filterType === f.id
+                  ? 'bg-emerald-700 text-white shadow-sm'
+                  : 'bg-white border border-[#e6decb] text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              {f.label}
+            </button>
           ))}
         </div>
+
+        {/* Recycler Cards */}
+        <div className="space-y-3">
+          {sortedRecyclers.map((r, i) => {
+            const offerPerKg = r.offers[materialId] || 220;
+            const isTopMatch = i === 0;
+
+            return (
+              <div 
+                key={r.id}
+                className={`bg-white rounded-[24px] border transition-all overflow-hidden shadow-card-elevated ${
+                  isTopMatch ? 'border-emerald-500/60 ring-1 ring-emerald-500/30' : 'border-[#e6decb]'
+                }`}
+              >
+                <div className="p-4 space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="flex items-center space-x-1.5">
+                        <h3 className="font-black text-slate-900 text-base">{r.name}</h3>
+                        {r.authorized && (
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                            <ShieldCheck className="w-3 h-3 mr-0.5 text-emerald-600" />
+                            CPCB VERIFIED
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="flex items-center space-x-3 text-xs text-slate-500 mt-1 font-mono">
+                        <span className="flex items-center">
+                          <MapPin className="w-3.5 h-3.5 mr-1 text-slate-400" />
+                          {r.distance} किमी दूर
+                        </span>
+                        <span className="flex items-center text-amber-600 font-bold">
+                          <Star className="w-3.5 h-3.5 mr-0.5 fill-amber-400 text-amber-500" />
+                          {r.rating}
+                        </span>
+                      </div>
+                    </div>
+
+                    {isTopMatch && (
+                      <span className="bg-emerald-600 text-white text-[10px] font-mono font-bold px-2.5 py-1 rounded-full shadow-sm flex items-center space-x-1">
+                        <Sparkles className="w-3 h-3" />
+                        <span>BEST MATCH</span>
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-xs text-slate-500 font-medium">
+                    📍 {r.address}
+                  </p>
+
+                  {/* Badges */}
+                  <div className="flex flex-wrap gap-1.5 text-[11px] font-mono">
+                    {r.pickup ? (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-200">
+                        <Truck className="w-3 h-3 mr-1 text-teal-600" /> गोदाम पिकअप उपलब्ध
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-lg bg-slate-50 text-slate-600 border border-slate-200">
+                        स्वयं डिलीवरी (Self Drop)
+                      </span>
+                    )}
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200">
+                      नकद / UPI भुगतान
+                    </span>
+                  </div>
+                </div>
+
+                {/* Offer Price Bar & Accept CTA */}
+                <div className="bg-[#f8fbf9] p-3.5 border-t border-[#eaf2ed] flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] font-mono text-slate-500 uppercase font-bold">
+                      ऑफर भाव ({currentMaterial?.name || 'PCB'})
+                    </span>
+                    <div className="flex items-baseline space-x-1">
+                      <span className="text-2xl font-black text-emerald-900 font-mono tracking-tight">
+                        ₹{offerPerKg}
+                      </span>
+                      <span className="text-xs text-slate-600 font-mono">/ किग्रा</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <a
+                      href="tel:9876543210"
+                      className="p-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors"
+                      title="कॉल करें"
+                    >
+                      <Phone className="w-4 h-4" />
+                    </a>
+
+                    <button
+                      onClick={() => handleAcceptOffer(r)}
+                      className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black text-xs font-mono py-2.5 px-4 rounded-xl shadow-tactile-green active:translate-y-0.5 transition-all flex items-center space-x-1.5"
+                    >
+                      <span>ऑफर स्वीकारें</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
       </div>
     </div>
   );

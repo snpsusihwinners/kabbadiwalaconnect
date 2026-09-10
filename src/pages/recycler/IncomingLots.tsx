@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { Search, Filter, ShieldAlert } from 'lucide-react';
+import { 
+  Search, 
+  Filter, 
+  ShieldAlert, 
+  Sparkles, 
+  ArrowRight, 
+  CheckCircle2, 
+  Layers, 
+  Truck,
+  IndianRupee
+} from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import type { Lot } from '../../data/mockData';
 
@@ -7,147 +17,190 @@ const IncomingLots: React.FC = () => {
   const { lots, materials, updateLot } = useAppContext();
   const [selectedLot, setSelectedLot] = useState<Lot | null>(null);
   const [offerPrice, setOfferPrice] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredLots = lots.filter(l => 
+    l.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    l.collectorId.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleMakeOffer = () => {
     if (selectedLot && offerPrice) {
       updateLot(selectedLot.id, { 
-        status: 'Offer Accepted', // In a real app this would go to 'Offer Made' and collector accepts
-        finalPrice: parseFloat(offerPrice) * selectedLot.weight 
+        status: 'Offer Accepted',
+        finalPrice: Math.round(parseFloat(offerPrice) * selectedLot.weight)
       });
       setSelectedLot(null);
-      alert('Offer submitted successfully!');
+      alert('ऑफर सफलता पूर्वक सबमिट किया गया! कलेक्टर को तुरंत नोटिफिकेशन भेजा गया.');
     }
   };
 
   return (
     <div className="space-y-6">
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center">
-        <div className="relative w-64">
+      
+      {/* Action Header & Search */}
+      <div className="bg-[#0b2118]/80 border border-emerald-900/50 p-4 rounded-2xl flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+        <div className="relative flex-1 max-w-md">
           <input 
             type="text" 
-            placeholder="Search Lot ID..." 
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-green-500"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search Lot ID or Collector (e.g. L1, COL-1028)..." 
+            className="w-full pl-10 pr-4 py-2.5 bg-[#061710] border border-emerald-900/80 rounded-xl text-white font-mono text-xs focus:outline-none focus:border-emerald-400 placeholder:text-slate-500"
           />
-          <Search className="w-5 h-5 text-gray-400 absolute left-3 top-2.5" />
+          <Search className="w-4 h-4 text-emerald-500 absolute left-3.5 top-3" />
         </div>
-        <button className="flex items-center px-4 py-2 text-gray-600 bg-gray-50 rounded-lg border border-gray-200">
-          <Filter className="w-4 h-4 mr-2" /> Filter
-        </button>
+
+        <div className="flex items-center space-x-2">
+          <span className="text-xs font-mono text-slate-400">
+            Total Intake Queued: <strong className="text-emerald-400">{lots.length} Lots</strong>
+          </span>
+        </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lot ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Material</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Weight</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Collector</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Est. Value</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {lots.map(lot => {
-              const material = materials.find(m => m.id === lot.materialId);
-              return (
-                <tr key={lot.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">{lot.id.toUpperCase()}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <span className="text-xl mr-2">{material?.icon}</span>
-                      <span className="text-sm font-medium text-gray-900">{material?.name}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{lot.weight} kg</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{lot.collectorId}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">₹{lot.estimatedValueRange[0]} - ₹{lot.estimatedValueRange[1]}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      lot.status === 'Created' ? 'bg-yellow-100 text-yellow-800' :
-                      lot.status === 'Offer Accepted' ? 'bg-blue-100 text-blue-800' :
-                      'bg-green-100 text-green-800'
-                    }`}>
-                      {lot.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    {lot.status === 'Created' ? (
-                      <button onClick={() => setSelectedLot(lot)} className="text-green-600 hover:text-green-900 font-bold">Make Offer</button>
-                    ) : (
-                      <span className="text-gray-400">View</span>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      {/* Modern Technical Grid/Table */}
+      <div className="bg-[#0b2118]/80 border border-emerald-900/50 rounded-3xl overflow-hidden shadow-xl">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-emerald-950/80 text-left font-mono">
+            <thead className="bg-[#071912] text-[11px] text-slate-400 uppercase tracking-wider">
+              <tr>
+                <th className="px-6 py-4">Lot ID</th>
+                <th className="px-6 py-4">Material Stream</th>
+                <th className="px-6 py-4">Weighed Mass</th>
+                <th className="px-6 py-4">Origin Hub</th>
+                <th className="px-6 py-4">Suggested Range</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-emerald-950/60 text-xs">
+              {filteredLots.map((lot) => {
+                const material = materials.find(m => m.id === lot.materialId);
+                const isPending = lot.status === 'Created';
+
+                return (
+                  <tr key={lot.id} className="hover:bg-emerald-950/30 transition-colors">
+                    <td className="px-6 py-4 font-bold text-white">
+                      #{lot.id.toUpperCase()}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xl">{material?.icon}</span>
+                        <span className="text-slate-200 font-bold">{material?.name}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-slate-300 font-bold">
+                      {lot.weight} KG
+                    </td>
+                    <td className="px-6 py-4 text-slate-400">
+                      {lot.collectorId} (Pune)
+                    </td>
+                    <td className="px-6 py-4 text-amber-300 font-bold">
+                      ₹{lot.estimatedValueRange[0]} – ₹{lot.estimatedValueRange[1]}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold inline-flex items-center space-x-1 ${
+                        lot.status === 'Handover Completed'
+                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                          : lot.status === 'Offer Accepted'
+                          ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30'
+                          : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                      }`}>
+                        <span>{lot.status}</span>
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      {isPending ? (
+                        <button 
+                          onClick={() => {
+                            setSelectedLot(lot);
+                            setOfferPrice(material?.basePrice.toString() || '230');
+                          }}
+                          className="px-3.5 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg text-xs transition-all shadow-sm active:scale-95"
+                        >
+                          Make Offer
+                        </button>
+                      ) : (
+                        <span className="text-slate-500 text-[11px]">
+                          {lot.finalPrice ? `₹${lot.finalPrice} Locked` : 'Matched'}
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Make Offer Modal */}
       {selectedLot && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Make Offer for {selectedLot.id.toUpperCase()}</h3>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-[#0b241a] border-2 border-emerald-500/40 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 text-slate-100 font-sans">
+            <div className="flex items-center justify-between pb-3 border-b border-emerald-900/60">
+              <h3 className="text-lg font-black text-white font-mono uppercase">
+                Submit Offer for Lot #{selectedLot.id.toUpperCase()}
+              </h3>
+              <span className="text-xs font-mono text-emerald-400">COLLECTOR DIRECT</span>
+            </div>
             
-            <div className="bg-gray-50 p-4 rounded-xl space-y-2 mb-4 text-sm">
+            <div className="bg-[#061710] p-4 rounded-2xl border border-emerald-950 space-y-2 text-xs font-mono">
               <div className="flex justify-between">
-                <span className="text-gray-500">Material</span>
-                <span className="font-bold">{materials.find(m => m.id === selectedLot.materialId)?.name}</span>
+                <span className="text-slate-400">Material Stream:</span>
+                <span className="font-bold text-white">
+                  {materials.find(m => m.id === selectedLot.materialId)?.name}
+                </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Weight</span>
-                <span className="font-bold">{selectedLot.weight} kg</span>
+                <span className="text-slate-400">Certified Weight:</span>
+                <span className="font-bold text-white">{selectedLot.weight} KG</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Suggested Range</span>
-                <span className="font-bold">₹{selectedLot.estimatedValueRange[0]} - ₹{selectedLot.estimatedValueRange[1]}</span>
+                <span className="text-slate-400">Fair Mandi Floor:</span>
+                <span className="font-bold text-amber-300">
+                  ₹{selectedLot.estimatedValueRange[0]} – ₹{selectedLot.estimatedValueRange[1]}
+                </span>
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Your Offer Price (per kg)</label>
-                <div className="relative">
-                  <span className="absolute left-3 top-2 text-gray-500 font-bold">₹</span>
-                  <input 
-                    type="number" 
-                    value={offerPrice}
-                    onChange={(e) => setOfferPrice(e.target.value)}
-                    className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500"
-                    placeholder="Enter amount"
-                  />
-                </div>
+            <div className="space-y-2">
+              <label className="text-xs font-mono text-slate-300 font-bold block">
+                Offered Buying Rate (₹ per KG):
+              </label>
+              <div className="relative">
+                <span className="absolute left-3.5 top-3 text-emerald-400 font-mono font-bold">₹</span>
+                <input 
+                  type="number"
+                  value={offerPrice}
+                  onChange={(e) => setOfferPrice(e.target.value)}
+                  className="w-full pl-8 pr-4 py-3 bg-[#061710] border border-emerald-500/40 rounded-xl text-white font-mono text-lg font-bold focus:outline-none focus:border-emerald-400"
+                />
               </div>
-              
-              {offerPrice && parseFloat(offerPrice) * selectedLot.weight < selectedLot.estimatedValueRange[0] && (
-                <div className="flex items-start text-orange-600 bg-orange-50 p-3 rounded-lg text-sm">
-                  <ShieldAlert className="w-5 h-5 mr-2 flex-shrink-0" />
-                  <p>Offer is below suggested market range. Collector may reject.</p>
-                </div>
-              )}
+              <p className="text-[11px] font-mono text-slate-400">
+                Total Lot Payout: <strong className="text-emerald-300">₹{Math.round((parseFloat(offerPrice) || 0) * selectedLot.weight)}</strong> (Cash on Handover)
+              </p>
+            </div>
 
-              <div className="flex justify-end space-x-3 mt-6">
-                <button 
-                  onClick={() => setSelectedLot(null)}
-                  className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg font-medium hover:bg-gray-200"
-                >
-                  Cancel
-                </button>
-                <button 
-                  onClick={handleMakeOffer}
-                  disabled={!offerPrice}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 disabled:opacity-50"
-                >
-                  Submit Offer
-                </button>
-              </div>
+            <div className="flex space-x-3 pt-3">
+              <button 
+                onClick={() => setSelectedLot(null)}
+                className="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono font-bold text-xs rounded-xl"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleMakeOffer}
+                disabled={!offerPrice}
+                className="flex-1 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono font-black text-xs rounded-xl shadow-tactile-green active:translate-y-0.5 transition-all"
+              >
+                Dispatch Offer
+              </button>
             </div>
           </div>
         </div>
       )}
+
     </div>
   );
 };
