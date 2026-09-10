@@ -3,126 +3,172 @@ import {
   Search, 
   Filter, 
   ShieldAlert, 
-  Sparkles, 
+  Scale, 
   ArrowRight, 
   CheckCircle2, 
-  Layers, 
-  Truck,
-  IndianRupee
+  MapPin, 
+  User,
+  X,
+  Sparkles
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import type { Lot } from '../../data/mockData';
+import { MaterialBadge } from '../../components/ui/MaterialBadge';
 
 const IncomingLots: React.FC = () => {
   const { lots, materials, updateLot } = useAppContext();
   const [selectedLot, setSelectedLot] = useState<Lot | null>(null);
   const [offerPrice, setOfferPrice] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'All' | 'Created' | 'Offer Accepted' | 'Handover Completed'>('All');
 
-  const filteredLots = lots.filter(l => 
-    l.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    l.collectorId.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredLots = lots.filter(lot => {
+    const matchesStatus = statusFilter === 'All' || lot.status === statusFilter;
+    const material = materials.find(m => m.id === lot.materialId);
+    const matchesSearch = searchQuery === '' ||
+      lot.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lot.manifestNo.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (material && material.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      lot.collectorName.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesStatus && matchesSearch;
+  });
 
   const handleMakeOffer = () => {
     if (selectedLot && offerPrice) {
+      const rate = parseFloat(offerPrice);
       updateLot(selectedLot.id, { 
         status: 'Offer Accepted',
-        finalPrice: Math.round(parseFloat(offerPrice) * selectedLot.weight)
+        finalPrice: Math.round(rate * selectedLot.weight),
+        ratePerKg: rate,
+        recyclerId: 'r1'
       });
       setSelectedLot(null);
-      alert('ऑफर सफलता पूर्वक सबमिट किया गया! कलेक्टर को तुरंत नोटिफिकेशन भेजा गया.');
+      setOfferPrice('');
     }
   };
 
   return (
     <div className="space-y-6">
-      
-      {/* Action Header & Search */}
-      <div className="bg-[#0b2118]/80 border border-emerald-900/50 p-4 rounded-2xl flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+      {/* Header Controls */}
+      <div className="bg-white p-5 rounded-2xl border border-paper-300 shadow-tactile flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="relative flex-1 max-w-md">
           <input 
             type="text" 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search Lot ID or Collector (e.g. L1, COL-1028)..." 
-            className="w-full pl-10 pr-4 py-2.5 bg-[#061710] border border-emerald-900/80 rounded-xl text-white font-mono text-xs focus:outline-none focus:border-emerald-400 placeholder:text-slate-500"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by Lot ID, Manifest, Material or Collector..." 
+            className="w-full pl-10 pr-4 py-2.5 text-xs bg-paper-50 border border-paper-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium placeholder-industrial-400"
           />
-          <Search className="w-4 h-4 text-emerald-500 absolute left-3.5 top-3" />
+          <Search className="w-4 h-4 text-industrial-400 absolute left-3.5 top-3" />
         </div>
 
-        <div className="flex items-center space-x-2">
-          <span className="text-xs font-mono text-slate-400">
-            Total Intake Queued: <strong className="text-emerald-400">{lots.length} Lots</strong>
-          </span>
+        {/* Status Tabs */}
+        <div className="flex gap-1.5 text-xs">
+          {(['All', 'Created', 'Offer Accepted', 'Handover Completed'] as const).map(tab => (
+            <button
+              key={tab}
+              onClick={() => setStatusFilter(tab)}
+              className={`px-3 py-1.5 rounded-xl font-bold border transition-all whitespace-nowrap ${
+                statusFilter === tab 
+                  ? 'bg-forest-800 text-white border-forest-700 shadow-sm' 
+                  : 'bg-paper-100 text-industrial-600 border-paper-300 hover:bg-paper-200'
+              }`}
+            >
+              {tab === 'Created' ? 'Awaiting Bids' : tab === 'Offer Accepted' ? 'In Transit' : tab === 'Handover Completed' ? 'Settled' : 'All Lots'}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Modern Technical Grid/Table */}
-      <div className="bg-[#0b2118]/80 border border-emerald-900/50 rounded-3xl overflow-hidden shadow-xl">
+      {/* High-Density Lots Table */}
+      <div className="bg-white rounded-2xl border border-paper-300 shadow-tactile overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-emerald-950/80 text-left font-mono">
-            <thead className="bg-[#071912] text-[11px] text-slate-400 uppercase tracking-wider">
+          <table className="min-w-full divide-y divide-paper-200">
+            <thead className="bg-paper-100 text-industrial-600 font-mono text-[11px] uppercase tracking-wider">
               <tr>
-                <th className="px-6 py-4">Lot ID</th>
-                <th className="px-6 py-4">Material Stream</th>
-                <th className="px-6 py-4">Weighed Mass</th>
-                <th className="px-6 py-4">Origin Hub</th>
-                <th className="px-6 py-4">Suggested Range</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4 text-right">Action</th>
+                <th className="px-6 py-3.5 text-left font-bold">Lot ID & Manifest</th>
+                <th className="px-6 py-3.5 text-left font-bold">Material Grade</th>
+                <th className="px-6 py-3.5 text-left font-bold">Net Weight</th>
+                <th className="px-6 py-3.5 text-left font-bold">Collector & Origin</th>
+                <th className="px-6 py-3.5 text-left font-bold">Mandi MSP Range</th>
+                <th className="px-6 py-3.5 text-left font-bold">Current Status</th>
+                <th className="px-6 py-3.5 text-right font-bold">Procurement Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-emerald-950/60 text-xs">
-              {filteredLots.map((lot) => {
+            <tbody className="bg-white divide-y divide-paper-200 text-xs font-sans">
+              {filteredLots.map(lot => {
                 const material = materials.find(m => m.id === lot.materialId);
-                const isPending = lot.status === 'Created';
 
                 return (
-                  <tr key={lot.id} className="hover:bg-emerald-950/30 transition-colors">
-                    <td className="px-6 py-4 font-bold text-white">
-                      #{lot.id.toUpperCase()}
+                  <tr key={lot.id} className="hover:bg-paper-50/80 transition-colors">
+                    {/* ID */}
+                    <td className="px-6 py-4 whitespace-nowrap font-mono">
+                      <span className="font-bold text-industrial-950 block">{lot.id.toUpperCase()}</span>
+                      <span className="text-[10px] text-industrial-500">{lot.manifestNo}</span>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-xl">{material?.icon}</span>
-                        <span className="text-slate-200 font-bold">{material?.name}</span>
+
+                    {/* Material */}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2.5">
+                        <MaterialBadge iconKey={material?.icon} category={material?.category} size="sm" />
+                        <div>
+                          <span className="font-bold text-industrial-950 block">{material?.name}</span>
+                          <span className="text-[11px] text-industrial-500 font-mono">{material?.grade}</span>
+                        </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-slate-300 font-bold">
-                      {lot.weight} KG
+
+                    {/* Weight */}
+                    <td className="px-6 py-4 whitespace-nowrap font-mono">
+                      <span className="font-bold text-industrial-950 block">{lot.weight} kg</span>
+                      <span className="text-[10px] text-industrial-500">Grade: {lot.condition}</span>
                     </td>
-                    <td className="px-6 py-4 text-slate-400">
-                      {lot.collectorId} (Pune)
+
+                    {/* Collector */}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="font-bold text-industrial-800 block">{lot.collectorName}</span>
+                      <span className="text-[11px] text-industrial-500 font-mono">{lot.collectorId}</span>
                     </td>
-                    <td className="px-6 py-4 text-amber-300 font-bold">
-                      ₹{lot.estimatedValueRange[0]} – ₹{lot.estimatedValueRange[1]}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold inline-flex items-center space-x-1 ${
-                        lot.status === 'Handover Completed'
-                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                          : lot.status === 'Offer Accepted'
-                          ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30'
-                          : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                      }`}>
-                        <span>{lot.status}</span>
+
+                    {/* Mandi MSP */}
+                    <td className="px-6 py-4 whitespace-nowrap font-mono">
+                      <span className="font-bold text-emerald-800 block">
+                        ₹{lot.estimatedValueRange[0]} - ₹{lot.estimatedValueRange[1]}
+                      </span>
+                      <span className="text-[10px] text-industrial-500">
+                        ₹{material?.basePrice}/kg index
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      {isPending ? (
+
+                    {/* Status */}
+                    <td className="px-6 py-4 whitespace-nowrap font-mono">
+                      <span className={`px-2.5 py-1 inline-flex text-[10px] leading-4 font-bold rounded-full border ${
+                        lot.status === 'Created' ? 'bg-amber-50 text-amber-800 border-amber-200' :
+                        lot.status === 'Offer Accepted' ? 'bg-blue-50 text-blue-800 border-blue-200' :
+                        'bg-emerald-50 text-emerald-800 border-emerald-200'
+                      }`}>
+                        {lot.status === 'Created' ? 'AWAITING BID' :
+                         lot.status === 'Offer Accepted' ? 'EN ROUTE' :
+                         'GATE-IN SETTLED'}
+                      </span>
+                    </td>
+
+                    {/* Action */}
+                    <td className="px-6 py-4 whitespace-nowrap text-right font-display font-bold">
+                      {lot.status === 'Created' ? (
                         <button 
                           onClick={() => {
                             setSelectedLot(lot);
-                            setOfferPrice(material?.basePrice.toString() || '230');
-                          }}
-                          className="px-3.5 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg text-xs transition-all shadow-sm active:scale-95"
+                            setOfferPrice((material?.basePrice || 200).toString());
+                          }} 
+                          className="bg-forest-800 hover:bg-forest-900 active:scale-95 text-white px-3.5 py-1.5 rounded-xl shadow-tactile text-xs inline-flex items-center gap-1 transition-all"
                         >
-                          Make Offer
+                          <span>Place B2B Bid</span>
+                          <ArrowRight className="w-3 h-3" />
                         </button>
                       ) : (
-                        <span className="text-slate-500 text-[11px]">
-                          {lot.finalPrice ? `₹${lot.finalPrice} Locked` : 'Matched'}
+                        <span className="text-industrial-500 font-mono text-xs">
+                          {lot.finalPrice ? `₹${lot.finalPrice}` : 'View'}
                         </span>
                       )}
                     </td>
@@ -134,75 +180,89 @@ const IncomingLots: React.FC = () => {
         </div>
       </div>
 
-      {/* Make Offer Modal */}
+      {/* B2B Make Offer Modal */}
       {selectedLot && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-[#0b241a] border-2 border-emerald-500/40 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 text-slate-100 font-sans">
-            <div className="flex items-center justify-between pb-3 border-b border-emerald-900/60">
-              <h3 className="text-lg font-black text-white font-mono uppercase">
-                Submit Offer for Lot #{selectedLot.id.toUpperCase()}
-              </h3>
-              <span className="text-xs font-mono text-emerald-400">COLLECTOR DIRECT</span>
-            </div>
-            
-            <div className="bg-[#061710] p-4 rounded-2xl border border-emerald-950 space-y-2 text-xs font-mono">
-              <div className="flex justify-between">
-                <span className="text-slate-400">Material Stream:</span>
-                <span className="font-bold text-white">
-                  {materials.find(m => m.id === selectedLot.materialId)?.name}
-                </span>
+        <div className="fixed inset-0 bg-industrial-950/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-paper-300 space-y-4">
+            <div className="flex items-center justify-between border-b border-paper-200 pb-3">
+              <div>
+                <h3 className="font-display font-bold text-base text-industrial-950">
+                  Submit Procurement Bid for {selectedLot.id.toUpperCase()}
+                </h3>
+                <p className="text-[11px] text-industrial-500 font-mono">
+                  Manifest: {selectedLot.manifestNo}
+                </p>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Certified Weight:</span>
-                <span className="font-bold text-white">{selectedLot.weight} KG</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Fair Mandi Floor:</span>
-                <span className="font-bold text-amber-300">
-                  ₹{selectedLot.estimatedValueRange[0]} – ₹{selectedLot.estimatedValueRange[1]}
-                </span>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-mono text-slate-300 font-bold block">
-                Offered Buying Rate (₹ per KG):
-              </label>
-              <div className="relative">
-                <span className="absolute left-3.5 top-3 text-emerald-400 font-mono font-bold">₹</span>
-                <input 
-                  type="number"
-                  value={offerPrice}
-                  onChange={(e) => setOfferPrice(e.target.value)}
-                  className="w-full pl-8 pr-4 py-3 bg-[#061710] border border-emerald-500/40 rounded-xl text-white font-mono text-lg font-bold focus:outline-none focus:border-emerald-400"
-                />
-              </div>
-              <p className="text-[11px] font-mono text-slate-400">
-                Total Lot Payout: <strong className="text-emerald-300">₹{Math.round((parseFloat(offerPrice) || 0) * selectedLot.weight)}</strong> (Cash on Handover)
-              </p>
-            </div>
-
-            <div className="flex space-x-3 pt-3">
               <button 
                 onClick={() => setSelectedLot(null)}
-                className="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono font-bold text-xs rounded-xl"
+                className="p-1 rounded-lg hover:bg-paper-100 text-industrial-400"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="bg-paper-50 p-4 rounded-2xl border border-paper-300 space-y-2 text-xs font-mono">
+              <div className="flex justify-between">
+                <span className="text-industrial-500 font-sans">Commodity</span>
+                <span className="font-bold text-industrial-900">{materials.find(m => m.id === selectedLot.materialId)?.name}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-industrial-500 font-sans">Net Declared Weight</span>
+                <span className="font-bold text-industrial-900">{selectedLot.weight} kg</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-industrial-500 font-sans">Mandi Market Range</span>
+                <span className="font-bold text-emerald-800">₹{selectedLot.estimatedValueRange[0]} - ₹{selectedLot.estimatedValueRange[1]}</span>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs font-bold text-industrial-700 block mb-1">
+                Your Procurement Buying Rate (₹ per kg)
+              </label>
+              <div className="relative">
+                <span className="absolute left-3.5 top-3 font-mono font-bold text-industrial-500">₹</span>
+                <input 
+                  type="number" 
+                  value={offerPrice}
+                  onChange={(e) => setOfferPrice(e.target.value)}
+                  className="w-full pl-8 pr-4 py-2.5 text-base font-mono font-bold border border-paper-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  placeholder="Enter per kg rate"
+                />
+              </div>
+            </div>
+
+            {offerPrice && (
+              <div className="bg-forest-900 text-white p-3 rounded-xl flex items-center justify-between text-xs font-mono">
+                <span>TOTAL COMMITMENT PAYOUT:</span>
+                <span className="text-base font-black text-amber-300">
+                  ₹{Math.round(parseFloat(offerPrice || '0') * selectedLot.weight).toLocaleString('en-IN')}
+                </span>
+              </div>
+            )}
+
+            <div className="flex justify-end gap-2 pt-2">
+              <button 
+                onClick={() => setSelectedLot(null)}
+                className="px-4 py-2.5 text-xs font-bold text-industrial-600 bg-paper-100 hover:bg-paper-200 rounded-xl transition-colors"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleMakeOffer}
-                disabled={!offerPrice}
-                className="flex-1 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono font-black text-xs rounded-xl shadow-tactile-green active:translate-y-0.5 transition-all"
+                disabled={!offerPrice || parseFloat(offerPrice) <= 0}
+                className="px-5 py-2.5 bg-forest-800 hover:bg-forest-900 disabled:opacity-50 text-white rounded-xl text-xs font-display font-bold shadow-tactile flex items-center gap-1.5 transition-all"
               >
-                Dispatch Offer
+                <span>Transmit Offer</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 };
 
 export default IncomingLots;
+

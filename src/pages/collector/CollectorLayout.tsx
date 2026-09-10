@@ -1,165 +1,210 @@
 import React from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Home, 
-  Wallet,
+  IndianRupee, 
   Building2, 
-  LineChart, 
-  WifiOff,
-  Wifi,
-  Languages,
-  ArrowLeftRight,
-  ShieldCheck,
-  BookOpen
+  FileSpreadsheet, 
+  User, 
+  WifiOff, 
+  RefreshCw, 
+  MapPin, 
+  Volume2,
+  CheckCircle2
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 
 const CollectorLayout: React.FC = () => {
-  const { language, setLanguage, isOnline, setIsOnline, syncQueue } = useAppContext();
-  const location = useLocation();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { 
+    isOnline, 
+    setIsOnline, 
+    syncQueue, 
+    processSyncQueue, 
+    language, 
+    setLanguage, 
+    speak, 
+    isSpeaking 
+  } = useAppContext();
 
   const navItems = [
-    { id: 'home', path: '/collector', icon: Home, labelEn: 'HOME', labelHi: 'मुख्य' },
-    { id: 'prices', path: '/collector/prices', icon: LineChart, labelEn: 'RATES', labelHi: 'भाव' },
-    { id: 'recyclers', path: '/collector/recyclers', icon: Building2, labelEn: 'BUYERS', labelHi: 'खरेदीदार' },
-    { id: 'earnings', path: '/collector/earnings', icon: BookOpen, labelEn: 'LEDGER', labelHi: 'खाते' },
+    { 
+      id: 'home', 
+      icon: Home, 
+      label: language === 'hi' ? 'होम' : language === 'mr' ? 'होम' : 'Home', 
+      path: '/collector' 
+    },
+    { 
+      id: 'prices', 
+      icon: IndianRupee, 
+      label: language === 'hi' ? 'मंडी भाव' : language === 'mr' ? 'बाजार भाव' : 'Mandi Rates', 
+      path: '/collector/prices' 
+    },
+    { 
+      id: 'recyclers', 
+      icon: Building2, 
+      label: language === 'hi' ? 'खरीदार' : language === 'mr' ? 'खरेदीदार' : 'Recyclers', 
+      path: '/collector/recyclers' 
+    },
+    { 
+      id: 'earnings', 
+      icon: FileSpreadsheet, 
+      label: language === 'hi' ? 'खाता बही' : language === 'mr' ? 'खातावही' : 'Passbook', 
+      path: '/collector/earnings' 
+    },
+    { 
+      id: 'profile', 
+      icon: User, 
+      label: language === 'hi' ? 'प्रोफ़ाइल' : language === 'mr' ? 'प्रोफाइल' : 'Profile', 
+      path: '/collector/profile' 
+    },
   ];
 
-  const toggleLanguage = () => {
-    setLanguage(language === 'en' ? 'hi' : (language === 'hi' ? 'mr' : 'en'));
-  };
-
-  const getLangBadge = () => {
-    if (language === 'en') return 'EN (English)';
-    if (language === 'hi') return 'HI (हिंदी)';
-    return 'MR (मराठी)';
+  const handleAudioGuide = () => {
+    let guide = '';
+    if (location.pathname === '/collector') {
+      guide = language === 'hi' 
+        ? 'कलेक्टर होमपेज। नया स्क्रैप लॉट बनाने के लिए कैमरा बटन दबाएं, या आज के ताज़ा मंडी भाव देखें।'
+        : language === 'mr'
+        ? 'कलेक्टर मुख्य पृष्ठ. नवीन स्क्रॅप लॉट तयार करण्यासाठी कॅमेरा बटण दाबा, किंवा आजचे बाजार भाव पहा.'
+        : 'Collector Home. Tap Create Lot to weigh and sell scrap, or check live Mandi rates.';
+    } else if (location.pathname.includes('/prices')) {
+      guide = language === 'hi'
+        ? 'आज के पुणे मंडी स्क्रैप भाव। तांबा 620, पीसीबी 240, और लिथियम बैटरी 110 रुपये प्रति किलो।'
+        : 'Today\'s Pune Mandi benchmark scrap prices.';
+    } else {
+      guide = language === 'hi' ? 'इकोसेतु कलेक्टर सेवा में आपका स्वागत है।' : 'EcoSetu Collector Field Service.';
+    }
+    speak(guide);
   };
 
   return (
-    <div className="min-h-screen bg-khata-paper text-khata-ink bg-grid-pattern font-mono flex flex-col md:flex-row items-center justify-center p-0 md:p-6 lg:p-12 relative overflow-hidden">
-      
-      {/* Background Graphic elements */}
-      <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none hidden md:block">
-        <h2 className="text-9xl font-vernacular">ECOSETU</h2>
-      </div>
-
-      {/* Presentation/Debug Panel (Desktop Only) */}
-      <div className="hidden md:flex flex-col w-[360px] mr-12 shrink-0 z-10 space-y-6">
+    <div className="min-h-screen bg-industrial-950/20 sm:py-6 flex items-center justify-center font-sans antialiased selection:bg-amber-200">
+      {/* Mobile Device Container Frame */}
+      <div className="w-full max-w-md h-[100dvh] sm:h-[880px] bg-paper-50 sm:rounded-[36px] sm:shadow-2xl sm:border-[8px] sm:border-industrial-900 flex flex-col overflow-hidden relative">
         
-        {/* Title */}
-        <div className="brutal-card p-6 bg-khata-blue text-khata-paper border-4 border-khata-ink shadow-brutal text-left">
-          <div className="inline-block px-2 py-1 bg-khata-red text-khata-paper text-xs font-bold font-mono border-2 border-khata-ink mb-4 transform -rotate-2">
-            OFFICIAL DIGITAL LEDGER
-          </div>
-          <h1 className="text-5xl font-vernacular font-black tracking-tight leading-none mb-4">
-            ECOSETU
-          </h1>
-          <p className="text-sm font-mono border-l-4 border-khata-red pl-3 leading-tight opacity-90">
-            A digital Bahi-Khata replacing traditional paper ledgers for informal waste aggregators.
-          </p>
-        </div>
-
-        {/* Demo Controls */}
-        <div className="brutal-card p-4 border-4 border-khata-ink bg-white shadow-brutal space-y-4">
-          <div className="flex items-center space-x-2 border-b-4 border-khata-ink pb-2">
-            <span className="font-bold text-lg">PROTOTYPE CONTROLS</span>
-          </div>
-
-          <div className="space-y-4 pt-2">
+        {/* Top Header Bar */}
+        <header className="bg-forest-900 text-white px-4 py-3 shrink-0 flex items-center justify-between border-b border-forest-800 shadow-sm z-30">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-forest-800 border border-forest-700 flex items-center justify-center font-mono font-bold text-xs text-emerald-300 shadow-inner">
+              RS
+            </div>
             <div>
-              <p className="text-xs font-bold mb-1">NETWORK STATE:</p>
-              <button 
-                onClick={() => setIsOnline(!isOnline)}
-                className={`w-full p-2 border-4 text-sm font-bold flex items-center justify-center space-x-2 active:scale-95 transition-transform ${
-                  isOnline 
-                    ? 'border-khata-green text-khata-green bg-khata-green/10' 
-                    : 'border-khata-red text-khata-red bg-khata-red/10'
-                }`}
-              >
-                {isOnline ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
-                <span>{isOnline ? 'ONLINE' : 'OFFLINE MODE'}</span>
-              </button>
-            </div>
-
-            <div>
-              <p className="text-xs font-bold mb-1">LANGUAGE:</p>
-              <button 
-                onClick={toggleLanguage}
-                className="w-full p-2 border-4 border-khata-ink hover:bg-khata-ink hover:text-khata-paper text-sm font-bold flex items-center justify-center space-x-2 active:scale-95 transition-colors"
-              >
-                <Languages className="w-4 h-4" />
-                <span>{getLangBadge()}</span>
-              </button>
-            </div>
-
-            <div className="pt-2">
-              <button
-                onClick={() => navigate('/recycler')}
-                className="w-full p-2 bg-khata-ink text-khata-paper font-bold flex items-center justify-center space-x-2 active:scale-95 transition-transform"
-              >
-                <ArrowLeftRight className="w-4 h-4" />
-                <span>SWITCH TO BUYER</span>
-              </button>
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-bold text-white tracking-tight">Raju Scrap Co.</span>
+                <span className="bg-emerald-500/20 text-emerald-300 text-[9px] font-mono px-1.5 py-0.2 rounded border border-emerald-500/30">
+                  COL-1028
+                </span>
+              </div>
+              <div className="flex items-center gap-1 text-[10px] text-forest-300">
+                <MapPin className="w-2.5 h-2.5 text-amber-400" />
+                <span>Pune Market Yard (Zone 4)</span>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Flagship Mobile Handset Frame */}
-      <div className="w-full md:w-[400px] h-[100dvh] md:h-[820px] bg-khata-paper md:border-4 md:border-khata-ink md:shadow-brutal shrink-0 flex flex-col relative overflow-hidden transition-all">
-        
-        {/* Top Speaker notch (Desktop) */}
-        <div className="hidden md:flex justify-center bg-khata-ink h-6 items-end pb-1 border-b-4 border-khata-ink shrink-0">
-           <div className="w-24 h-2 bg-khata-paper/20 rounded-full"></div>
-        </div>
+          <div className="flex items-center gap-2">
+            {/* Audio Voice Guide Button */}
+            <button
+              onClick={handleAudioGuide}
+              className={`p-1.5 rounded-lg border transition-all ${
+                isSpeaking 
+                  ? 'bg-amber-500 text-industrial-950 border-amber-400 animate-pulse'
+                  : 'bg-forest-800 hover:bg-forest-700 text-forest-200 border-forest-700'
+              }`}
+              title="Voice Assistance"
+            >
+              <Volume2 className="w-4 h-4" />
+            </button>
 
-        {/* Offline Banner */}
+            {/* Offline/Online Toggle Simulator */}
+            <button
+              onClick={() => setIsOnline(!isOnline)}
+              className={`px-2 py-1 rounded-lg text-[10px] font-mono font-bold border transition-all flex items-center gap-1 ${
+                isOnline 
+                  ? 'bg-emerald-950/80 text-emerald-300 border-emerald-800' 
+                  : 'bg-rose-950 text-rose-300 border-rose-800 animate-pulse'
+              }`}
+              title="Toggle Online/Offline for Field Simulation"
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-emerald-400' : 'bg-rose-400'}`}></span>
+              <span>{isOnline ? 'ONLINE' : 'OFFLINE'}</span>
+            </button>
+
+            {/* Language Pill */}
+            <button
+              onClick={() => setLanguage(language === 'hi' ? 'mr' : language === 'mr' ? 'en' : 'hi')}
+              className="bg-forest-800 hover:bg-forest-700 text-forest-100 text-[11px] font-bold px-2 py-1 rounded-lg border border-forest-700"
+              title="Switch Language"
+            >
+              {language === 'hi' ? 'हिंदी' : language === 'mr' ? 'मराठी' : 'EN'}
+            </button>
+          </div>
+        </header>
+
+        {/* Offline Banner & Sync Status */}
         {!isOnline && (
-          <div className="bg-khata-red text-khata-paper px-4 py-2 flex items-center justify-between text-xs font-bold font-mono border-b-4 border-khata-ink z-50">
-            <div className="flex items-center space-x-2">
-              <WifiOff className="w-4 h-4 animate-pulse" />
-              <span>OFFLINE: SYNC PAUSED</span>
+          <div className="bg-amber-600 text-industrial-950 px-4 py-2 flex items-center justify-between text-xs font-bold shrink-0 shadow-md">
+            <div className="flex items-center gap-1.5">
+              <WifiOff className="w-3.5 h-3.5" />
+              <span>Offline Field Mode (Lots save locally)</span>
             </div>
             {syncQueue.length > 0 && (
-              <span className="bg-khata-ink text-khata-paper px-2 py-0.5 border border-khata-paper">
-                {syncQueue.length} PENDING
+              <span className="bg-amber-800 text-white px-2 py-0.5 rounded-full text-[10px] font-mono">
+                {syncQueue.length} Queued
               </span>
             )}
           </div>
         )}
 
-        {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto pb-20 relative bg-transparent scrollbar-hide">
-          <Outlet />
-        </main>
+        {/* Online Sync Pending Alert */}
+        {isOnline && syncQueue.length > 0 && (
+          <div className="bg-emerald-700 text-white px-4 py-1.5 flex items-center justify-between text-xs font-semibold shrink-0">
+            <div className="flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
+              <span>Back online! Syncing {syncQueue.length} offline transactions...</span>
+            </div>
+            <button 
+              onClick={processSyncQueue}
+              className="bg-emerald-900 hover:bg-emerald-800 px-2 py-0.5 rounded text-[10px] flex items-center gap-1"
+            >
+              <RefreshCw className="w-2.5 h-2.5 animate-spin" />
+              <span>Sync</span>
+            </button>
+          </div>
+        )}
 
-        {/* Brutalist Bottom Nav */}
-        <nav className="absolute bottom-0 left-0 right-0 bg-white border-t-4 border-khata-ink flex z-40 h-[72px]">
-          {navItems.map((item, index) => {
+        {/* Scrollable Viewport */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden bg-paper-100 pb-20 no-scrollbar">
+          <Outlet />
+        </div>
+
+        {/* Bottom Tactile Navigation Bar */}
+        <nav className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-paper-300 px-2 py-1.5 flex justify-around items-center z-40 shadow-tactile-md">
+          {navItems.map((item) => {
             const isActive = location.pathname === item.path || (item.path !== '/collector' && location.pathname.startsWith(item.path));
+            
             return (
               <button
                 key={item.id}
                 onClick={() => navigate(item.path)}
-                className={`flex-1 flex flex-col items-center justify-center border-r-4 border-khata-ink last:border-r-0 transition-colors ${
+                className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all min-w-[58px] ${
                   isActive 
-                    ? 'bg-khata-ink text-khata-paper' 
-                    : 'bg-white text-khata-ink hover:bg-khata-paper'
+                    ? 'text-forest-900 font-bold bg-forest-50 border border-forest-200 shadow-sm' 
+                    : 'text-industrial-500 hover:text-industrial-800'
                 }`}
               >
-                <item.icon className={`w-6 h-6 mb-1 ${isActive ? 'fill-khata-paper' : ''}`} strokeWidth={isActive ? 2 : 2.5} />
-                <span className="text-[10px] font-bold tracking-tight">
-                  {language === 'en' ? item.labelEn : item.labelHi}
-                </span>
+                <item.icon className={`w-5 h-5 mb-0.5 transition-transform ${isActive ? 'scale-110 text-forest-800' : ''}`} />
+                <span className="text-[10px] tracking-tight">{item.label}</span>
               </button>
             );
           })}
         </nav>
       </div>
-
     </div>
   );
 };
 
 export default CollectorLayout;
+

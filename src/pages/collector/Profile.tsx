@@ -1,25 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   User, 
   LogOut, 
   ShieldAlert, 
   Volume2, 
-  BadgeCheck, 
+  ShieldCheck, 
   MapPin, 
-  Calendar, 
-  Award,
-  Globe,
+  Flame, 
+  AlertTriangle, 
+  BatteryWarning, 
   Sparkles,
-  PhoneCall,
-  CheckCircle2
+  ExternalLink
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 
 const Profile: React.FC = () => {
-  const { setRole, language, setLanguage } = useAppContext();
+  const { setRole, language, speak } = useAppContext();
   const navigate = useNavigate();
-  const [playingItem, setPlayingItem] = useState<number | null>(null);
 
   const handleLogout = () => {
     setRole(null);
@@ -28,171 +26,152 @@ const Profile: React.FC = () => {
 
   const safetyItems = [
     { 
-      icon: '🔥', 
-      titleHi: 'तारों को कभी न जलाएं', 
-      descHi: 'तार जलाने से जहरीला धुआं निकलता है जो फेफड़ों को गंभीर नुकसान पहुंचाता है। रीसाइक्लर को पूरा केबल दें।',
-      speak: 'तारों को कभी न जलाएं. तार जलाने से जहरीला धुआं निकलता है. रीसाइक्लर को पूरा केबल सीधे दें.'
+      id: 'wires',
+      icon: Flame, 
+      color: 'text-rose-600 bg-rose-50 border-rose-200',
+      title: language === 'hi' ? 'तारों को कभी न जलाएं' : 'Zero Open Wire Burning', 
+      desc: language === 'hi' 
+        ? 'प्लास्टिक जलाने से जहरीला धुआं और डायोक्सिन निकलता है। यह कानूनन अपराध है। स्वचालित वायर स्ट्रिपर का उपयोग करें।' 
+        : 'Burning PVC releases toxic dioxins and carries heavy CPCB penalties. Handover unstripped cable intact.',
+      speech: language === 'hi' ? 'तारों को कभी न जलाएं। जहरीला धुआं स्वास्थ्य के लिए खतरनाक है।' : 'Never burn insulated copper cables.'
     },
     { 
-      icon: '☣️', 
-      titleHi: 'एसिड से धातु न निकालें', 
-      descHi: 'तेज़ाब से सोना या तांबा निकालना गैरकानूनी और जानलेवा है। फेफड़े और त्वचा झुलस सकती है।',
-      speak: 'एसिड से धातु कभी न निकालें. तेज़ाब से धातु निकालना गैरकानूनी और जानलेवा है.'
+      id: 'acid',
+      icon: AlertTriangle, 
+      color: 'text-amber-600 bg-amber-50 border-amber-200',
+      title: language === 'hi' ? 'तेज़ाब (एसिड) रिकवरी निषेध' : 'No Chemical / Acid Leaching', 
+      desc: language === 'hi' 
+        ? 'मदरबोर्ड से सोना निकालने के लिए एसिड का प्रयोग जानलेवा है। बोर्ड सीधा अधिकृत रिसाइक्लर को दें।' 
+        : 'Acid recovery at informal yards causes groundwater poisoning. Deliver PCB batches directly to refiners.',
+      speech: language === 'hi' ? 'तेज़ाब से धातु न निकालें। यह कानूनन प्रतिबंधित है।' : 'Do not use acid leaching for metal recovery.'
     },
     { 
-      icon: '🔋', 
-      titleHi: 'बैटरी को कभी न तोड़ें', 
-      descHi: 'लिथियम और लेड एसिड बैटरी को ठोकने या छेदने से आग और भयंकर विस्फोट हो सकता है।',
-      speak: 'बैटरी को कभी न तोड़ें. लिथियम बैटरी फटने से आग लग सकती है.'
+      id: 'battery',
+      icon: BatteryWarning, 
+      color: 'text-indigo-600 bg-indigo-50 border-indigo-200',
+      title: language === 'hi' ? 'बैटरी कभी न तोड़ें' : 'Intact Battery Handling', 
+      desc: language === 'hi' 
+        ? 'लिथियम और लेड एसिड बैटरियों में आग और विस्फोट का खतरा होता है। इन्हें सूखे बक्से में सुरक्षित रखें।' 
+        : 'Li-ion and Lead-Acid cells can undergo thermal runaway. Store in dry, insulated bins.',
+      speech: language === 'hi' ? 'बैटरी कभी न तोड़ें। इसमें आग और विस्फोट का खतरा रहता है।' : 'Never puncture or break battery casings.'
     },
     { 
-      icon: '🧤', 
-      titleHi: 'हमेशा दस्ताने पहनें', 
-      descHi: 'सर्किट बोर्ड और टूटे कांच को छूते समय मोटे रबर या लेदर दस्तानों का अनिवार्य प्रयोग करें।',
-      speak: 'हमेशा दस्ताने पहनें. सर्किट बोर्ड और कांच से हाथों को चोट से बचाएं.'
+      id: 'gear',
+      icon: ShieldCheck, 
+      color: 'text-emerald-600 bg-emerald-50 border-emerald-200',
+      title: language === 'hi' ? 'सुरक्षा दस्ताने व जूते' : 'Certified Protective PPE', 
+      desc: language === 'hi' 
+        ? 'कांच, धातु और नुकीले स्क्रैप से हाथ कटने से बचने के लिए मोटे रबर दस्ताने और सेफ्टी जूते पहनें।' 
+        : 'Always wear puncture-proof gloves and heavy-soled boots when handling CRT glass and sharp motors.',
+      speech: language === 'hi' ? 'स्क्रैप उठाते समय हमेशा मजबूत दस्ताने पहनें।' : 'Always use protective heavy gloves.'
     },
   ];
 
-  const playSafetyAudio = (index: number, text: string) => {
-    if ('speechSynthesis' in window) {
-      setPlayingItem(index);
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'hi-IN';
-      utterance.onend = () => setPlayingItem(null);
-      utterance.onerror = () => setPlayingItem(null);
-      window.speechSynthesis.speak(utterance);
-    }
-  };
-
   return (
-    <div className="flex flex-col min-h-full bg-[#fbf8f1] text-[#13261e] pb-10">
-      
-      {/* Header */}
-      <div className="bg-[#0b241a] text-white px-5 pt-4 pb-5 rounded-b-[30px] shadow-md relative overflow-hidden">
-        <div className="relative z-10">
-          <div className="flex items-center space-x-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-300 font-bold">
-              AGGREGATOR REGISTRY
-            </span>
+    <div className="p-4 space-y-4">
+      {/* Aggregator ID Badge Card */}
+      <div className="bg-white rounded-3xl p-5 border border-paper-300 shadow-tactile space-y-4 relative overflow-hidden">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-14 h-14 rounded-2xl bg-forest-900 text-emerald-300 border border-forest-800 flex items-center justify-center font-display font-extrabold text-xl shadow-tactile">
+              RS
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <h2 className="font-display font-bold text-base text-industrial-950">
+                  Raju Scrap Co.
+                </h2>
+                <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0" />
+              </div>
+              <p className="text-xs text-industrial-500 font-mono">
+                CPCB ID: MH-PUN-COL-1028
+              </p>
+              <div className="flex items-center gap-1 text-[11px] text-industrial-600 mt-0.5">
+                <MapPin className="w-3 h-3 text-amber-600" />
+                <span>Pune Market Yard (Zone 4)</span>
+              </div>
+            </div>
           </div>
-          <h1 className="text-xl font-black text-white">कलेक्टर पहचान व सुरक्षा</h1>
-          <p className="text-xs text-emerald-200/80 mt-0.5">
-            डिजिटल पहचान पत्र व अनौपचारिक स्क्रैप सुरक्षा नियम
-          </p>
+
+          <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-mono font-bold px-2 py-0.5 rounded-md">
+            ACTIVE
+          </span>
+        </div>
+
+        {/* Operational Statistics */}
+        <div className="grid grid-cols-3 gap-2 pt-2 border-t border-paper-200 text-center">
+          <div className="bg-paper-100 p-2.5 rounded-xl">
+            <span className="text-[10px] font-mono text-industrial-500 uppercase block">Completed</span>
+            <span className="text-base font-black font-mono text-industrial-950">42 Lots</span>
+          </div>
+          <div className="bg-paper-100 p-2.5 rounded-xl">
+            <span className="text-[10px] font-mono text-industrial-500 uppercase block">Disbursed</span>
+            <span className="text-base font-black font-mono text-emerald-800">₹28.4k</span>
+          </div>
+          <div className="bg-paper-100 p-2.5 rounded-xl">
+            <span className="text-[10px] font-mono text-industrial-500 uppercase block">Rating</span>
+            <span className="text-base font-black font-mono text-amber-800">4.9 ★</span>
+          </div>
         </div>
       </div>
 
-      <div className="p-4 space-y-4 flex-1">
-        
-        {/* Digital Identity Smart Card */}
-        <div className="bg-gradient-to-br from-[#0c2e22] via-[#092218] to-[#05160f] text-white rounded-[28px] p-5 border-2 border-emerald-500/30 shadow-tactile-green relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-36 h-36 bg-emerald-400/10 rounded-full blur-2xl pointer-events-none" />
-          
-          <div className="flex items-center justify-between pb-4 border-b border-emerald-800/60">
-            <div className="flex items-center space-x-3">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-400 to-amber-200 p-0.5 shadow-md">
-                <div className="w-full h-full bg-[#081a13] rounded-[14px] flex items-center justify-center text-amber-300 font-black text-xl font-mono">
-                  RB
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-black text-white flex items-center space-x-1">
-                  <span>राजू भाई स्क्रैप</span>
-                  <BadgeCheck className="w-4 h-4 text-emerald-400 inline" />
-                </h3>
-                <p className="text-xs text-emerald-300 font-mono">
-                  ID: COL-1028 • PUNE HUB
-                </p>
-              </div>
-            </div>
-
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-              VERIFIED
-            </span>
+      {/* Hazardous Scrap Safety Directives */}
+      <div className="space-y-2.5">
+        <div className="flex items-center justify-between px-1">
+          <div className="flex items-center gap-1.5">
+            <ShieldAlert className="w-4 h-4 text-rose-600" />
+            <h3 className="font-display font-bold text-sm text-industrial-950">
+              {language === 'hi' ? 'सुरक्षा नियम व मार्गदर्शन' : 'CPCB Hazardous Waste Safety Directives'}
+            </h3>
           </div>
-
-          <div className="grid grid-cols-2 gap-3 mt-4 text-xs font-mono">
-            <div className="bg-black/30 p-2.5 rounded-xl border border-emerald-950">
-              <span className="text-[10px] text-slate-400 block">कार्य क्षेत्र (Area):</span>
-              <span className="font-bold text-white">पुणे शहर (Shivaji Nagar)</span>
-            </div>
-            <div className="bg-black/30 p-2.5 rounded-xl border border-emerald-950">
-              <span className="text-[10px] text-slate-400 block">कुल लेनदेन (Handovers):</span>
-              <span className="font-bold text-emerald-300">42 पूर्ण लॉट ✓</span>
-            </div>
-            <div className="bg-black/30 p-2.5 rounded-xl border border-emerald-950">
-              <span className="text-[10px] text-slate-400 block">सक्रिय भाषा:</span>
-              <span className="font-bold text-amber-300">
-                {language === 'hi' ? 'हिंदी (Hindi)' : language === 'mr' ? 'मराठी (Marathi)' : 'English'}
-              </span>
-            </div>
-            <div className="bg-black/30 p-2.5 rounded-xl border border-emerald-950">
-              <span className="text-[10px] text-slate-400 block">रजिस्ट्रेशन स्थिति:</span>
-              <span className="font-bold text-emerald-400">सक्रिय (Active)</span>
-            </div>
-          </div>
+          <span className="text-[10px] text-industrial-500 font-mono">Tap speaker to hear</span>
         </div>
 
-        {/* Safety Education Section (Vernacular Audio Enabled) */}
         <div className="space-y-2.5">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-black text-slate-900 flex items-center uppercase tracking-wide font-mono">
-              <ShieldAlert className="w-4 h-4 text-amber-600 mr-1.5" />
-              सुरक्षा नियम • ऑडियो सुनें (Safety Rules)
-            </h3>
-            <span className="text-[10px] text-slate-500 font-mono">अनिवार्य दिशानिर्देश</span>
-          </div>
-
-          <div className="grid grid-cols-1 gap-2.5">
-            {safetyItems.map((item, idx) => (
+          {safetyItems.map((item) => {
+            const Icon = item.icon;
+            return (
               <div 
-                key={idx}
-                className="bg-white rounded-2xl p-3.5 border border-[#e6decb] shadow-sm hover:border-emerald-500/40 transition-all flex items-start space-x-3 relative"
+                key={item.id}
+                className="bg-white rounded-2xl p-3.5 border border-paper-300 shadow-tactile flex items-start gap-3 relative"
               >
-                <div className="text-3xl p-1.5 bg-[#fbf8f1] rounded-xl shrink-0">
-                  {item.icon}
+                <div className={`p-2.5 rounded-xl border shrink-0 ${item.color}`}>
+                  <Icon className="w-5 h-5" />
                 </div>
-
-                <div className="flex-1 space-y-1 pr-8">
-                  <h4 className="font-black text-slate-900 text-sm">
-                    {item.titleHi}
+                
+                <div className="flex-1 pr-6">
+                  <h4 className="font-display font-bold text-xs text-industrial-950">
+                    {item.title}
                   </h4>
-                  <p className="text-xs text-slate-600 leading-snug">
-                    {item.descHi}
+                  <p className="text-[11px] text-industrial-600 leading-relaxed mt-0.5">
+                    {item.desc}
                   </p>
                 </div>
 
                 <button
-                  onClick={() => playSafetyAudio(idx, item.speak)}
-                  className={`absolute top-3.5 right-3.5 p-2 rounded-xl border transition-all ${
-                    playingItem === idx 
-                      ? 'bg-amber-400 text-slate-950 border-amber-300 animate-pulse' 
-                      : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
-                  }`}
-                  title="ऑडियो सुनें"
+                  onClick={() => speak(item.speech)}
+                  className="absolute top-3 right-3 text-industrial-400 hover:text-emerald-700 p-1"
+                  title="Listen in chosen language"
                 >
-                  <Volume2 className="w-3.5 h-3.5" />
+                  <Volume2 className="w-4 h-4" />
                 </button>
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
-
-        {/* Sign Out Button */}
-        <div className="pt-2">
-          <button 
-            onClick={handleLogout}
-            className="w-full bg-white hover:bg-red-50 text-red-700 font-bold text-xs font-mono py-3.5 rounded-2xl border border-red-200 shadow-sm active:scale-98 transition-all flex items-center justify-center space-x-2"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>लॉगआउट / भूमिका बदलें (Switch Role)</span>
-          </button>
-        </div>
-
       </div>
+
+      {/* Sign Out / Portal Switch */}
+      <button 
+        onClick={handleLogout}
+        className="w-full bg-white hover:bg-rose-50 text-rose-700 font-display font-bold text-xs py-3.5 rounded-2xl flex items-center justify-center gap-2 border border-paper-300 shadow-tactile transition-all active:scale-95"
+      >
+        <LogOut className="w-4 h-4" />
+        <span>{language === 'hi' ? 'पोर्टल से बाहर निकलें / स्विच करें' : 'Switch Portal / Sign Out'}</span>
+      </button>
     </div>
   );
 };
 
 export default Profile;
+

@@ -1,164 +1,199 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   TrendingUp, 
   TrendingDown, 
-  Minus,
-  MapPin,
-  Volume2,
-  Share2,
-  Check,
-  Newspaper
+  Minus, 
+  MapPin, 
+  Volume2, 
+  Search, 
+  Sparkles,
+  ArrowRight,
+  ShieldCheck
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
+import { MaterialBadge } from '../../components/ui/MaterialBadge';
 
 const Prices: React.FC = () => {
-  const { materials, language } = useAppContext();
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [selectedCity, setSelectedCity] = useState('Pune');
-  const [copied, setCopied] = useState(false);
+  const navigate = useNavigate();
+  const { materials, language, speak, isSpeaking } = useAppContext();
+  
+  const [selectedCategory, setSelectedCategory] = useState<'all' | 'e-waste' | 'metals' | 'batteries' | 'plastics'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const getTrend = (index: number) => {
-    if (index % 3 === 0) return { icon: TrendingUp, label: '+₹15', color: 'text-khata-green' };
-    if (index % 3 === 1) return { icon: TrendingDown, label: '-₹5', color: 'text-khata-red' };
-    return { icon: Minus, label: 'STABLE', color: 'text-khata-ink' };
-  };
+  const categories = [
+    { id: 'all', label: language === 'hi' ? 'सभी' : language === 'mr' ? 'सर्व' : 'All' },
+    { id: 'metals', label: language === 'hi' ? 'धातुएं' : language === 'mr' ? 'धातू' : 'Metals' },
+    { id: 'e-waste', label: language === 'hi' ? 'ई-कचरा' : language === 'mr' ? 'ई-कचरा' : 'E-Waste' },
+    { id: 'batteries', label: language === 'hi' ? 'बैटरी' : language === 'mr' ? 'बॅटरी' : 'Batteries' },
+    { id: 'plastics', label: language === 'hi' ? 'प्लास्टिक' : language === 'mr' ? 'प्लास्टिक' : 'Plastics' },
+  ];
 
-  const listenToPrices = () => {
-    if ('speechSynthesis' in window) {
-      setIsPlaying(true);
-      const top3 = materials.slice(0, 4).map(m => `${m.name} ${m.basePrice} रुपये`).join(', ');
-      const text = language === 'mr'
-        ? `आजचे भाव: ${top3}.`
-        : `Today's rates: ${top3}.`;
+  const filteredMaterials = materials.filter(m => {
+    const matchesCat = selectedCategory === 'all' || m.category === selectedCategory;
+    const matchesSearch = searchQuery === '' || 
+      m.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      m.tagHindi.includes(searchQuery) ||
+      m.grade.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCat && matchesSearch;
+  });
 
-      const utterance = new SpeechSynthesisUtterance(text);
-      if (language === 'mr') utterance.lang = 'mr-IN';
-      else utterance.lang = 'hi-IN';
-
-      utterance.onend = () => setIsPlaying(false);
-      utterance.onerror = () => setIsPlaying(false);
-      window.speechSynthesis.speak(utterance);
-    }
-  };
-
-  const sharePrices = () => {
-    navigator.clipboard.writeText(
-      `ECOSETU RATES (${selectedCity}):\n` +
-      materials.map(m => `${m.name}: ₹${m.basePrice}/kg`).join('\n')
-    );
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleListenAllPrices = () => {
+    const priceList = filteredMaterials
+      .slice(0, 5)
+      .map(m => `${language === 'hi' ? m.tagHindi : m.name}: ${m.basePrice} रुपये प्रति किलो`)
+      .join(', ');
+    const speech = language === 'hi' 
+      ? `आज के पुणे मंडी भाव: ${priceList}`
+      : `Today's Pune Mandi Scrap Rates: ${priceList}`;
+    speak(speech);
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-khata-paper text-khata-ink bg-grid-pattern pb-10">
-      
-      {/* Brutal Header */}
-      <div className="bg-khata-ink text-khata-paper p-4 brutal-border-b border-b-4 border-khata-ink">
-        <div className="flex justify-between items-start mb-2">
-          <div>
-            <div className="flex items-center space-x-2 mb-1">
-              <Newspaper className="w-5 h-5 text-khata-paper" />
-              <span className="text-[10px] font-mono uppercase tracking-widest font-bold bg-khata-red px-1">
-                MARKET RATES
-              </span>
-            </div>
-            <h1 className="font-vernacular text-3xl font-black">
-              {language === 'mr' ? 'बाजार भाव' : 'DAILY RATES'}
+    <div className="p-4 space-y-4">
+      {/* Header Banner */}
+      <div className="bg-white rounded-2xl p-4 border border-paper-300 shadow-tactile flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+            <h1 className="font-display font-bold text-base text-industrial-950">
+              {language === 'hi' ? 'दैनिक पुणे मंडी भाव फलक' : language === 'mr' ? 'पुणे बाजार भाव फलक' : "Today's Mandi Price Index"}
             </h1>
           </div>
-          
-          <div className="flex flex-col items-end">
-            <span className="text-[10px] font-mono mb-1">LOCATION</span>
-            <select 
-              value={selectedCity} 
-              onChange={(e) => setSelectedCity(e.target.value)}
-              className="bg-transparent border-2 border-khata-paper text-khata-paper font-bold text-sm px-2 py-1 appearance-none rounded-none focus:outline-none"
-            >
-              <option value="Pune" className="bg-khata-ink">Pune (पुणे)</option>
-              <option value="Mumbai" className="bg-khata-ink">Mumbai (मुंबई)</option>
-              <option value="Nagpur" className="bg-khata-ink">Nagpur (नागपूर)</option>
-            </select>
-          </div>
+          <p className="text-xs text-industrial-500 font-medium">
+            Official benchmark rates updated 20 mins ago
+          </p>
         </div>
 
-        {/* Actions */}
-        <div className="flex space-x-3 mt-4 pt-4 border-t-2 border-khata-paper/20">
-          <button
-            onClick={listenToPrices}
-            className={`flex-1 py-2 px-3 border-2 font-mono text-sm font-bold flex items-center justify-center space-x-2 transition-all ${
-              isPlaying 
-                ? 'bg-khata-red border-khata-red text-khata-paper animate-pulse' 
-                : 'border-khata-paper hover:bg-khata-paper hover:text-khata-ink active:scale-95'
-            }`}
-          >
-            <Volume2 className="w-4 h-4" />
-            <span>{isPlaying ? 'PLAYING...' : 'LISTEN'}</span>
-          </button>
-
-          <button
-            onClick={sharePrices}
-            className="py-2 px-4 border-2 border-khata-paper font-mono text-sm font-bold hover:bg-khata-paper hover:text-khata-ink flex items-center space-x-1.5 active:scale-95"
-          >
-            {copied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
-            <span>{copied ? 'COPIED' : 'SHARE'}</span>
-          </button>
+        <div className="flex items-center text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-xl">
+          <MapPin className="w-3.5 h-3.5 mr-1 text-amber-600" />
+          Pune Yard
         </div>
       </div>
 
-      <div className="p-4 flex-1">
-        
-        {/* Trend Banner */}
-        <div className="bg-khata-blue text-khata-paper p-3 mb-6 flex justify-between items-center border-2 border-khata-ink brutal-sm">
-          <span className="font-mono text-xs font-bold">PCB INDEX: +4.8%</span>
-          <div className="flex h-4 items-end space-x-1">
-             {[3, 5, 4, 7, 6, 8, 10].map((v, i) => (
-               <div key={i} style={{ height: `${v*10}%` }} className={`w-2 ${i === 6 ? 'bg-khata-red' : 'bg-khata-paper'}`}></div>
-             ))}
-          </div>
+      {/* Voice Assistant Audio Announcement Banner */}
+      <button
+        onClick={handleListenAllPrices}
+        className={`w-full py-3 px-4 rounded-2xl border transition-all flex items-center justify-between shadow-tactile ${
+          isSpeaking 
+            ? 'bg-amber-500 text-industrial-950 border-amber-400 font-bold' 
+            : 'bg-forest-900 hover:bg-forest-850 text-white border-forest-800'
+        }`}
+      >
+        <div className="flex items-center gap-2.5">
+          <Volume2 className="w-4 h-4 text-amber-300" />
+          <span className="font-display font-bold text-xs">
+            {isSpeaking 
+              ? (language === 'hi' ? 'भाव बोले जा रहे हैं...' : 'Speaking Mandi Rates...') 
+              : (language === 'hi' ? 'आज के सभी भाव ऑडियो में सुनें' : 'Listen to Scrap Rates Aloud')}
+          </span>
         </div>
+        <span className="text-[10px] font-mono uppercase bg-white/20 px-2 py-0.5 rounded">
+          {language === 'hi' ? 'आवाज़' : 'AUDIO'}
+        </span>
+      </button>
 
-        {/* Ledger Rows */}
-        <div className="border-2 border-khata-ink bg-white shadow-brutal divide-y-2 divide-khata-ink">
-          {materials.map((m, i) => {
-            const trend = getTrend(i);
-            const TrendIcon = trend.icon;
+      {/* Search Bar */}
+      <div className="relative">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder={language === 'hi' ? 'सामग्री खोजें (जैसे तांबा, पीसीबी)...' : 'Search material, grade or HSN...'}
+          className="w-full pl-9 pr-4 py-2.5 text-xs bg-white border border-paper-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium placeholder-industrial-400 shadow-sm"
+        />
+        <Search className="w-4 h-4 text-industrial-400 absolute left-3 top-3" />
+      </div>
 
-            return (
-              <div 
-                key={m.id}
-                className="p-3 flex items-center justify-between hover:bg-khata-paper transition-colors"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 border-2 border-khata-ink flex items-center justify-center text-xl bg-khata-paper">
-                    {m.icon}
-                  </div>
+      {/* Category Pills */}
+      <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs">
+        {categories.map((cat) => (
+          <button
+            key={cat.id}
+            onClick={() => setSelectedCategory(cat.id as any)}
+            className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition-all border ${
+              selectedCategory === cat.id 
+                ? 'bg-forest-800 text-white border-forest-700 shadow-sm' 
+                : 'bg-white text-industrial-600 border-paper-300 hover:bg-paper-50'
+            }`}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Material Rates List */}
+      <div className="space-y-3">
+        {filteredMaterials.map((m) => {
+          const isPositive = m.trend > 0;
+          const isNegative = m.trend < 0;
+
+          return (
+            <div 
+              key={m.id} 
+              className="bg-white rounded-2xl p-4 border border-paper-300 shadow-tactile space-y-2.5 transition-all hover:border-paper-400"
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <MaterialBadge iconKey={m.icon} category={m.category} size="md" />
                   <div>
-                    <h3 className="font-vernacular text-lg leading-tight">{m.name}</h3>
-                    <p className="text-[10px] font-mono font-bold text-khata-ink/60 mt-0.5">
-                      REF: {m.id.toUpperCase()}
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-display font-bold text-sm text-industrial-950">
+                        {language === 'hi' ? m.tagHindi : m.name}
+                      </h3>
+                      <span className="text-[10px] font-mono text-industrial-500 bg-paper-200 px-1.5 py-0.2 rounded">
+                        HSN {m.hsnCode}
+                      </span>
+                    </div>
+                    <p className="text-xs text-industrial-600 font-medium">
+                      {m.grade}
                     </p>
                   </div>
                 </div>
 
                 <div className="text-right">
-                  <div className="flex items-end justify-end space-x-1">
-                    <span className="text-2xl font-black font-mono">₹{m.basePrice}</span>
-                    <span className="text-xs font-mono font-bold mb-1">/{m.unit}</span>
+                  <div className="flex items-center justify-end gap-1">
+                    <span className="text-lg font-black font-mono text-industrial-950">
+                      ₹{m.basePrice}
+                    </span>
+                    <span className="text-[10px] text-industrial-500 font-normal">
+                      /{m.unit}
+                    </span>
                   </div>
-                  <span className={`inline-flex items-center text-[10px] font-mono font-bold ${trend.color}`}>
-                    <TrendIcon className="w-3 h-3 mr-0.5" />
-                    {trend.label}
+
+                  <span className={`inline-flex items-center text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                    isPositive ? 'text-emerald-700 bg-emerald-50 border border-emerald-200' :
+                    isNegative ? 'text-rose-700 bg-rose-50 border border-rose-200' :
+                    'text-industrial-600 bg-paper-200'
+                  }`}>
+                    {isPositive && <TrendingUp className="w-2.5 h-2.5 mr-0.5 inline" />}
+                    {isNegative && <TrendingDown className="w-2.5 h-2.5 mr-0.5 inline" />}
+                    {m.trend >= 0 ? `+${m.trend}%` : `${m.trend}%`}
                   </span>
                 </div>
               </div>
-            );
-          })}
-        </div>
 
+              <div className="flex items-center justify-between pt-2 border-t border-paper-200 text-xs">
+                <div className="flex items-center gap-1 text-[11px] text-emerald-800 font-medium">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>{m.purityBenchmark}</span>
+                </div>
+
+                <button
+                  onClick={() => navigate('/collector/create')}
+                  className="text-xs font-bold text-forest-800 hover:text-forest-950 flex items-center gap-1 bg-paper-100 hover:bg-paper-200 px-3 py-1 rounded-lg transition-colors border border-paper-300"
+                >
+                  <span>{language === 'hi' ? 'यह बेचें' : 'Sell Lot'}</span>
+                  <ArrowRight className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 };
 
 export default Prices;
+
