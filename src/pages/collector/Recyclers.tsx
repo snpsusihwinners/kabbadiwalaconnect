@@ -17,7 +17,7 @@ const Recyclers: React.FC = () => {
   const { recyclers, materials, lots, updateLot, language } = useAppContext();
   const [filterType, setFilterType] = useState<'rate'|'distance'|'pickup'>('rate');
 
-  const pendingLots = lots.filter(t => t.status === 'Created');
+  const pendingLots = lots.filter(l => l.status === 'Created');
   const currentLot = pendingLots.length > 0 ? pendingLots[0] : null;
   const currentMaterial = currentLot ? materials.find(m => m.id === currentLot.materialId) : materials[0];
   const materialId = currentLot ? currentLot.materialId : 'm3';
@@ -39,141 +39,168 @@ const Recyclers: React.FC = () => {
       });
       navigate(`/collector/handover/${currentLot.id}`);
     } else {
-      navigate('/collector/lot/new');
+      navigate('/collector/create');
     }
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-khata-paper text-khata-ink bg-ruled-pattern pb-10">
+    <div className="p-4 space-y-4 pb-8">
       
       {/* Header */}
-      <div className="bg-khata-blue text-khata-paper p-4 brutal-border-b border-b-2 border-khata-ink shadow-brutal-sm">
-        <div className="flex items-center space-x-2 mb-2">
-          <Building2 className="w-5 h-5" />
-          <span className="text-[10px] font-mono uppercase tracking-widest font-bold">
-            AUTHORIZED NETWORK
-          </span>
+      <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-2">
+        <div className="flex items-center space-x-2 text-xs font-semibold text-emerald-700">
+          <ShieldCheck className="w-4 h-4" />
+          <span>CPCB AUTHORIZED BUYERS</span>
         </div>
-        <h1 className="font-vernacular text-3xl font-black mb-1">
-          {language === 'mr' ? 'खरेदीदार' : 'BUYERS'}
-        </h1>
-        <p className="text-xs font-mono font-bold bg-khata-ink text-khata-paper inline-block px-2 py-0.5 mt-1">
-          CPCB CERTIFIED ONLY
+        <h2 className="text-xl font-black text-slate-900 leading-tight">
+          {language === 'mr' ? 'जवळचे अधिकृत खरेदीदार' : 
+           language === 'hi' ? 'निकटतम अधिकृत खरीदार' : 
+           'Authorized Recyclers'}
+        </h2>
+        <p className="text-xs text-slate-500">
+          सर्व खरेदीदार सरकारमान्य असून वजन काट्याची व त्वरित पेमेंटची खात्री देतात.
         </p>
 
         {currentLot && (
-          <div className="mt-4 border-2 border-khata-ink bg-white text-khata-ink p-3 shadow-brutal-sm">
-            <div className="flex justify-between items-center mb-1">
-              <span className="text-xs font-bold font-mono">MATCHING FOR:</span>
-              <span className="text-xs font-mono bg-khata-red text-khata-paper px-1">{currentLot.id.toUpperCase()}</span>
+          <div className="mt-2 bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <span className="text-xl">{currentMaterial?.icon}</span>
+              <div>
+                <p className="text-xs font-bold text-slate-900">{currentLot.weight} KG {currentMaterial?.name}</p>
+                <p className="text-[10px] text-emerald-700 font-medium">लॉट #{currentLot.id.toUpperCase()}</p>
+              </div>
             </div>
-            <div className="text-xl font-black font-vernacular">
-              {currentLot.weight} KG {currentMaterial?.name}
-            </div>
+            <span className="text-xs font-bold text-emerald-800 bg-white px-2 py-1 rounded-lg border border-emerald-200">
+              Matching Buyer
+            </span>
           </div>
         )}
       </div>
 
-      <div className="p-4 space-y-4 flex-1">
-        
-        {/* Filters */}
-        <div className="flex space-x-2 border-b-2 border-khata-ink pb-3">
-          {[
-            { id: 'rate', label: language === 'mr' ? 'भाव' : 'RATE' },
-            { id: 'distance', label: language === 'mr' ? 'जवळ' : 'NEAR' },
-            { id: 'pickup', label: language === 'mr' ? 'पिकअप' : 'PICKUP' },
-          ].map((f) => (
-            <button
-              key={f.id}
-              onClick={() => setFilterType(f.id as any)}
-              className={`px-3 py-1 font-mono text-sm font-bold transition-all border-2 ${
-                filterType === f.id
-                  ? 'border-khata-ink bg-khata-ink text-khata-paper'
-                  : 'border-transparent text-khata-ink/60 hover:text-khata-ink'
+      {/* Filter Tabs */}
+      <div className="flex space-x-2">
+        {[
+          { id: 'rate', label: language === 'mr' ? 'उत्तम भाव (Best Rate)' : 'Best Rate' },
+          { id: 'distance', label: language === 'mr' ? 'जवळचे (Nearest)' : 'Nearest' },
+          { id: 'pickup', label: language === 'mr' ? 'पिकअप (Pickup)' : 'Pickup' },
+        ].map((f) => (
+          <button
+            key={f.id}
+            onClick={() => setFilterType(f.id as any)}
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              filterType === f.id
+                ? 'bg-slate-900 text-white shadow-sm'
+                : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Recyclers List */}
+      <div className="space-y-3">
+        {sortedRecyclers.map((r, i) => {
+          const offerPerKg = r.offers[materialId] || 220;
+          const isTopMatch = i === 0;
+
+          return (
+            <div 
+              key={r.id}
+              className={`bg-white rounded-2xl border transition-all overflow-hidden shadow-sm ${
+                isTopMatch ? 'border-emerald-500 ring-1 ring-emerald-500/20' : 'border-slate-200'
               }`}
             >
-              {f.label}
-            </button>
-          ))}
-        </div>
-
-        {/* List */}
-        <div className="space-y-4">
-          {sortedRecyclers.map((r, i) => {
-            const offerPerKg = r.offers[materialId] || 220;
-            const isTopMatch = i === 0;
-
-            return (
-              <div 
-                key={r.id}
-                className={`brutal-card bg-white p-0 overflow-hidden ${
-                  isTopMatch ? 'ring-2 ring-khata-red' : ''
-                }`}
-              >
-                <div className="p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="font-vernacular text-2xl leading-none mb-1">{r.name}</h3>
+              <div className="p-4 space-y-3">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <h3 className="font-bold text-slate-900 text-base">{r.name}</h3>
                       {r.authorized && (
-                        <span className="inline-flex items-center text-[10px] font-mono font-bold border border-khata-green text-khata-green px-1">
-                          <ShieldCheck className="w-3 h-3 mr-1" /> CPCB VERIFIED
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          CPCB ✓
                         </span>
                       )}
                     </div>
-                    {isTopMatch && (
-                      <span className="bg-khata-red text-khata-paper text-[10px] font-mono font-bold px-2 py-1 flex items-center shadow-brutal-active">
-                        <Sparkles className="w-3 h-3 mr-1" /> TOP MATCH
+                    
+                    <div className="flex items-center space-x-3 text-xs text-slate-500 mt-1">
+                      <span className="flex items-center">
+                        <MapPin className="w-3.5 h-3.5 mr-1 text-slate-400" />
+                        {r.distance} KM अंतर
                       </span>
-                    )}
-                  </div>
-                  
-                  <div className="flex items-center space-x-4 text-xs font-mono font-bold mt-3 mb-2">
-                    <span className="flex items-center">
-                      <MapPin className="w-4 h-4 mr-1" /> {r.distance} KM
-                    </span>
-                    <span className="flex items-center">
-                      <Star className="w-4 h-4 mr-1 text-khata-red" /> {r.rating}
-                    </span>
+                      <span className="flex items-center text-amber-600 font-semibold">
+                        <Star className="w-3.5 h-3.5 mr-0.5 fill-amber-400 text-amber-500" />
+                        {r.rating}
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="flex flex-wrap gap-2 text-[10px] font-mono font-bold mt-2">
-                    {r.pickup ? (
-                      <span className="border border-khata-ink px-1 flex items-center">
-                        <Truck className="w-3 h-3 mr-1" /> YES
-                      </span>
-                    ) : (
-                      <span className="border border-khata-ink px-1 opacity-60">DROP-OFF</span>
-                    )}
-                  </div>
+                  {isTopMatch && (
+                    <span className="bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center space-x-1">
+                      <Sparkles className="w-3 h-3" />
+                      <span>Best Offer</span>
+                    </span>
+                  )}
                 </div>
 
-                {/* Offer Footer */}
-                <div className="bg-khata-paper border-t-2 border-khata-ink p-3 flex justify-between items-center">
-                  <div>
-                    <span className="text-[10px] font-mono font-bold bg-khata-ink text-khata-paper px-1 mb-1 block w-max">
-                      OFFER RATE
-                    </span>
-                    <span className="text-2xl font-black font-mono">₹{offerPerKg}</span>
-                    <span className="text-xs font-mono">/KG</span>
-                  </div>
+                <p className="text-xs text-slate-500">
+                  📍 {r.address}
+                </p>
 
-                  <div className="flex space-x-2">
-                    <a href="tel:9876543210" className="p-2 border-2 border-khata-ink bg-white active:bg-khata-ink active:text-khata-paper transition-colors">
-                      <Phone className="w-5 h-5" />
-                    </a>
-                    <button
-                      onClick={() => handleAcceptOffer(r)}
-                      className="px-4 py-2 bg-khata-green text-khata-paper border-2 border-khata-ink font-mono font-bold flex items-center shadow-brutal-sm active:shadow-none active:translate-y-1 active:translate-x-1 transition-all"
-                    >
-                      {currentLot ? 'ACCEPT' : 'NEW LOT'} <ArrowRight className="w-4 h-4 ml-1" />
-                    </button>
-                  </div>
+                {/* Badges */}
+                <div className="flex flex-wrap gap-1.5 text-[11px]">
+                  {r.pickup ? (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium">
+                      <Truck className="w-3 h-3 mr-1 text-emerald-600" /> वाहन पिकअप उपलब्ध
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 font-medium">
+                      स्वतः आणून देणे (Self Drop)
+                    </span>
+                  )}
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 font-medium">
+                    रोख / UPI
+                  </span>
                 </div>
               </div>
-            );
-          })}
-        </div>
+
+              {/* Offer Price Footer */}
+              <div className="bg-slate-50 px-4 py-3 border-t border-slate-100 flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] text-slate-500 uppercase font-bold">
+                    ऑफर भाव ({currentMaterial?.name || 'PCB'})
+                  </span>
+                  <div className="flex items-baseline space-x-1">
+                    <span className="text-2xl font-black text-emerald-700">
+                      ₹{offerPerKg}
+                    </span>
+                    <span className="text-xs text-slate-500 font-medium">/किलो</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <a
+                    href="tel:9876543210"
+                    className="p-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors bg-white shadow-sm"
+                    title="फोन करा"
+                  >
+                    <Phone className="w-4 h-4" />
+                  </a>
+
+                  <button
+                    onClick={() => handleAcceptOffer(r)}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-sm transition-all flex items-center space-x-1.5"
+                  >
+                    <span>{currentLot ? 'ऑफर स्वीकारा' : 'लॉट जोडा'}</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
+
     </div>
   );
 };

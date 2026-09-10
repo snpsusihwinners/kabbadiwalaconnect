@@ -3,45 +3,26 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --bg-page: #F1EFE7;
-  }
-
   body {
-    background-color: var(--bg-page);
-    color: #0C0C0C;
-    font-family: 'JetBrains Mono', monospace;
+    background-color: #f8fafc;
+    color: #0f172a;
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-tap-highlight-color: transparent;
   }
 }
 
-.brutal-border {
-  border: 2px solid #0C0C0C;
-}
-
-.brutal-card {
-  background-color: #F1EFE7;
-  border: 2px solid #0C0C0C;
-  box-shadow: 4px 4px 0px 0px #0C0C0C;
-  transition: all 0.1s ease-in-out;
-}
-
-.brutal-card:active {
-  box-shadow: 1px 1px 0px 0px #0C0C0C;
-  transform: translate(3px, 3px);
-}
-
-.khata-stamp {
-  border: 2px solid #D32F2F;
-  color: #D32F2F;
-  font-family: 'Rozha One', serif;
-  transform: rotate(-5deg);
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 4px;
-}
-
-/* Hide scrollbar for clean brutalist look */
+/* Custom scrollbars that look subtle and clean */
 ::-webkit-scrollbar {
-  display: none;
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }

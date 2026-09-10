@@ -4,14 +4,10 @@ import {
   CheckCircle2, 
   MapPin, 
   Share2, 
-  Download, 
   ShieldCheck, 
-  QrCode, 
   ChevronLeft, 
-  Clock, 
-  Printer,
   Sparkles,
-  ArrowRight
+  QrCode
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useAppContext } from '../../context/AppContext';
@@ -19,7 +15,7 @@ import { useAppContext } from '../../context/AppContext';
 const Handover: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { lots, recyclers, materials, updateLot, addTransaction } = useAppContext();
+  const { lots, recyclers, materials, updateLot, addTransaction, language } = useAppContext();
   
   const lot = lots.find(l => l.id === id) || lots[0];
   const recycler = recyclers.find(r => r.id === lot?.recyclerId) || recyclers[0];
@@ -29,7 +25,7 @@ const Handover: React.FC = () => {
   const [copied, setCopied] = useState(false);
 
   if (!lot) {
-    return <div className="p-8 text-center text-slate-500 font-mono">Lot not found</div>;
+    return <div className="p-8 text-center text-slate-500">Lot not found</div>;
   }
 
   const finalAmount = lot.finalPrice || Math.round(lot.weight * (recycler.offers[material.id] || 230));
@@ -66,217 +62,209 @@ const Handover: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-full bg-khata-paper text-khata-ink pb-10">
+    <div className="p-4 space-y-4 pb-8">
       
       {/* Top Header */}
-      <div className="bg-khata-paper text-white px-4 py-3.5 flex items-center justify-between shadow-md relative z-10">
+      <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2.5">
           <button 
             onClick={() => navigate('/collector')}
-            className="p-1.5 rounded-none bg-khata-green/60 hover:bg-khata-green text-khata-green transition-colors"
+            className="p-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-base font-black tracking-tight leading-tight">
-              {step === 'qr' ? 'हैंडओवर क्यूआर कोड' : 'डिजिटल रसीद'}
-            </h1>
-            <p className="text-[10px] font-mono text-khata-green/80 uppercase">
-              LOT #{lot.id.toUpperCase()} • GREEN HANDOVER
+            <h2 className="text-base font-extrabold text-slate-900 leading-tight">
+              {step === 'qr' ? 'हँडओव्हर क्यूआर कोड' : 'डिजिटल पावती'}
+            </h2>
+            <p className="text-[11px] text-slate-500 font-medium">
+              लॉट #{lot.id.toUpperCase()} • Digital Custody Pass
             </p>
           </div>
         </div>
 
-        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-khata-green text-khata-green font-bold border border-khata-green/50">
-          {step === 'qr' ? 'SCAN PENDING' : 'COMPLETED ✓'}
+        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+          step === 'qr' ? 'bg-amber-50 text-amber-800 border-amber-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+        }`}>
+          {step === 'qr' ? 'Pending Scan' : 'Completed ✓'}
         </span>
       </div>
 
-      <div className="p-4 flex-1">
-        
-        {step === 'qr' ? (
-          <div className="space-y-4">
-            
-            {/* Handover Gate Pass */}
-            <div className="bg-white rounded-none border-2 border-khata-ink shadow-brutal p-5 text-center space-y-4 relative overflow-hidden">
-              <div className="space-y-1">
-                <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-khata-green bg-khata-green px-2.5 py-0.5 rounded-full border border-khata-green">
-                  DIGITAL CHAIN OF CUSTODY
-                </span>
-                <h2 className="text-xl font-black text-slate-900">
-                  रीसाइक्लर को यह QR कोड दिखाएं
-                </h2>
-                <p className="text-xs text-slate-500 font-medium">
-                  स्कैन होते ही माल आपके खाते में दर्ज होगा व तुरंत नकद भुगतान मिलेगा
-                </p>
-              </div>
-
-              {/* High Contrast QR Code Container */}
-              <div className="bg-khata-ink from-[#f7faf8] to-[#edf4f0] p-6 rounded-none border-2 border-khata-green/40 inline-block mx-auto shadow-inner relative">
-                <div className="p-3 bg-white rounded-none shadow-md border border-slate-200/80">
-                  <QRCodeSVG 
-                    value={JSON.stringify({ 
-                      lotId: lot.id, 
-                      collectorId: lot.collectorId || 'COL-1028',
-                      recyclerId: recycler.id,
-                      weight: lot.weight,
-                      price: finalAmount,
-                      ts: new Date().toISOString()
-                    })} 
-                    size={200}
-                    level="H"
-                  />
-                </div>
-                <div className="mt-2 text-[10px] font-mono text-khata-green font-bold tracking-widest uppercase">
-                  ECOSETU SECURE TOKEN
-                </div>
-              </div>
-
-              {/* Manifest Snapshot */}
-              <div className="bg-khata-paper rounded-none p-4 border-2 border-khata-ink text-left space-y-2 text-xs font-mono">
-                <div className="flex justify-between">
-                  <span className="text-slate-500">सामग्री (Material):</span>
-                  <span className="font-bold text-slate-900">{material.name} ({material.icon})</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">कुल वजन (Weight):</span>
-                  <span className="font-bold text-slate-900">{lot.weight} KG</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">स्वीकृत रीसाइक्लर:</span>
-                  <span className="font-bold text-slate-900">{recycler.name}</span>
-                </div>
-                <div className="flex justify-between pt-2 border-t border-2 border-khata-ink">
-                  <span className="text-slate-800 font-bold">कुल देय नकद:</span>
-                  <span className="text-base font-black text-khata-green">₹{finalAmount.toLocaleString()}</span>
-                </div>
-              </div>
-
-              {/* Live Location Stamp */}
-              <div className="flex items-center justify-center space-x-2 text-[11px] font-mono text-slate-500">
-                <MapPin className="w-3.5 h-3.5 text-khata-green" />
-                <span>GPS Location Captured • Pune Hub</span>
-              </div>
-            </div>
-
-            {/* Simulation Button for Judges / Demonstration */}
-            <div className="pt-2">
-              <button 
-                onClick={handleConfirmHandover}
-                className="w-full bg-khata-ink text-white font-black text-base py-4 rounded-none shadow-brutal active:translate-y-1 transition-all flex items-center justify-center space-x-2"
-              >
-                <CheckCircle2 className="w-5 h-5" />
-                <span>हैंडओवर व नकद भुगतान कन्फर्म करें (Scan & Pay)</span>
-              </button>
-              <p className="text-[10px] text-center text-slate-500 font-mono mt-1.5">
-                (डेमो हेतु: रीसाइक्लर स्कैनर द्वारा पुष्टि का सिमुलेशन)
+      {step === 'qr' ? (
+        <div className="space-y-4">
+          
+          {/* Handover Gate Pass */}
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 text-center space-y-4">
+            <div className="space-y-1">
+              <span className="text-[10px] font-bold tracking-wider uppercase text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                DIGITAL CHAIN OF CUSTODY
+              </span>
+              <h3 className="text-lg font-black text-slate-900 pt-1">
+                {language === 'mr' ? 'हा QR कोड रिसायकलरला दाखवा' : 'Show QR code to Recycler'}
+              </h3>
+              <p className="text-xs text-slate-500 max-w-xs mx-auto">
+                रिसायकलरने स्कॅन केल्यावर माल त्यांच्याकडे नोंदवला जाईल आणि तुम्हाला लगेच पेमेंट मिळेल.
               </p>
             </div>
 
-          </div>
-        ) : (
-          /* STEP 2: Stamped Digital Receipt */
-          <div className="space-y-4 animate-in zoom-in-95 duration-200">
-            
-            {/* Success Banner */}
-            <div className="bg-khata-ink text-white p-4 rounded-none text-center shadow-lg space-y-1 relative overflow-hidden">
-              <div className="w-12 h-12 rounded-full bg-khata-green text-slate-950 flex items-center justify-center mx-auto mb-1 shadow-md">
-                <CheckCircle2 className="w-7 h-7" />
+            {/* Clean QR Code Container */}
+            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 inline-block mx-auto shadow-inner">
+              <div className="p-3 bg-white rounded-xl shadow-sm border border-slate-200">
+                <QRCodeSVG 
+                  value={JSON.stringify({ 
+                    lotId: lot.id, 
+                    collectorId: lot.collectorId || 'COL-1028',
+                    recyclerId: recycler.id,
+                    weight: lot.weight,
+                    price: finalAmount,
+                    ts: new Date().toISOString()
+                  })} 
+                  size={190}
+                  level="H"
+                />
               </div>
-              <h2 className="text-xl font-black">हैंडओवर पूरा हुआ • भुगतान प्राप्त!</h2>
-              <p className="text-xs text-khata-green font-mono">
-                CPCB TRACEABILITY LOGGED • TXN #{lot.id.toUpperCase()}
+              <div className="mt-2 text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                ECOSETU VERIFIED TOKEN
+              </div>
+            </div>
+
+            {/* Manifest Details */}
+            <div className="bg-slate-50 rounded-xl p-3.5 border border-slate-200 text-left space-y-2 text-xs">
+              <div className="flex justify-between">
+                <span className="text-slate-500">सामग्री (Material):</span>
+                <span className="font-bold text-slate-900">{material.name} ({material.icon})</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">एकूण वजन (Weight):</span>
+                <span className="font-bold text-slate-900">{lot.weight} KG</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">अधिकृत खरेदीदार:</span>
+                <span className="font-bold text-slate-900">{recycler.name}</span>
+              </div>
+              <div className="flex justify-between pt-2 border-t border-slate-200">
+                <span className="text-slate-700 font-bold">निश्चित देय रक्कम:</span>
+                <span className="text-base font-black text-emerald-700">₹{finalAmount.toLocaleString()}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center space-x-1.5 text-xs text-slate-500">
+              <MapPin className="w-3.5 h-3.5 text-emerald-600" />
+              <span>GPS Location: Hinjewadi Pune Center</span>
+            </div>
+          </div>
+
+          {/* Verification CTA */}
+          <div className="space-y-1.5 pt-1">
+            <button 
+              onClick={handleConfirmHandover}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm py-3.5 rounded-xl shadow-sm transition-all flex items-center justify-center space-x-2"
+            >
+              <CheckCircle2 className="w-5 h-5" />
+              <span>हँडओव्हर व पेमेंट पूर्ण करा (Confirm Handover)</span>
+            </button>
+            <p className="text-[11px] text-center text-slate-400">
+              (डेमोसाठी: स्कॅनर कन्फर्मेशन सिमुलेशन)
+            </p>
+          </div>
+
+        </div>
+      ) : (
+        /* STEP 2: Stamped Digital Receipt */
+        <div className="space-y-4">
+          
+          <div className="bg-emerald-700 text-white p-4 rounded-2xl text-center shadow-sm space-y-1">
+            <div className="w-10 h-10 rounded-full bg-white/20 text-white flex items-center justify-center mx-auto mb-1">
+              <CheckCircle2 className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-black">हँडओव्हर पूर्ण • पेमेंट जमा!</h3>
+            <p className="text-xs text-emerald-100">
+              CPCB TRACEABILITY COMPLETED • TXN #{lot.id.toUpperCase()}
+            </p>
+          </div>
+
+          {/* Digital Receipt Card */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+            <div className="text-center pb-3 border-b border-dashed border-slate-200 space-y-0.5">
+              <div className="text-base font-black text-slate-900">
+                ECOSETU DIGITAL RECEIPT
+              </div>
+              <p className="text-[11px] text-slate-500">
+                भारत सरकार ई-कचरा व्यवस्थापन नियम २०२२ अंतर्गत प्रमाणित
               </p>
             </div>
 
-            {/* Digital Bahi-Khata Receipt Card */}
-            <div className="bg-white rounded-none border-2 border-2 border-khata-ink p-5 shadow-brutal relative overflow-hidden">
-              {/* Receipt Header */}
-              <div className="text-center pb-4 border-b border-dashed border-2 border-khata-ink space-y-1">
-                <div className="text-base font-black text-slate-900 tracking-tight">
-                  ECOSETU DIGITAL RECEIPT
-                </div>
-                <p className="text-[11px] font-mono text-slate-500">
-                  भारत सरकार ई-कचरा प्रबंधन नियम 2022 अधिकृत
-                </p>
+            {/* Financial Amount */}
+            <div className="py-3 text-center bg-emerald-50 rounded-xl border border-emerald-100">
+              <span className="text-[11px] font-bold text-emerald-800 uppercase">
+                प्राप्त रोख रक्कम (Cash Payment Received)
+              </span>
+              <div className="text-3xl font-black text-emerald-900 mt-0.5">
+                ₹{finalAmount.toLocaleString()}
               </div>
+              <span className="inline-block mt-1 text-[11px] font-semibold text-emerald-700 bg-white px-2.5 py-0.5 rounded-full border border-emerald-200">
+                ✓ रोख रक्कम प्राप्त
+              </span>
+            </div>
 
-              {/* Financial Highlight */}
-              <div className="py-4 text-center bg-khata-paper rounded-none border border-khata-green my-4">
-                <span className="text-[11px] font-mono font-bold text-slate-500 uppercase">
-                  कुल नकद भुगतान प्राप्त (PAID IN CASH)
-                </span>
-                <div className="text-4xl font-black text-khata-green font-mono tracking-tight mt-0.5">
-                  ₹{finalAmount.toLocaleString()}
-                </div>
-                <span className="inline-block mt-1 text-[11px] font-bold text-khata-green bg-khata-green/70 px-2.5 py-0.5 rounded-full">
-                  ✓ तुरंत नकद प्राप्त (Hand-to-Hand)
-                </span>
+            {/* Receipt Table */}
+            <div className="space-y-2 text-xs border-b border-slate-100 pb-3">
+              <div className="flex justify-between">
+                <span className="text-slate-500">लॉट आयडी:</span>
+                <span className="font-bold text-slate-900">{lot.id.toUpperCase()}</span>
               </div>
-
-              {/* Receipt Itemized Table */}
-              <div className="space-y-2 text-xs font-mono border-b border-2 border-khata-ink pb-4">
-                <div className="flex justify-between">
-                  <span className="text-slate-500">लॉट आईडी:</span>
-                  <span className="font-bold text-slate-900">{lot.id.toUpperCase()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">कलेक्टर आईडी:</span>
-                  <span className="font-bold text-slate-900">COL-1028 (Raju Bhai)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">रीसाइक्लर:</span>
-                  <span className="font-bold text-slate-900">{recycler.name}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">ई-कचरा श्रेणी:</span>
-                  <span className="font-bold text-slate-900">{material.name} ({material.icon})</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">अंतिम वजन:</span>
-                  <span className="font-bold text-slate-900">{lot.weight} KG</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">दर प्रति किलो:</span>
-                  <span className="font-bold text-slate-900">₹{recycler.offers[material.id] || 230} / KG</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">समय व स्थान:</span>
-                  <span className="font-bold text-slate-900">10 Sep 2026, 5:42 PM (Pune)</span>
-                </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">कलेक्टर:</span>
+                <span className="font-bold text-slate-900">COL-1028 (रामदास)</span>
               </div>
-
-              {/* Verified Stamp */}
-              <div className="pt-4 flex items-center justify-between text-[11px] font-mono text-slate-500">
-                <span className="flex items-center text-khata-green font-bold">
-                  <ShieldCheck className="w-4 h-4 mr-1 text-khata-green" /> CPCB Traceability Verified
-                </span>
-                <span>SHA-256 DIGITAL HASH ✓</span>
+              <div className="flex justify-between">
+                <span className="text-slate-500">अधिकृत खरेदीदार:</span>
+                <span className="font-bold text-slate-900">{recycler.name}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">सामग्री:</span>
+                <span className="font-bold text-slate-900">{material.name} ({material.icon})</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">वजन:</span>
+                <span className="font-bold text-slate-900">{lot.weight} KG</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">दर:</span>
+                <span className="font-bold text-slate-900">₹{recycler.offers[material.id] || 230} / KG</span>
               </div>
             </div>
 
-            {/* Sharing & Navigation CTAs */}
-            <div className="space-y-2 pt-1">
-              <button 
-                onClick={handleShare}
-                className="w-full bg-khata-paper text-white font-bold text-sm font-mono py-3.5 rounded-none active:scale-98 transition-all flex items-center justify-center space-x-2 shadow-sm"
-              >
-                <Share2 className="w-4 h-4" />
-                <span>{copied ? 'रसीद कॉपी हो गई!' : 'रसीद शेयर करें (Share Receipt)'}</span>
-              </button>
-
-              <button 
-                onClick={() => navigate('/collector')}
-                className="w-full bg-khata-paper hover:bg-khata-paper text-slate-800 font-bold text-xs py-3 rounded-none border-2 border-khata-ink transition-colors text-center"
-              >
-                ← मुख्य स्क्रीन पर लौटें (Back to Home)
-              </button>
+            {/* Stamp footer */}
+            <div className="flex items-center justify-between text-[11px] text-slate-500">
+              <span className="flex items-center text-emerald-700 font-semibold">
+                <ShieldCheck className="w-4 h-4 mr-1 text-emerald-600" /> CPCB Traceability Verified
+              </span>
+              <span>SHA-256 DIGITAL HASH ✓</span>
             </div>
-
           </div>
-        )}
 
-      </div>
+          {/* Navigation CTAs */}
+          <div className="space-y-2 pt-1">
+            <button 
+              onClick={handleShare}
+              className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-3 rounded-xl transition-all flex items-center justify-center space-x-2"
+            >
+              <Share2 className="w-4 h-4" />
+              <span>{copied ? 'पावती कॉपी झाली!' : 'पावती शेअर करा (Share Receipt)'}</span>
+            </button>
+
+            <button 
+              onClick={() => navigate('/collector')}
+              className="w-full bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs py-2.5 rounded-xl border border-slate-200 transition-colors text-center"
+            >
+              ← मुख्य स्क्रीनवर परत जा (Home)
+            </button>
+          </div>
+
+        </div>
+      )}
+
     </div>
   );
 };

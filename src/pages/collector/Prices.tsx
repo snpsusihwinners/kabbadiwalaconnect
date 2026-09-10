@@ -7,7 +7,8 @@ import {
   Volume2,
   Share2,
   Check,
-  Newspaper
+  Search,
+  Sparkles
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 
@@ -16,20 +17,21 @@ const Prices: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedCity, setSelectedCity] = useState('Pune');
   const [copied, setCopied] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const getTrend = (index: number) => {
-    if (index % 3 === 0) return { icon: TrendingUp, label: '+₹15', color: 'text-khata-green' };
-    if (index % 3 === 1) return { icon: TrendingDown, label: '-₹5', color: 'text-khata-red' };
-    return { icon: Minus, label: 'STABLE', color: 'text-khata-ink' };
+    if (index % 3 === 0) return { icon: TrendingUp, label: '+₹15/kg', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' };
+    if (index % 3 === 1) return { icon: TrendingDown, label: '-₹5/kg', color: 'text-red-700 bg-red-50 border-red-200' };
+    return { icon: Minus, label: 'स्थिर (Stable)', color: 'text-slate-600 bg-slate-100 border-slate-200' };
   };
 
   const listenToPrices = () => {
     if ('speechSynthesis' in window) {
       setIsPlaying(true);
-      const top3 = materials.slice(0, 4).map(m => `${m.name} ${m.basePrice} रुपये`).join(', ');
+      const top3 = materials.slice(0, 4).map(m => `${m.name} ${m.basePrice} रुपये प्रति किलो`).join(', ');
       const text = language === 'mr'
-        ? `आजचे भाव: ${top3}.`
-        : `Today's rates: ${top3}.`;
+        ? `आजचे बाजार भाव: ${top3}. अधिकृत रिसायकलर्सकडून खात्रीशीर दर मिळवा.`
+        : `आज के मंडी भाव: ${top3}. रीसाइक्लर्स से सही दाम प्राप्त करें.`;
 
       const utterance = new SpeechSynthesisUtterance(text);
       if (language === 'mr') utterance.lang = 'mr-IN';
@@ -43,120 +45,128 @@ const Prices: React.FC = () => {
 
   const sharePrices = () => {
     navigator.clipboard.writeText(
-      `ECOSETU RATES (${selectedCity}):\n` +
-      materials.map(m => `${m.name}: ₹${m.basePrice}/kg`).join('\n')
+      `♻️ ECOSETU E-Waste Mandi Rates (${selectedCity}):\n` +
+      materials.map(m => `• ${m.name}: ₹${m.basePrice}/${m.unit}`).join('\n') +
+      `\nVerified by CPCB Recyclers.`
     );
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const filteredMaterials = materials.filter(m => 
+    m.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className="flex flex-col min-h-screen bg-khata-paper text-khata-ink bg-grid-pattern pb-10">
+    <div className="p-4 space-y-4 pb-8">
       
-      {/* Brutal Header */}
-      <div className="bg-khata-ink text-khata-paper p-4 brutal-border-b border-b-4 border-khata-ink">
-        <div className="flex justify-between items-start mb-2">
+      {/* Header with City Selector */}
+      <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
+        <div className="flex items-center justify-between">
           <div>
-            <div className="flex items-center space-x-2 mb-1">
-              <Newspaper className="w-5 h-5 text-khata-paper" />
-              <span className="text-[10px] font-mono uppercase tracking-widest font-bold bg-khata-red px-1">
-                MARKET RATES
-              </span>
+            <div className="flex items-center space-x-1.5 text-xs font-semibold text-emerald-700">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>LIVE MANDI BOARD</span>
             </div>
-            <h1 className="font-vernacular text-3xl font-black">
-              {language === 'mr' ? 'बाजार भाव' : 'DAILY RATES'}
-            </h1>
+            <h2 className="text-xl font-black text-slate-900 mt-0.5">
+              {language === 'mr' ? 'आजचे ई-कचरा बाजार भाव' : 
+               language === 'hi' ? 'आज के ई-कचरा मंडी भाव' : 
+               'Today\'s Scrap Rates'}
+            </h2>
           </div>
-          
-          <div className="flex flex-col items-end">
-            <span className="text-[10px] font-mono mb-1">LOCATION</span>
+
+          <div className="flex items-center bg-slate-100 rounded-xl px-2.5 py-1.5 border border-slate-200 text-xs font-medium text-slate-800">
+            <MapPin className="w-3.5 h-3.5 text-emerald-600 mr-1" />
             <select 
               value={selectedCity} 
               onChange={(e) => setSelectedCity(e.target.value)}
-              className="bg-transparent border-2 border-khata-paper text-khata-paper font-bold text-sm px-2 py-1 appearance-none rounded-none focus:outline-none"
+              className="bg-transparent font-bold focus:outline-none cursor-pointer text-slate-900"
             >
-              <option value="Pune" className="bg-khata-ink">Pune (पुणे)</option>
-              <option value="Mumbai" className="bg-khata-ink">Mumbai (मुंबई)</option>
-              <option value="Nagpur" className="bg-khata-ink">Nagpur (नागपूर)</option>
+              <option value="Pune">पुणे (Pune)</option>
+              <option value="Mumbai">मुंबई (Mumbai)</option>
+              <option value="Nagpur">नागपूर (Nagpur)</option>
+              <option value="Nashik">नाशिक (Nashik)</option>
             </select>
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex space-x-3 mt-4 pt-4 border-t-2 border-khata-paper/20">
+        {/* Listen & Share Actions */}
+        <div className="flex space-x-2 pt-1 border-t border-slate-100">
           <button
             onClick={listenToPrices}
-            className={`flex-1 py-2 px-3 border-2 font-mono text-sm font-bold flex items-center justify-center space-x-2 transition-all ${
+            className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center space-x-2 transition-all border ${
               isPlaying 
-                ? 'bg-khata-red border-khata-red text-khata-paper animate-pulse' 
-                : 'border-khata-paper hover:bg-khata-paper hover:text-khata-ink active:scale-95'
+                ? 'bg-amber-100 text-amber-900 border-amber-300 animate-pulse' 
+                : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-200'
             }`}
           >
-            <Volume2 className="w-4 h-4" />
-            <span>{isPlaying ? 'PLAYING...' : 'LISTEN'}</span>
+            <Volume2 className="w-4 h-4 text-emerald-600" />
+            <span>{isPlaying ? 'वाचत आहे (Playing...)' : (language === 'mr' ? 'भाव ऐका (Listen)' : 'भाव सुनें')}</span>
           </button>
 
           <button
             onClick={sharePrices}
-            className="py-2 px-4 border-2 border-khata-paper font-mono text-sm font-bold hover:bg-khata-paper hover:text-khata-ink flex items-center space-x-1.5 active:scale-95"
+            className="py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-200 flex items-center space-x-1.5 transition-colors"
           >
-            {copied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
-            <span>{copied ? 'COPIED' : 'SHARE'}</span>
+            {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4 text-slate-600" />}
+            <span>{copied ? 'Copied' : 'Share'}</span>
           </button>
         </div>
       </div>
 
-      <div className="p-4 flex-1">
-        
-        {/* Trend Banner */}
-        <div className="bg-khata-blue text-khata-paper p-3 mb-6 flex justify-between items-center border-2 border-khata-ink brutal-sm">
-          <span className="font-mono text-xs font-bold">PCB INDEX: +4.8%</span>
-          <div className="flex h-4 items-end space-x-1">
-             {[3, 5, 4, 7, 6, 8, 10].map((v, i) => (
-               <div key={i} style={{ height: `${v*10}%` }} className={`w-2 ${i === 6 ? 'bg-khata-red' : 'bg-khata-paper'}`}></div>
-             ))}
-          </div>
-        </div>
+      {/* Search Input */}
+      <div className="relative">
+        <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+        <input 
+          type="text"
+          placeholder={language === 'mr' ? 'माल शोधा (उदा. PCB, बॅटरी)...' : 'Search scrap material...'}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full pl-10 pr-4 py-2.5 bg-white rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400 text-slate-900 shadow-sm"
+        />
+      </div>
 
-        {/* Ledger Rows */}
-        <div className="border-2 border-khata-ink bg-white shadow-brutal divide-y-2 divide-khata-ink">
-          {materials.map((m, i) => {
-            const trend = getTrend(i);
-            const TrendIcon = trend.icon;
+      {/* Price Cards List */}
+      <div className="space-y-2.5">
+        {filteredMaterials.map((m, i) => {
+          const trend = getTrend(i);
+          const TrendIcon = trend.icon;
 
-            return (
-              <div 
-                key={m.id}
-                className="p-3 flex items-center justify-between hover:bg-khata-paper transition-colors"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 border-2 border-khata-ink flex items-center justify-center text-xl bg-khata-paper">
-                    {m.icon}
-                  </div>
-                  <div>
-                    <h3 className="font-vernacular text-lg leading-tight">{m.name}</h3>
-                    <p className="text-[10px] font-mono font-bold text-khata-ink/60 mt-0.5">
-                      REF: {m.id.toUpperCase()}
-                    </p>
-                  </div>
+          return (
+            <div 
+              key={m.id}
+              className="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm hover:border-emerald-300 transition-all flex items-center justify-between group"
+            >
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-2xl shrink-0 group-hover:scale-105 transition-transform">
+                  {m.icon}
                 </div>
-
-                <div className="text-right">
-                  <div className="flex items-end justify-end space-x-1">
-                    <span className="text-2xl font-black font-mono">₹{m.basePrice}</span>
-                    <span className="text-xs font-mono font-bold mb-1">/{m.unit}</span>
-                  </div>
-                  <span className={`inline-flex items-center text-[10px] font-mono font-bold ${trend.color}`}>
-                    <TrendIcon className="w-3 h-3 mr-0.5" />
-                    {trend.label}
-                  </span>
+                <div>
+                  <h3 className="font-bold text-slate-900 text-sm">{m.name}</h3>
+                  <p className="text-xs text-slate-500">
+                    अंदाजे भाव: ₹{Math.round(m.basePrice * 0.95)} - ₹{Math.round(m.basePrice * 1.05)}
+                  </p>
                 </div>
               </div>
-            );
-          })}
-        </div>
 
+              <div className="text-right flex flex-col items-end space-y-1">
+                <div className="flex items-baseline space-x-1">
+                  <span className="text-xl font-black text-slate-900">
+                    ₹{m.basePrice}
+                  </span>
+                  <span className="text-xs text-slate-500">/{m.unit}</span>
+                </div>
+
+                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${trend.color}`}>
+                  <TrendIcon className="w-3 h-3 mr-1" />
+                  {trend.label}
+                </span>
+              </div>
+            </div>
+          );
+        })}
       </div>
+
     </div>
   );
 };

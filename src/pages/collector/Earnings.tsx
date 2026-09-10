@@ -2,14 +2,10 @@ import React, { useState } from 'react';
 import { 
   CheckCircle2, 
   Clock, 
-  IndianRupee, 
-  Coins, 
-  Download, 
-  ArrowUpRight, 
-  FileSpreadsheet, 
-  ShieldCheck,
-  ChevronRight,
-  BookOpen
+  ShieldCheck, 
+  Download,
+  Wallet,
+  ArrowUpRight
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 
@@ -23,117 +19,150 @@ const Earnings: React.FC = () => {
   const totalPending = transactions.filter(t => t.status === 'Pending').reduce((sum, t) => sum + t.amount, 0);
 
   return (
-    <div className="flex flex-col min-h-screen bg-khata-paper text-khata-ink bg-ruled-pattern pb-10">
+    <div className="p-4 space-y-4 pb-8">
       
-      {/* Header */}
-      <div className="bg-khata-red text-khata-paper p-4 brutal-border-b border-b-2 border-khata-ink shadow-brutal-sm">
-        <div className="flex items-center space-x-2 mb-2">
-          <BookOpen className="w-5 h-5" />
-          <span className="text-[10px] font-mono uppercase tracking-widest font-bold">
-            {language === 'mr' ? 'बाही-खाता' : 'DIGITAL BAHI-KHATA'}
-          </span>
-        </div>
-        <h1 className="font-vernacular text-3xl font-black mb-1">
-          {language === 'mr' ? 'खाते पुस्तक' : 'LEDGER'}
-        </h1>
-        <p className="text-xs font-mono font-bold bg-khata-ink text-khata-paper inline-block px-2 py-0.5 mt-1">
-          {language === 'mr' ? 'सर्व व्यवहार आणि पेमेंट्स' : 'ALL TRANSACTIONS & PAYMENTS'}
-        </p>
-      </div>
-
-      <div className="p-4 space-y-6 flex-1">
-        
-        {/* Ledger Summary */}
-        <div className="brutal-card p-4 relative overflow-hidden bg-white">
-          <div className="flex justify-between items-start mb-4 border-b-2 border-khata-ink pb-2">
-            <div>
-              <p className="text-xs font-mono font-bold text-khata-ink/60">
-                {language === 'mr' ? 'एकूण जमा' : 'TOTAL SETTLED'}
-              </p>
-              <p className="text-4xl font-black font-mono">
-                ₹{totalEarned.toLocaleString()}
-              </p>
+      {/* Passbook Header Card */}
+      <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+              <Wallet className="w-5 h-5" />
             </div>
-            <div className="text-right">
-              <span className="khata-stamp">PAID</span>
+            <div>
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                {language === 'mr' ? 'डिजिटल पासबुक' : 'Digital Passbook'}
+              </span>
+              <h2 className="text-xl font-extrabold text-slate-900 leading-tight">
+                {language === 'mr' ? 'खाते व कमाई' : 'Ledger & Earnings'}
+              </h2>
             </div>
           </div>
           
-          <div className="flex justify-between items-center text-sm font-bold font-mono text-khata-red">
-            <span>{language === 'mr' ? 'येणे बाकी' : 'PENDING:'}</span>
-            <span className="text-lg">₹{totalPending.toLocaleString()}</span>
+          <button 
+            onClick={() => alert('Receipt summary downloaded!')}
+            className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium border border-slate-200 flex items-center space-x-1"
+            title="Download Statement"
+          >
+            <Download className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Big Balance Display */}
+        <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs font-semibold text-slate-500">
+              {language === 'mr' ? 'एकूण जमा रक्कम (Total Received)' : 'Total Received'}
+            </span>
+            <span className="inline-flex items-center text-xs font-bold text-emerald-700 bg-emerald-100/70 px-2 py-0.5 rounded-full">
+              <CheckCircle2 className="w-3 h-3 mr-1" /> Verified
+            </span>
+          </div>
+          <div className="text-3xl font-black text-slate-900 tracking-tight">
+            ₹{totalEarned.toLocaleString()}
           </div>
         </div>
 
-        {/* Filter Tabs */}
-        <div className="flex space-x-2 border-b-2 border-khata-ink pb-2">
-          {[
-            { id: 'All', label: language === 'mr' ? 'सर्व' : 'ALL' },
-            { id: 'Paid', label: language === 'mr' ? 'जमा' : 'SETTLED' },
-            { id: 'Pending', label: language === 'mr' ? 'बाकी' : 'PENDING' },
-          ].map((f) => (
-            <button
-              key={f.id}
-              onClick={() => setFilter(f.id as any)}
-              className={`px-3 py-1 font-mono text-sm font-bold transition-all border-2 border-transparent ${
-                filter === f.id
-                  ? 'border-khata-ink bg-khata-ink text-khata-paper'
-                  : 'text-khata-ink/60 hover:text-khata-ink'
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
+        {/* 2-Column Split: Pending & Completed */}
+        <div className="grid grid-cols-2 gap-3 pt-1">
+          <div className="p-3 bg-amber-50/70 rounded-xl border border-amber-100">
+            <span className="text-[11px] font-semibold text-amber-800 block">
+              {language === 'mr' ? 'येणे बाकी (Pending):' : 'Pending Payment:'}
+            </span>
+            <span className="text-lg font-bold text-amber-950">₹{totalPending.toLocaleString()}</span>
+          </div>
+          <div className="p-3 bg-slate-100 rounded-xl border border-slate-200">
+            <span className="text-[11px] font-semibold text-slate-600 block">
+              {language === 'mr' ? 'एकूण व्यवहार (Lots):' : 'Completed Lots:'}
+            </span>
+            <span className="text-lg font-bold text-slate-900">{transactions.length} व्यवहार</span>
+          </div>
         </div>
+      </div>
 
-        {/* Transactions List */}
-        <div className="space-y-4">
-          {filteredTransactions.map((t) => {
-            const material = materials.find(m => m.id === t.materialId);
-            const isPaid = t.status === 'Paid';
+      {/* Filter Tabs */}
+      <div className="flex space-x-2">
+        {[
+          { id: 'All', label: language === 'mr' ? 'सर्व (All)' : 'All' },
+          { id: 'Paid', label: language === 'mr' ? 'जमा (Paid)' : 'Paid' },
+          { id: 'Pending', label: language === 'mr' ? 'बाकी (Pending)' : 'Pending' },
+        ].map((f) => (
+          <button
+            key={f.id}
+            onClick={() => setFilter(f.id as any)}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              filter === f.id
+                ? 'bg-emerald-700 text-white shadow-sm'
+                : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
 
-            return (
-              <div 
-                key={t.id}
-                className="brutal-card p-3 relative flex items-center justify-between group cursor-pointer"
-              >
-                {/* Red stripe for pending */}
-                {!isPaid && (
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-khata-red"></div>
-                )}
-                
-                <div className="flex items-center space-x-4 pl-2">
-                  <div>
-                    <h4 className="font-vernacular text-lg leading-none mb-1">
-                      {material?.name}
-                    </h4>
-                    <p className="text-xs font-mono font-bold text-khata-ink/70">
-                      {t.weight} KG • {new Date(t.date).toLocaleDateString('en-GB')}
-                    </p>
-                  </div>
+      {/* Transaction Records List */}
+      <div className="space-y-2.5">
+        {filteredTransactions.map((t) => {
+          const material = materials.find(m => m.id === t.materialId);
+          const isPaid = t.status === 'Paid';
+
+          return (
+            <div 
+              key={t.id}
+              className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center justify-between group hover:border-emerald-300 transition-all"
+            >
+              <div className="flex items-center space-x-3">
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0 ${
+                  isPaid ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
+                }`}>
+                  {material?.icon || '📦'}
                 </div>
 
-                <div className="text-right flex flex-col items-end">
-                  <span className="text-xl font-black font-mono">
-                    ₹{t.amount.toLocaleString()}
+                <div>
+                  <h4 className="font-bold text-slate-900 text-sm">{material?.name}</h4>
+                  <p className="text-xs text-slate-500 font-medium">
+                    {t.weight} KG • {new Date(t.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                  </p>
+                  <span className="text-[10px] text-slate-400">
+                    ID: #{t.id.toUpperCase()}
                   </span>
-                  
-                  {isPaid ? (
-                     <span className="text-[10px] font-mono font-bold text-khata-green border border-khata-green px-1 mt-1">
-                       {t.method || 'CASH'}
-                     </span>
-                  ) : (
-                     <span className="text-[10px] font-mono font-bold text-khata-red border border-khata-red px-1 mt-1">
-                       PENDING
-                     </span>
-                  )}
                 </div>
               </div>
-            );
-          })}
-        </div>
 
+              <div className="text-right flex flex-col items-end space-y-1">
+                <span className="text-lg font-black text-slate-900">
+                  ₹{t.amount.toLocaleString()}
+                </span>
+                
+                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+                  isPaid ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-800 border-amber-200'
+                }`}>
+                  {isPaid ? (
+                    <>
+                      <CheckCircle2 className="w-3 h-3 mr-1 text-emerald-600" />
+                      {t.method || 'Cash'}
+                    </>
+                  ) : (
+                    <>
+                      <Clock className="w-3 h-3 mr-1 text-amber-600" />
+                      {language === 'mr' ? 'हँडओव्हर बाकी' : 'Pending'}
+                    </>
+                  )}
+                </span>
+              </div>
+            </div>
+          );
+        })}
       </div>
+
+      {/* Trust & Guarantee Note */}
+      <div className="bg-slate-100 rounded-xl p-3.5 border border-slate-200 flex items-center space-x-3 text-xs text-slate-600">
+        <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
+        <p className="leading-relaxed">
+          ECOSETU हमी: सर्व व्यवहार CPCB अधिकृत रिसायकलर्सकडून थेट रोख किंवा त्वरित UPI द्वारे पूर्ण होतात.
+        </p>
+      </div>
+
     </div>
   );
 };

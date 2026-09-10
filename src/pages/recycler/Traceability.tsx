@@ -4,14 +4,10 @@ import {
   Truck, 
   Building2, 
   MapPin, 
-  Search, 
   ShieldCheck, 
   Download, 
-  QrCode, 
   FileText,
-  Clock,
-  Sparkles,
-  ArrowRight
+  Clock
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 
@@ -71,21 +67,21 @@ const Traceability: React.FC = () => {
   return (
     <div className="space-y-6">
       
-      {/* Title */}
+      {/* Title Bar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-black text-white font-mono uppercase tracking-wider flex items-center space-x-2">
+          <h2 className="text-xl font-bold text-slate-900 flex items-center space-x-2">
             <span>CPCB Circular Chain of Custody</span>
-            <ShieldCheck className="w-5 h-5 text-emerald-400" />
+            <ShieldCheck className="w-5 h-5 text-emerald-600" />
           </h2>
-          <p className="text-xs text-slate-400 font-mono">
+          <p className="text-xs text-slate-500">
             Government e-Waste Management Rules 2022 compliant digital audit trail
           </p>
         </div>
 
         <button 
           onClick={() => alert(`Certificate for LOT #${activeLot?.id.toUpperCase()} generated! SHA-256: 7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069`)}
-          className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono font-bold text-xs px-4 py-2.5 rounded-xl shadow-tactile-green active:translate-y-0.5 transition-all flex items-center space-x-2"
+          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm transition-all flex items-center space-x-2"
         >
           <Download className="w-4 h-4" />
           <span>Export EPR Audit Certificate (PDF)</span>
@@ -95,8 +91,8 @@ const Traceability: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Left: Lot Selector */}
-        <div className="bg-[#0b2118]/80 border border-emerald-900/50 rounded-3xl p-5 shadow-lg space-y-4">
-          <h3 className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+          <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
             Select Trackable Scrap Lot
           </h3>
 
@@ -109,26 +105,26 @@ const Traceability: React.FC = () => {
                 <div
                   key={l.id}
                   onClick={() => setSelectedLotId(l.id)}
-                  className={`p-3.5 rounded-2xl border transition-all cursor-pointer font-mono ${
+                  className={`p-3 rounded-xl border transition-all cursor-pointer ${
                     isSelected
-                      ? 'bg-emerald-500/20 border-emerald-400 text-white shadow-inner'
-                      : 'bg-[#061710] border-emerald-950 text-slate-400 hover:border-emerald-800'
+                      ? 'bg-emerald-50 border-emerald-500 shadow-sm'
+                      : 'bg-white border-slate-200 hover:bg-slate-50'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold text-xs text-white">LOT #{l.id.toUpperCase()}</span>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                    <span className="font-bold text-xs text-slate-900">LOT #{l.id.toUpperCase()}</span>
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
                       l.status === 'Handover Completed' 
-                        ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' 
-                        : 'bg-amber-950 text-amber-300 border border-amber-800'
+                        ? 'bg-emerald-100 text-emerald-800 border-emerald-200' 
+                        : 'bg-amber-50 text-amber-800 border-amber-200'
                     }`}>
                       {l.status === 'Handover Completed' ? 'AUDITED ✓' : 'QUEUED'}
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center justify-between text-xs text-slate-600">
                     <span>{mat?.icon} {mat?.name}</span>
-                    <span className="font-bold text-emerald-400">{l.weight} KG</span>
+                    <span className="font-bold text-slate-900">{l.weight} KG</span>
                   </div>
                 </div>
               );
@@ -136,54 +132,54 @@ const Traceability: React.FC = () => {
           </div>
         </div>
 
-        {/* Right: Interactive Blockchain/Audit Timeline */}
-        <div className="lg:col-span-2 bg-[#0b2118]/80 border border-emerald-900/50 rounded-3xl p-6 shadow-xl space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-emerald-950/80 gap-2">
+        {/* Right: Timeline */}
+        <div className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
             <div>
-              <span className="text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">
+              <span className="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2.5 py-0.5 rounded-full border border-emerald-200">
                 AUDITED MANIFEST
               </span>
-              <h3 className="text-lg font-black text-white font-mono mt-1">
+              <h3 className="text-lg font-bold text-slate-900 mt-1">
                 LOT #{activeLot?.id.toUpperCase()} — {material?.name} ({activeLot?.weight} KG)
               </h3>
             </div>
             
-            <div className="text-right font-mono text-xs">
-              <span className="text-slate-400">Ledger Value: </span>
-              <span className="text-amber-300 font-bold">₹{activeLot?.finalPrice || 1900}</span>
+            <div className="text-right text-xs">
+              <span className="text-slate-500">Payout Value: </span>
+              <span className="text-emerald-700 font-bold text-sm">₹{activeLot?.finalPrice || 1900}</span>
             </div>
           </div>
 
           {/* Timeline Visual Nodes */}
-          <div className="relative pl-6 space-y-8 before:absolute before:left-3 before:top-3 before:bottom-3 before:w-0.5 before:bg-gradient-to-b before:from-emerald-400 before:via-emerald-700 before:to-slate-800">
+          <div className="relative pl-6 space-y-6 before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
             {timelineSteps.map((step, idx) => (
-              <div key={idx} className="relative group">
+              <div key={idx} className="relative">
                 {/* Node indicator */}
-                <div className={`absolute -left-6 top-1 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                <div className={`absolute -left-6 top-0.5 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
                   step.completed 
-                    ? 'bg-emerald-400 border-[#0b2118] text-slate-950 shadow-[0_0_12px_#34d399]' 
-                    : 'bg-[#061710] border-slate-700 text-slate-600'
+                    ? 'bg-emerald-600 border-white text-white shadow-sm' 
+                    : 'bg-slate-100 border-slate-300 text-slate-400'
                 }`}>
                   <step.icon className="w-3 h-3" />
                 </div>
 
                 <div className="space-y-1">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between">
-                    <h4 className={`text-sm font-bold font-mono ${step.completed ? 'text-white' : 'text-slate-500'}`}>
+                    <h4 className={`text-sm font-bold ${step.completed ? 'text-slate-900' : 'text-slate-400'}`}>
                       {step.title}
                     </h4>
-                    <span className="text-[10px] font-mono text-emerald-400/80">
+                    <span className="text-[11px] text-slate-500 font-medium">
                       {step.meta}
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-400 leading-relaxed font-sans">
+                  <p className="text-xs text-slate-600 leading-relaxed">
                     {step.desc}
                   </p>
 
                   {step.time && (
-                    <div className="text-[10px] font-mono text-slate-500 flex items-center space-x-1 pt-0.5">
-                      <Clock className="w-3 h-3 text-slate-600" />
+                    <div className="text-[11px] text-slate-400 flex items-center space-x-1 pt-0.5">
+                      <Clock className="w-3 h-3 text-slate-400" />
                       <span>{new Date(step.time).toLocaleString('en-IN')}</span>
                     </div>
                   )}
@@ -193,11 +189,11 @@ const Traceability: React.FC = () => {
           </div>
 
           {/* Verification Seal Footer */}
-          <div className="pt-4 border-t border-emerald-950/80 flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono text-slate-400 gap-2">
-            <span className="flex items-center text-emerald-400">
-              <ShieldCheck className="w-4 h-4 mr-1.5" /> Immutable Hash Verification Passed
+          <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
+            <span className="flex items-center text-emerald-700 font-semibold">
+              <ShieldCheck className="w-4 h-4 mr-1 text-emerald-600" /> Immutable Hash Verification Passed
             </span>
-            <span className="text-slate-500">Node: PUNE_HUB_04</span>
+            <span className="text-slate-400">Node: PUNE_HUB_04</span>
           </div>
 
         </div>

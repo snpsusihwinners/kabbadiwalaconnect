@@ -7,7 +7,8 @@ import {
   LogOut, 
   ShieldCheck,
   Building2,
-  Terminal
+  Smartphone,
+  CheckCircle2
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 
@@ -17,9 +18,9 @@ const RecyclerLayout: React.FC = () => {
   const { setRole } = useAppContext();
 
   const sidebarItems = [
-    { id: 'dashboard', icon: LayoutDashboard, label: 'CONTROL DESK', path: '/recycler' },
-    { id: 'lots', icon: Inbox, label: 'INBOUND SCRAP', path: '/recycler/lots' },
-    { id: 'traceability', icon: Map, label: 'TRACEABILITY', path: '/recycler/traceability' },
+    { id: 'dashboard', icon: LayoutDashboard, label: 'Overview Dashboard', path: '/recycler' },
+    { id: 'lots', icon: Inbox, label: 'Incoming Scrap Lots', path: '/recycler/lots' },
+    { id: 'traceability', icon: Map, label: 'Traceability & EPR', path: '/recycler/traceability' },
   ];
 
   const handleLogout = () => {
@@ -28,65 +29,76 @@ const RecyclerLayout: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-khata-paper text-khata-ink font-mono overflow-hidden bg-grid-pattern">
+    <div className="flex h-screen bg-slate-50 text-slate-900 overflow-hidden font-sans">
       
-      {/* Brutalist Sidebar */}
-      <aside className="w-72 bg-khata-blue text-khata-paper border-r-4 border-khata-ink flex flex-col shrink-0">
+      {/* Sleek Modern Sidebar */}
+      <aside className="w-64 bg-slate-900 text-white flex flex-col shrink-0 border-r border-slate-800">
         
-        <div className="p-6 border-b-4 border-khata-ink bg-khata-ink">
+        {/* Brand Header */}
+        <div className="p-5 border-b border-slate-800">
           <div className="flex items-center space-x-3">
-            <Terminal className="w-8 h-8 text-khata-paper" />
+            <div className="w-9 h-9 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center font-extrabold text-base shadow-sm">
+              ES
+            </div>
             <div>
-              <h2 className="text-3xl font-black font-vernacular leading-none text-khata-paper">ECOSETU</h2>
-              <p className="text-[10px] font-bold text-khata-paper/80 mt-1 tracking-widest uppercase">
-                BUYER TERMINAL
+              <h2 className="text-lg font-black tracking-tight text-white leading-none">ECOSETU</h2>
+              <p className="text-[11px] text-slate-400 mt-0.5 font-medium">
+                Recycler Operations
               </p>
             </div>
           </div>
         </div>
         
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+        {/* Nav items */}
+        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+          <div className="px-3 py-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+            Menu
+          </div>
           {sidebarItems.map((item) => {
             const isActive = location.pathname === item.path || (item.path !== '/recycler' && location.pathname.startsWith(item.path));
             return (
               <button
                 key={item.id}
                 onClick={() => navigate(item.path)}
-                className={`w-full flex items-center px-4 py-3 text-sm font-bold border-2 transition-all ${
+                className={`w-full flex items-center px-3.5 py-2.5 text-xs font-semibold rounded-xl transition-all ${
                   isActive 
-                    ? 'bg-khata-paper text-khata-ink border-khata-paper shadow-brutal' 
-                    : 'bg-transparent text-khata-paper border-transparent hover:border-khata-paper/50'
+                    ? 'bg-emerald-600 text-white shadow-sm' 
+                    : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                 }`}
               >
-                <item.icon className="mr-3 h-5 w-5" />
-                {item.label}
+                <item.icon className="mr-3 h-4 w-4" />
+                <span>{item.label}</span>
               </button>
             );
           })}
 
-          <div className="pt-6 mt-6 border-t-2 border-khata-paper/20">
+          <div className="pt-4 mt-4 border-t border-slate-800">
             <button
               onClick={() => navigate('/collector')}
-              className="w-full p-3 border-2 border-khata-paper font-bold text-xs flex items-center justify-between hover:bg-khata-paper hover:text-khata-ink transition-colors"
+              className="w-full p-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-emerald-400 font-semibold text-xs flex items-center justify-between transition-colors border border-slate-700/60"
             >
-              <span>SWITCH TO MOBILE</span>
+              <span className="flex items-center space-x-2">
+                <Smartphone className="w-4 h-4" />
+                <span>Mobile Collector View</span>
+              </span>
               <span>→</span>
             </button>
           </div>
         </nav>
 
-        <div className="p-4 border-t-4 border-khata-ink bg-khata-ink">
-          <div className="flex items-center space-x-2 text-xs font-bold text-khata-paper mb-4">
-            <ShieldCheck className="w-4 h-4 text-khata-green" />
-            <span>CPCB: #EW-MH-089</span>
+        {/* Footer */}
+        <div className="p-4 border-t border-slate-800 space-y-3">
+          <div className="flex items-center space-x-2 text-xs text-slate-400">
+            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span className="truncate">CPCB: #EW-MH-089</span>
           </div>
 
           <button 
             onClick={handleLogout} 
-            className="w-full flex items-center justify-center px-3 py-2 text-xs font-bold border-2 border-khata-red text-khata-red hover:bg-khata-red hover:text-khata-paper transition-colors"
+            className="w-full flex items-center justify-center px-3 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition-colors"
           >
             <LogOut className="mr-2 h-4 w-4" />
-            EXIT SYSTEM
+            Sign Out
           </button>
         </div>
       </aside>
@@ -95,29 +107,30 @@ const RecyclerLayout: React.FC = () => {
       <div className="flex-1 flex flex-col overflow-hidden relative">
         
         {/* Top Header */}
-        <header className="bg-white border-b-4 border-khata-ink px-8 py-4 flex justify-between items-center z-10 shrink-0">
+        <header className="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center z-10 shrink-0">
           <div>
-            <h1 className="text-2xl font-black font-vernacular uppercase tracking-widest">
-              {sidebarItems.find(i => i.path === location.pathname)?.label || 'DASHBOARD'}
+            <h1 className="text-lg font-bold text-slate-900 leading-tight">
+              {sidebarItems.find(i => i.path === location.pathname)?.label || 'Overview Dashboard'}
             </h1>
-            <p className="text-xs font-bold mt-1 text-khata-ink/60">NODE: HINJEWADI, PUNE</p>
+            <p className="text-xs text-slate-500">Facility Node: Hinjewadi Phase 2, Pune</p>
           </div>
 
-          <div className="flex items-center space-x-4">
-            <div className="text-right">
-              <p className="text-sm font-bold">GreenCycle Solutions</p>
-              <span className="inline-block bg-khata-ink text-khata-paper text-[10px] px-2 py-0.5 mt-1 font-bold">
-                AUTHORIZED FACILITY
+          <div className="flex items-center space-x-3">
+            <div className="text-right hidden sm:block">
+              <p className="text-xs font-bold text-slate-900">GreenCycle Recycling Solutions</p>
+              <span className="inline-flex items-center text-[11px] text-emerald-700 font-semibold">
+                <CheckCircle2 className="w-3 h-3 mr-1 text-emerald-600" />
+                CPCB R-Category Partner
               </span>
             </div>
-            <div className="w-12 h-12 border-4 border-khata-ink bg-khata-paper flex items-center justify-center shadow-brutal">
-              <Building2 className="w-6 h-6" />
+            <div className="w-9 h-9 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 font-bold text-sm">
+              GC
             </div>
           </div>
         </header>
 
         {/* Scrollable Canvas */}
-        <main className="flex-1 overflow-y-auto p-8">
+        <main className="flex-1 overflow-y-auto p-6">
           <Outlet />
         </main>
       </div>
