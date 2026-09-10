@@ -2,35 +2,34 @@ import React, { useState } from 'react';
 import { 
   TrendingUp, 
   TrendingDown, 
-  Minus, 
-  MapPin, 
-  Volume2, 
-  Share2, 
-  Sparkles,
-  Calendar,
-  Check
+  Minus,
+  MapPin,
+  Volume2,
+  Share2,
+  Check,
+  Newspaper
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 
 const Prices: React.FC = () => {
   const { materials, language } = useAppContext();
-  const [selectedCity, setSelectedCity] = useState('Pune');
   const [isPlaying, setIsPlaying] = useState(false);
+  const [selectedCity, setSelectedCity] = useState('Pune');
   const [copied, setCopied] = useState(false);
 
   const getTrend = (index: number) => {
-    if (index % 3 === 0) return { icon: TrendingUp, label: '+₹15/kg', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' };
-    if (index % 3 === 1) return { icon: TrendingDown, label: '-₹5/kg', color: 'text-red-700 bg-red-50 border-red-200' };
-    return { icon: Minus, label: 'स्थिर', color: 'text-slate-600 bg-slate-100 border-slate-200' };
+    if (index % 3 === 0) return { icon: TrendingUp, label: '+₹15', color: 'text-khata-green' };
+    if (index % 3 === 1) return { icon: TrendingDown, label: '-₹5', color: 'text-khata-red' };
+    return { icon: Minus, label: 'STABLE', color: 'text-khata-ink' };
   };
 
   const listenToPrices = () => {
     if ('speechSynthesis' in window) {
       setIsPlaying(true);
-      const top3 = materials.slice(0, 4).map(m => `${m.name} ${m.basePrice} रुपये किलो`).join(', ');
+      const top3 = materials.slice(0, 4).map(m => `${m.name} ${m.basePrice} रुपये`).join(', ');
       const text = language === 'mr'
-        ? `पुणे बाजारभाव: ${top3}. रीसायकलर कडून आज पक्के दर उपलब्ध आहेत.`
-        : `पुणे मंडी आज का भाव: ${top3}. अधिकृत रीसाइक्लर से आज पक्का भाव प्राप्त करें.`;
+        ? `आजचे भाव: ${top3}.`
+        : `Today's rates: ${top3}.`;
 
       const utterance = new SpeechSynthesisUtterance(text);
       if (language === 'mr') utterance.lang = 'mr-IN';
@@ -44,94 +43,83 @@ const Prices: React.FC = () => {
 
   const sharePrices = () => {
     navigator.clipboard.writeText(
-      `♻️ ECOSETU आज का ई-वेस्ट भाव (${selectedCity}):\n` +
-      materials.map(m => `• ${m.name}: ₹${m.basePrice}/kg`).join('\n')
+      `ECOSETU RATES (${selectedCity}):\n` +
+      materials.map(m => `${m.name}: ₹${m.basePrice}/kg`).join('\n')
     );
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <div className="flex flex-col min-h-full bg-[#fbf8f1] text-[#13261e] pb-10">
+    <div className="flex flex-col min-h-screen bg-khata-paper text-khata-ink bg-grid-pattern pb-10">
       
-      {/* Header with City Mandi Selector */}
-      <div className="bg-[#0b241a] text-white px-5 pt-4 pb-5 rounded-b-[30px] shadow-md relative overflow-hidden">
-        <div className="flex items-center justify-between relative z-10">
+      {/* Brutal Header */}
+      <div className="bg-khata-ink text-khata-paper p-4 brutal-border-b border-b-4 border-khata-ink">
+        <div className="flex justify-between items-start mb-2">
           <div>
-            <div className="flex items-center space-x-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-300 font-bold">
-                MANDI PRICE BOARD
+            <div className="flex items-center space-x-2 mb-1">
+              <Newspaper className="w-5 h-5 text-khata-paper" />
+              <span className="text-[10px] font-mono uppercase tracking-widest font-bold bg-khata-red px-1">
+                MARKET RATES
               </span>
             </div>
-            <h1 className="text-xl font-black text-white">आज का स्क्रैप भाव</h1>
+            <h1 className="font-vernacular text-3xl font-black">
+              {language === 'mr' ? 'बाजार भाव' : 'DAILY RATES'}
+            </h1>
           </div>
-
-          <div className="flex items-center bg-emerald-950 border border-emerald-700/50 rounded-xl p-1 text-xs font-mono">
-            <MapPin className="w-3.5 h-3.5 text-amber-400 ml-1.5 mr-1" />
+          
+          <div className="flex flex-col items-end">
+            <span className="text-[10px] font-mono mb-1">LOCATION</span>
             <select 
               value={selectedCity} 
               onChange={(e) => setSelectedCity(e.target.value)}
-              className="bg-transparent text-white font-bold pr-2 focus:outline-none cursor-pointer"
+              className="bg-transparent border-2 border-khata-paper text-khata-paper font-bold text-sm px-2 py-1 appearance-none rounded-none focus:outline-none"
             >
-              <option value="Pune" className="text-slate-900">पुणे (Pune)</option>
-              <option value="Mumbai" className="text-slate-900">मुंबई (Mumbai)</option>
-              <option value="Nagpur" className="text-slate-900">नागपुर (Nagpur)</option>
+              <option value="Pune" className="bg-khata-ink">Pune (पुणे)</option>
+              <option value="Mumbai" className="bg-khata-ink">Mumbai (मुंबई)</option>
+              <option value="Nagpur" className="bg-khata-ink">Nagpur (नागपूर)</option>
             </select>
           </div>
         </div>
 
-        {/* Action Pills */}
-        <div className="flex space-x-2 mt-4 pt-3 border-t border-emerald-900/60">
+        {/* Actions */}
+        <div className="flex space-x-3 mt-4 pt-4 border-t-2 border-khata-paper/20">
           <button
             onClick={listenToPrices}
-            className={`flex-1 py-2.5 px-3 rounded-xl border text-xs font-bold font-mono flex items-center justify-center space-x-2 transition-all ${
+            className={`flex-1 py-2 px-3 border-2 font-mono text-sm font-bold flex items-center justify-center space-x-2 transition-all ${
               isPlaying 
-                ? 'bg-amber-400 text-slate-950 border-amber-300 animate-pulse' 
-                : 'bg-emerald-900/60 border-emerald-700/50 text-emerald-200 hover:bg-emerald-800'
+                ? 'bg-khata-red border-khata-red text-khata-paper animate-pulse' 
+                : 'border-khata-paper hover:bg-khata-paper hover:text-khata-ink active:scale-95'
             }`}
           >
             <Volume2 className="w-4 h-4" />
-            <span>{isPlaying ? 'भाव बोल रहा है...' : '🔊 भाव सुनें (Listen)'}</span>
+            <span>{isPlaying ? 'PLAYING...' : 'LISTEN'}</span>
           </button>
 
           <button
             onClick={sharePrices}
-            className="py-2.5 px-4 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold font-mono hover:bg-emerald-500/30 flex items-center space-x-1.5 active:scale-95 transition-all"
+            className="py-2 px-4 border-2 border-khata-paper font-mono text-sm font-bold hover:bg-khata-paper hover:text-khata-ink flex items-center space-x-1.5 active:scale-95"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-amber-300" /> : <Share2 className="w-3.5 h-3.5" />}
-            <span>{copied ? 'कॉपी हुआ!' : 'शेयर'}</span>
+            {copied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
+            <span>{copied ? 'COPIED' : 'SHARE'}</span>
           </button>
         </div>
       </div>
 
-      <div className="p-4 space-y-3.5 flex-1">
+      <div className="p-4 flex-1">
         
-        {/* 7-Day Trend Visual Micro-Widget */}
-        <div className="bg-white rounded-2xl p-4 border border-[#e6decb] shadow-card-elevated flex items-center justify-between">
-          <div className="space-y-0.5">
-            <span className="text-[10px] font-mono text-slate-500 font-bold uppercase tracking-wider">
-              7-DAY COPPER & PCB INDEX
-            </span>
-            <div className="text-sm font-black text-slate-900 flex items-center space-x-1.5">
-              <span>तांबा + PCB दर +4.8% तेज</span>
-              <TrendingUp className="w-4 h-4 text-emerald-700 inline" />
-            </div>
-          </div>
-          {/* Sparkline simulation */}
-          <div className="flex items-end space-x-1 h-8">
-            {[45, 52, 48, 65, 58, 72, 85].map((val, idx) => (
-              <div 
-                key={idx} 
-                style={{ height: `${val}%` }} 
-                className={`w-2 rounded-t-sm ${idx === 6 ? 'bg-emerald-700' : 'bg-emerald-200'}`} 
-              />
-            ))}
+        {/* Trend Banner */}
+        <div className="bg-khata-blue text-khata-paper p-3 mb-6 flex justify-between items-center border-2 border-khata-ink brutal-sm">
+          <span className="font-mono text-xs font-bold">PCB INDEX: +4.8%</span>
+          <div className="flex h-4 items-end space-x-1">
+             {[3, 5, 4, 7, 6, 8, 10].map((v, i) => (
+               <div key={i} style={{ height: `${v*10}%` }} className={`w-2 ${i === 6 ? 'bg-khata-red' : 'bg-khata-paper'}`}></div>
+             ))}
           </div>
         </div>
 
-        {/* Material Price Cards */}
-        <div className="space-y-2.5">
+        {/* Ledger Rows */}
+        <div className="border-2 border-khata-ink bg-white shadow-brutal divide-y-2 divide-khata-ink">
           {materials.map((m, i) => {
             const trend = getTrend(i);
             const TrendIcon = trend.icon;
@@ -139,30 +127,27 @@ const Prices: React.FC = () => {
             return (
               <div 
                 key={m.id}
-                className="bg-white rounded-[22px] p-4 border border-[#e6decb] shadow-sm hover:border-emerald-500/40 transition-all flex items-center justify-between group"
+                className="p-3 flex items-center justify-between hover:bg-khata-paper transition-colors"
               >
-                <div className="flex items-center space-x-3.5">
-                  <div className="w-13 h-13 rounded-2xl bg-emerald-50 border border-emerald-100/80 flex items-center justify-center text-2xl shadow-inner group-hover:scale-105 transition-transform">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 border-2 border-khata-ink flex items-center justify-center text-xl bg-khata-paper">
                     {m.icon}
                   </div>
                   <div>
-                    <h3 className="font-black text-slate-900 text-base">{m.name}</h3>
-                    <p className="text-[11px] font-mono text-slate-500">
-                      न्यूनतम दर: ₹{(m.basePrice * 0.95).toFixed(0)} - ₹{(m.basePrice * 1.05).toFixed(0)}
+                    <h3 className="font-vernacular text-lg leading-tight">{m.name}</h3>
+                    <p className="text-[10px] font-mono font-bold text-khata-ink/60 mt-0.5">
+                      REF: {m.id.toUpperCase()}
                     </p>
                   </div>
                 </div>
 
-                <div className="text-right flex flex-col items-end space-y-1">
-                  <div className="flex items-baseline space-x-1">
-                    <span className="text-2xl font-black text-slate-900 font-mono tracking-tight">
-                      ₹{m.basePrice}
-                    </span>
-                    <span className="text-xs text-slate-500 font-mono">/ {m.unit}</span>
+                <div className="text-right">
+                  <div className="flex items-end justify-end space-x-1">
+                    <span className="text-2xl font-black font-mono">₹{m.basePrice}</span>
+                    <span className="text-xs font-mono font-bold mb-1">/{m.unit}</span>
                   </div>
-
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono font-bold border ${trend.color}`}>
-                    <TrendIcon className="w-3 h-3 mr-1" />
+                  <span className={`inline-flex items-center text-[10px] font-mono font-bold ${trend.color}`}>
+                    <TrendIcon className="w-3 h-3 mr-0.5" />
                     {trend.label}
                   </span>
                 </div>

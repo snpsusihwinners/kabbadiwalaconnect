@@ -8,12 +8,13 @@ import {
   ArrowUpRight, 
   FileSpreadsheet, 
   ShieldCheck,
-  ChevronRight
+  ChevronRight,
+  BookOpen
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 
 const Earnings: React.FC = () => {
-  const { transactions, materials } = useAppContext();
+  const { transactions, materials, language } = useAppContext();
   const [filter, setFilter] = useState<'All' | 'Paid' | 'Pending'>('All');
 
   const filteredTransactions = transactions.filter(t => filter === 'All' || t.status === filter);
@@ -22,65 +23,62 @@ const Earnings: React.FC = () => {
   const totalPending = transactions.filter(t => t.status === 'Pending').reduce((sum, t) => sum + t.amount, 0);
 
   return (
-    <div className="flex flex-col min-h-full bg-[#fbf8f1] text-[#13261e] pb-10">
+    <div className="flex flex-col min-h-screen bg-khata-paper text-khata-ink bg-ruled-pattern pb-10">
       
       {/* Header */}
-      <div className="bg-[#0b241a] text-white px-5 pt-4 pb-5 rounded-b-[30px] shadow-md relative overflow-hidden">
-        <div className="relative z-10">
-          <div className="flex items-center space-x-1.5">
-            <Coins className="w-4 h-4 text-amber-400" />
-            <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-300 font-bold">
-              DIGITAL BAHI-KHATA • बहीखाता
-            </span>
-          </div>
-          <h1 className="text-xl font-black text-white">मेरी कमाई व पासबुक</h1>
-          <p className="text-xs text-emerald-200/80 mt-0.5">
-            हर सौदे का पारदर्शी डिजिटल हिसाब • नकद व UPI
-          </p>
+      <div className="bg-khata-red text-khata-paper p-4 brutal-border-b border-b-2 border-khata-ink shadow-brutal-sm">
+        <div className="flex items-center space-x-2 mb-2">
+          <BookOpen className="w-5 h-5" />
+          <span className="text-[10px] font-mono uppercase tracking-widest font-bold">
+            {language === 'mr' ? 'बाही-खाता' : 'DIGITAL BAHI-KHATA'}
+          </span>
         </div>
-
-        {/* Passbook Master Card */}
-        <div className="mt-4 bg-gradient-to-tr from-[#082015] via-[#0e3b2b] to-[#144f3b] border-2 border-emerald-400/30 rounded-[26px] p-5 shadow-tactile-green text-white relative overflow-hidden">
-          <div className="absolute right-0 top-0 w-36 h-36 bg-emerald-400/10 rounded-full blur-2xl pointer-events-none" />
-          
-          <div className="flex items-center justify-between mb-1 text-emerald-200 text-xs font-mono font-bold">
-            <span>कुल सुरक्षित कमाई (SETTLED)</span>
-            <span className="text-amber-400">PASSED ✓</span>
-          </div>
-
-          <div className="text-4xl font-black font-mono tracking-tight text-white mb-4">
-            ₹{totalEarned.toLocaleString()}
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 pt-3 border-t border-emerald-700/50 text-xs font-mono">
-            <div className="bg-black/25 p-2 rounded-xl border border-emerald-900/50">
-              <span className="text-[10px] text-slate-400 block">बकाया (Pending):</span>
-              <span className="text-base font-bold text-amber-300">₹{totalPending.toLocaleString()}</span>
-            </div>
-            <div className="bg-black/25 p-2 rounded-xl border border-emerald-900/50">
-              <span className="text-[10px] text-slate-400 block">कुल सौदे (Handovers):</span>
-              <span className="text-base font-bold text-emerald-300">{transactions.length} लॉट</span>
-            </div>
-          </div>
-        </div>
+        <h1 className="font-vernacular text-3xl font-black mb-1">
+          {language === 'mr' ? 'खाते पुस्तक' : 'LEDGER'}
+        </h1>
+        <p className="text-xs font-mono font-bold bg-khata-ink text-khata-paper inline-block px-2 py-0.5 mt-1">
+          {language === 'mr' ? 'सर्व व्यवहार आणि पेमेंट्स' : 'ALL TRANSACTIONS & PAYMENTS'}
+        </p>
       </div>
 
-      <div className="p-4 space-y-3.5 flex-1">
+      <div className="p-4 space-y-6 flex-1">
         
-        {/* Filter Pills */}
-        <div className="flex space-x-2">
+        {/* Ledger Summary */}
+        <div className="brutal-card p-4 relative overflow-hidden bg-white">
+          <div className="flex justify-between items-start mb-4 border-b-2 border-khata-ink pb-2">
+            <div>
+              <p className="text-xs font-mono font-bold text-khata-ink/60">
+                {language === 'mr' ? 'एकूण जमा' : 'TOTAL SETTLED'}
+              </p>
+              <p className="text-4xl font-black font-mono">
+                ₹{totalEarned.toLocaleString()}
+              </p>
+            </div>
+            <div className="text-right">
+              <span className="khata-stamp">PAID</span>
+            </div>
+          </div>
+          
+          <div className="flex justify-between items-center text-sm font-bold font-mono text-khata-red">
+            <span>{language === 'mr' ? 'येणे बाकी' : 'PENDING:'}</span>
+            <span className="text-lg">₹{totalPending.toLocaleString()}</span>
+          </div>
+        </div>
+
+        {/* Filter Tabs */}
+        <div className="flex space-x-2 border-b-2 border-khata-ink pb-2">
           {[
-            { id: 'All', label: 'सभी सौदे (All)' },
-            { id: 'Paid', label: '✓ नकद प्राप्त (Paid)' },
-            { id: 'Pending', label: '⏳ बाकी (Pending)' },
+            { id: 'All', label: language === 'mr' ? 'सर्व' : 'ALL' },
+            { id: 'Paid', label: language === 'mr' ? 'जमा' : 'SETTLED' },
+            { id: 'Pending', label: language === 'mr' ? 'बाकी' : 'PENDING' },
           ].map((f) => (
             <button
               key={f.id}
               onClick={() => setFilter(f.id as any)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold font-mono transition-all ${
+              className={`px-3 py-1 font-mono text-sm font-bold transition-all border-2 border-transparent ${
                 filter === f.id
-                  ? 'bg-emerald-700 text-white shadow-sm'
-                  : 'bg-white border border-[#e6decb] text-slate-600 hover:bg-slate-50'
+                  ? 'border-khata-ink bg-khata-ink text-khata-paper'
+                  : 'text-khata-ink/60 hover:text-khata-ink'
               }`}
             >
               {f.label}
@@ -88,8 +86,8 @@ const Earnings: React.FC = () => {
           ))}
         </div>
 
-        {/* Transaction Ledger Records */}
-        <div className="space-y-2.5">
+        {/* Transactions List */}
+        <div className="space-y-4">
           {filteredTransactions.map((t) => {
             const material = materials.find(m => m.id === t.materialId);
             const isPaid = t.status === 'Paid';
@@ -97,60 +95,42 @@ const Earnings: React.FC = () => {
             return (
               <div 
                 key={t.id}
-                className="bg-white rounded-[22px] p-4 border border-[#e6decb] shadow-card-elevated flex items-center justify-between group hover:border-emerald-500/40 transition-all"
+                className="brutal-card p-3 relative flex items-center justify-between group cursor-pointer"
               >
-                <div className="flex items-center space-x-3">
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl shrink-0 border ${
-                    isPaid ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-amber-50 border-amber-200 text-amber-700'
-                  }`}>
-                    {material?.icon || '📦'}
-                  </div>
-
+                {/* Red stripe for pending */}
+                {!isPaid && (
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-khata-red"></div>
+                )}
+                
+                <div className="flex items-center space-x-4 pl-2">
                   <div>
-                    <h4 className="font-black text-slate-900 text-base flex items-center space-x-1.5">
-                      <span>{material?.name}</span>
+                    <h4 className="font-vernacular text-lg leading-none mb-1">
+                      {material?.name}
                     </h4>
-                    <p className="text-[11px] font-mono text-slate-500">
-                      {t.weight} KG • {new Date(t.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    <p className="text-xs font-mono font-bold text-khata-ink/70">
+                      {t.weight} KG • {new Date(t.date).toLocaleDateString('en-GB')}
                     </p>
-                    <span className="text-[10px] text-slate-400 font-mono">
-                      TXN #{t.id.toUpperCase()}
-                    </span>
                   </div>
                 </div>
 
-                <div className="text-right flex flex-col items-end space-y-1">
-                  <span className="text-xl font-black text-slate-900 font-mono tracking-tight">
+                <div className="text-right flex flex-col items-end">
+                  <span className="text-xl font-black font-mono">
                     ₹{t.amount.toLocaleString()}
                   </span>
                   
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border ${
-                    isPaid ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-amber-100 text-amber-800 border-amber-300'
-                  }`}>
-                    {isPaid ? (
-                      <>
-                        <CheckCircle2 className="w-3 h-3 mr-0.5 text-emerald-600" />
-                        {t.method || 'Cash'} मिला ✓
-                      </>
-                    ) : (
-                      <>
-                        <Clock className="w-3 h-3 mr-0.5 text-amber-600" />
-                        हैंडओवर बाकी
-                      </>
-                    )}
-                  </span>
+                  {isPaid ? (
+                     <span className="text-[10px] font-mono font-bold text-khata-green border border-khata-green px-1 mt-1">
+                       {t.method || 'CASH'}
+                     </span>
+                  ) : (
+                     <span className="text-[10px] font-mono font-bold text-khata-red border border-khata-red px-1 mt-1">
+                       PENDING
+                     </span>
+                  )}
                 </div>
               </div>
             );
           })}
-        </div>
-
-        {/* Bankless Assurance Footer */}
-        <div className="bg-[#f2ecde] rounded-2xl p-3.5 border border-[#dfd5c2] flex items-center space-x-3 text-xs text-slate-700">
-          <ShieldCheck className="w-5 h-5 text-emerald-700 shrink-0" />
-          <p className="leading-snug">
-            ECOSETU खाता बही में बैंक खाते की अनिवार्यता नहीं है। हर रीसाइक्लर से आपको मौके पर 100% पक्का नकद या UPI दिया जाता है।
-          </p>
         </div>
 
       </div>
