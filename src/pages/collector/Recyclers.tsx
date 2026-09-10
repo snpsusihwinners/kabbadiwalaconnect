@@ -14,10 +14,10 @@ import { useAppContext } from '../../context/AppContext';
 
 const Recyclers: React.FC = () => {
   const navigate = useNavigate();
-  const { recyclers, materials, transactions, updateTransaction, language } = useAppContext();
+  const { recyclers, materials, lots, updateLot, language } = useAppContext();
   const [filterType, setFilterType] = useState<'rate'|'distance'|'pickup'>('rate');
 
-  const pendingLots = transactions.filter(t => t.status === 'Pending');
+  const pendingLots = lots.filter(t => t.status === 'Created');
   const currentLot = pendingLots.length > 0 ? pendingLots[0] : null;
   const currentMaterial = currentLot ? materials.find(m => m.id === currentLot.materialId) : materials[0];
   const materialId = currentLot ? currentLot.materialId : 'm3';
@@ -32,10 +32,10 @@ const Recyclers: React.FC = () => {
   const handleAcceptOffer = (recycler: any) => {
     if (currentLot) {
       const offerPerKg = recycler.offers[materialId] || 220;
-      updateTransaction(currentLot.id, {
+      updateLot(currentLot.id, {
         recyclerId: recycler.id,
         finalPrice: offerPerKg * currentLot.weight,
-        status: 'Pending'
+        status: 'Offer Accepted'
       });
       navigate(`/collector/handover/${currentLot.id}`);
     } else {

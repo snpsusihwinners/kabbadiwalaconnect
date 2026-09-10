@@ -151,7 +151,7 @@ const CollectorHome: React.FC = () => {
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <h4 className="font-black text-xl">
-                      {recentLot.weight} KG
+                      {recentLot.amount} KG
                     </h4>
                     <p className="font-vernacular text-lg text-khata-ink/80">
                       {recentLot.materialId === 'm3' ? 'PCB BOARD' : 'MIXED E-WASTE'}
@@ -160,7 +160,7 @@ const CollectorHome: React.FC = () => {
                   
                   <div className="text-right">
                     <p className="text-2xl font-black font-mono">
-                      ₹{recentLot.finalPrice || '1,900'}
+                      ₹{recentLot.amount || '1,900'}
                     </p>
                     {/* Stamp effect */}
                     <div className="mt-1">
