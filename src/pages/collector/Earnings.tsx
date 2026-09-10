@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
-import { 
-  CheckCircle2, 
-  Clock, 
-  IndianRupee, 
-  FileSpreadsheet, 
-  ArrowDownLeft, 
-  CreditCard, 
-  Download,
-  Filter
-} from 'lucide-react';
+import { FileSpreadsheet } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { MaterialBadge } from '../../components/ui/MaterialBadge';
 

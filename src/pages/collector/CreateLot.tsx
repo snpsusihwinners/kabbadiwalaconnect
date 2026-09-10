@@ -4,13 +4,8 @@ import {
   Camera, 
   ArrowRight, 
   ArrowLeft,
-  CheckCircle2, 
-  RefreshCw, 
   Flashlight, 
   Scale, 
-  IndianRupee, 
-  Building2, 
-  Sparkles,
   ShieldCheck,
   Truck
 } from 'lucide-react';

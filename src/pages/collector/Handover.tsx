@@ -5,21 +5,16 @@ import {
   MapPin, 
   Share2, 
   Printer, 
-  QrCode, 
-  Scale, 
   ArrowLeft,
-  Building2,
-  ShieldCheck,
-  Download
+  ShieldCheck
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useAppContext } from '../../context/AppContext';
-import { MaterialBadge } from '../../components/ui/MaterialBadge';
 
 const Handover: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { lots, recyclers, materials, updateLot, addTransaction, language } = useAppContext();
+  const { lots, recyclers, materials, updateLot, addTransaction } = useAppContext();
   
   const lot = lots.find(l => l.id === id);
   const recycler = recyclers.find(r => r.id === lot?.recyclerId);

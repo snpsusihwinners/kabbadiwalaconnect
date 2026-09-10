@@ -3,11 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { 
   TrendingUp, 
   TrendingDown, 
-  Minus, 
   MapPin, 
   Volume2, 
   Search, 
-  Sparkles,
   ArrowRight,
   ShieldCheck
 } from 'lucide-react';

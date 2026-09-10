@@ -1,15 +1,10 @@
 import React from 'react';
 import { 
-  Inbox, 
   FileCheck, 
   IndianRupee, 
-  TrendingUp, 
   Scale, 
   ShieldCheck, 
-  ArrowRight,
-  Layers,
-  Recycle,
-  Sparkles
+  Recycle
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { MaterialBadge } from '../../components/ui/MaterialBadge';

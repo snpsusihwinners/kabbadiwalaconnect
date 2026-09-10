@@ -1,15 +1,8 @@
 import React from 'react';
 import { 
-  Building2, 
-  ShieldCheck, 
   MapPin, 
-  FileText, 
-  Scale, 
-  Award, 
   Phone, 
-  Mail, 
-  ExternalLink,
-  CheckCircle2
+  Mail
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 

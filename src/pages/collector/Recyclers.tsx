@@ -9,15 +9,14 @@ import {
   ChevronRight, 
   ArrowRight,
   Building2,
-  CheckCircle2,
-  BadgePercent
+  CheckCircle2
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import type { Recycler } from '../../data/mockData';
 import { MaterialBadge } from '../../components/ui/MaterialBadge';
 
 const Recyclers: React.FC = () => {
-  const { recyclers, lots, materials, updateLot, language } = useAppContext();
+  const { recyclers, lots, materials, updateLot } = useAppContext();
   const location = useLocation();
   const navigate = useNavigate();
   
@@ -123,7 +122,7 @@ const Recyclers: React.FC = () => {
 
       {/* Recyclers Directory List */}
       <div className="space-y-3.5">
-        {filteredRecyclers.map((r, i) => {
+        {filteredRecyclers.map((r) => {
           const lotRate = currentLot ? r.offers[currentLot.materialId] : null;
           const totalLotVal = lotRate && currentLot ? Math.round(lotRate * currentLot.weight) : null;
 

@@ -1,6 +1,5 @@
 import React from 'react';
 import { 
-  User, 
   LogOut, 
   ShieldAlert, 
   Volume2, 
@@ -8,9 +7,7 @@ import {
   MapPin, 
   Flame, 
   AlertTriangle, 
-  BatteryWarning, 
-  Sparkles,
-  ExternalLink
+  BatteryWarning
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { useNavigate } from 'react-router-dom';

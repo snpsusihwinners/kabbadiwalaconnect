@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
 import { 
-  IndianRupee, 
   Save, 
-  Sparkles, 
-  TrendingUp, 
-  ShieldCheck, 
-  CheckCircle2,
-  RefreshCw
+  CheckCircle2
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { MaterialBadge } from '../../components/ui/MaterialBadge';

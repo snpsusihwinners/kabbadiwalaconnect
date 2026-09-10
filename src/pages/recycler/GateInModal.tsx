@@ -2,12 +2,8 @@ import React, { useState } from 'react';
 import { 
   X, 
   Scale, 
-  QrCode, 
   CheckCircle2, 
-  ArrowRight, 
-  Building2, 
-  AlertCircle,
-  Truck
+  ArrowRight
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 

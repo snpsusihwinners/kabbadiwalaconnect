@@ -10,9 +10,7 @@ import {
   TrendingUp, 
   Scale, 
   Clock, 
-  CheckCircle2, 
-  QrCode,
-  Layers
+  QrCode
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { MaterialBadge } from '../../components/ui/MaterialBadge';

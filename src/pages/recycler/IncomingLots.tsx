@@ -1,15 +1,8 @@
 import React, { useState } from 'react';
 import { 
   Search, 
-  Filter, 
-  ShieldAlert, 
-  Scale, 
   ArrowRight, 
-  CheckCircle2, 
-  MapPin, 
-  User,
-  X,
-  Sparkles
+  X
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import type { Lot } from '../../data/mockData';

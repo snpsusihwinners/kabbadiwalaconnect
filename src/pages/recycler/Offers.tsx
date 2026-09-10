@@ -1,18 +1,9 @@
 import React from 'react';
-import { 
-  FileCheck, 
-  Clock, 
-  ArrowRight, 
-  Building2, 
-  ShieldCheck, 
-  Truck,
-  IndianRupee
-} from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { MaterialBadge } from '../../components/ui/MaterialBadge';
 
 const Offers: React.FC = () => {
-  const { lots, materials, recyclers } = useAppContext();
+  const { lots, materials } = useAppContext();
   
   // Lots that are either offered or completed with this recycler
   const myOffers = lots.filter(l => l.status !== 'Created');

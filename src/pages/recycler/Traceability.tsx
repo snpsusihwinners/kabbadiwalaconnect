@@ -4,15 +4,9 @@ import {
   Truck, 
   Building2, 
   MapPin, 
-  Search, 
   FileText, 
-  Download, 
   Printer, 
   ShieldCheck, 
-  Layers, 
-  ExternalLink,
-  QrCode,
-  Sparkles,
   X
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';

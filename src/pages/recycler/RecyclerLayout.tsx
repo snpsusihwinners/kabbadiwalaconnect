@@ -9,10 +9,7 @@ import {
   Settings, 
   LogOut, 
   Scale, 
-  ShieldCheck, 
-  Sparkles,
-  QrCode,
-  Building2
+  QrCode
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { GateInModal } from './GateInModal';
