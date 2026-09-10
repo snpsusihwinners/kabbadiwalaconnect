@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -12,7 +11,6 @@ import {
   Sparkles
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
-import { MaterialBadge } from '../../components/ui/MaterialBadge';
 
 const Prices: React.FC = () => {
   const { materials, language } = useAppContext();
@@ -174,4 +172,3 @@ const Prices: React.FC = () => {
 };
 
 export default Prices;
-

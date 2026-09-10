@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAppContext } from '../../context/AppContext';
 import { 
   Plus, 
   TrendingUp, 
@@ -12,8 +13,6 @@ import {
   Sparkles,
   QrCode
 } from 'lucide-react';
-import { useAppContext } from '../../context/AppContext';
-import { MaterialBadge } from '../../components/ui/MaterialBadge';
 
 const CollectorHome: React.FC = () => {
   const navigate = useNavigate();
@@ -238,4 +237,3 @@ const CollectorHome: React.FC = () => {
 };
 
 export default CollectorHome;
-

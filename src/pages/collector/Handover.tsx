@@ -17,59 +17,49 @@ const Handover: React.FC = () => {
   const navigate = useNavigate();
   const { lots, recyclers, materials, updateLot, addTransaction, language } = useAppContext();
   
-  const lot = lots.find(l => l.id === id);
-  const recycler = recyclers.find(r => r.id === lot?.recyclerId);
-  const material = materials.find(m => m.id === lot?.materialId);
+  const lot = lots.find(l => l.id === id) || lots[0];
+  const recycler = recyclers.find(r => r.id === lot?.recyclerId) || recyclers[0];
+  const material = materials.find(m => m.id === lot?.materialId) || materials[2];
 
-  const [step, setStep] = useState<'ticket' | 'receipt'>(lot?.status === 'Handover Completed' ? 'receipt' : 'ticket');
+  const [step, setStep] = useState<'qr' | 'success'>('qr');
+  const [copied, setCopied] = useState(false);
 
   if (!lot) {
     return <div className="p-8 text-center text-slate-500">Lot not found</div>;
   }
 
-  const activeRecycler = recycler || recyclers[0];
-  const finalAmount = lot.finalPrice || Math.round((lot.ratePerKg || material.basePrice) * lot.weight);
+  const finalAmount = lot.finalPrice || Math.round(lot.weight * (recycler.offers[material.id] || 230));
 
-  const handleConfirmScan = () => {
+  const handleConfirmHandover = () => {
     updateLot(lot.id, { 
       status: 'Handover Completed',
-      finalPrice: finalAmount,
-      recyclerId: activeRecycler.id
+      finalPrice: finalAmount
     });
-    
     addTransaction({
       id: `t${Math.floor(100 + Math.random() * 900)}`,
-      ticketNo: `KP-2026-${Math.floor(1000 + Math.random() * 9000)}`,
       lotId: lot.id,
       materialId: material.id,
-      grossWeight: lot.grossWeight || lot.weight + 0.6,
-      tareWeight: lot.tareWeight || 0.6,
       weight: lot.weight,
-      ratePerKg: lot.ratePerKg || material.basePrice,
       amount: finalAmount,
       date: new Date().toISOString(),
       status: 'Paid',
-      method: 'UPI',
-      utrRef: `UPI/${Math.floor(100000000000 + Math.random() * 900000000000)}/HDFC`
+      method: 'Cash'
     });
-
-    setStep('receipt');
+    setStep('success');
   };
 
-  const handlePrint = () => {
-    window.print();
+  const handleShare = () => {
+    navigator.clipboard.writeText(
+      `🧾 ECOSETU DIGITAL HANDOVER RECEIPT\n` +
+      `LOT ID: ${lot.id.toUpperCase()}\n` +
+      `Material: ${material.name} (${lot.weight} kg)\n` +
+      `Recycler: ${recycler.name}\n` +
+      `Total Cash Received: ₹${finalAmount}\n` +
+      `Status: CPCB Verified Traceability Completed`
+    );
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
   };
-
-  const qrData = JSON.stringify({
-    slip: `KP-${lot.id.toUpperCase()}`,
-    manifest: lot.manifestNo,
-    collector: lot.collectorId,
-    recycler: activeRecycler.id,
-    material: material.id,
-    weight: lot.weight,
-    amount: finalAmount,
-    timestamp: new Date().toISOString()
-  });
 
   return (
     <div className="p-4 space-y-4 pb-8">
@@ -280,4 +270,3 @@ const Handover: React.FC = () => {
 };
 
 export default Handover;
-

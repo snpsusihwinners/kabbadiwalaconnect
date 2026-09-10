@@ -1,12 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Inbox, 
-  FileCheck, 
-  IndianRupee, 
   Map, 
-  Settings, 
   LogOut, 
   ShieldCheck,
   Building2,
@@ -14,14 +11,11 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
-import { GateInModal } from './GateInModal';
 
 const RecyclerLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { setRole } = useAppContext();
-
-  const [gateInOpen, setGateInOpen] = useState(false);
 
   const sidebarItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Overview Dashboard', path: '/recycler' },
@@ -52,19 +46,6 @@ const RecyclerLayout: React.FC = () => {
                 Recycler Operations
               </p>
             </div>
-            <div>
-              <span className="font-display font-black text-lg tracking-tight text-white block">
-                ECOSETU
-              </span>
-              <span className="text-[10px] font-mono uppercase text-emerald-400 font-bold block">
-                Recycler Enterprise
-              </span>
-            </div>
-          </div>
-
-          <div className="mt-4 bg-industrial-900/80 p-2.5 rounded-xl border border-industrial-800 text-[11px]">
-            <p className="font-bold text-white">GreenCycle Technologies</p>
-            <p className="text-[10px] font-mono text-emerald-400 mt-0.5">CPCB/E-WASTE/2024/MH-0814</p>
           </div>
         </div>
         
@@ -74,8 +55,7 @@ const RecyclerLayout: React.FC = () => {
             Menu
           </div>
           {sidebarItems.map((item) => {
-            const isActive = location.pathname === item.path;
-
+            const isActive = location.pathname === item.path || (item.path !== '/recycler' && location.pathname.startsWith(item.path));
             return (
               <button
                 key={item.id}
@@ -146,14 +126,6 @@ const RecyclerLayout: React.FC = () => {
             <div className="w-9 h-9 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 font-bold text-sm">
               GC
             </div>
-
-            <button
-              onClick={() => setGateInOpen(true)}
-              className="bg-forest-800 hover:bg-forest-900 text-white px-4 py-2 rounded-xl text-xs font-display font-bold shadow-tactile flex items-center gap-1.5 transition-all"
-            >
-              <Scale className="w-4 h-4 text-emerald-300" />
-              <span>Scan Lot QR</span>
-            </button>
           </div>
         </header>
 
@@ -162,15 +134,8 @@ const RecyclerLayout: React.FC = () => {
           <Outlet />
         </main>
       </div>
-
-      {/* Gate-In Weighbridge Modal */}
-      <GateInModal 
-        isOpen={gateInOpen} 
-        onClose={() => setGateInOpen(false)} 
-      />
     </div>
   );
 };
 
 export default RecyclerLayout;
-

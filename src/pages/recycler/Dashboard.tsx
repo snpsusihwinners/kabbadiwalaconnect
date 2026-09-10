@@ -2,6 +2,8 @@ import React from 'react';
 import { 
   Inbox, 
   Scale, 
+  Leaf, 
+  ArrowUpRight, 
   ShieldCheck, 
   Layers,
   CheckCircle2,
@@ -9,15 +11,15 @@ import {
   Building2
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
-import { MaterialBadge } from '../../components/ui/MaterialBadge';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard: React.FC = () => {
-  const { lots, transactions, materials } = useAppContext();
+  const { lots, transactions } = useAppContext();
+  const navigate = useNavigate();
   
-  const pendingLots = lots.filter(l => l.status !== 'Handover Completed');
-  const completedLots = lots.filter(l => l.status === 'Handover Completed');
+  const pendingLotsCount = lots.filter(l => l.status !== 'Handover Completed').length;
+  const completedLotsCount = lots.filter(l => l.status === 'Handover Completed').length;
   const totalValue = transactions.filter(t => t.status === 'Paid').reduce((sum, t) => sum + t.amount, 0);
-  const totalKg = transactions.reduce((sum, t) => sum + t.weight, 0);
 
   const kpis = [
     { 
@@ -185,86 +187,11 @@ const Dashboard: React.FC = () => {
             <span className="text-slate-400">Target: 2,500 KG / Mo</span>
           </div>
         </div>
+
       </div>
 
-      {/* Hourly Intake Volume Chart */}
-      <div className="bg-white rounded-2xl border border-paper-300 p-6 shadow-tactile space-y-4">
-        <div className="flex justify-between items-center">
-          <h3 className="font-display font-bold text-base text-industrial-950">
-            Today's Weighbridge Intake Volume (kg)
-          </h3>
-          <span className="text-xs font-mono text-industrial-500">
-            Scale 01 Live Feed
-          </span>
-        </div>
-
-        <div className="h-56 flex items-end justify-between gap-3 pt-6 pb-2 border-b border-paper-200">
-          {[
-            { hour: '08:00', val: 30, kg: '18kg' },
-            { hour: '10:00', val: 65, kg: '42kg' },
-            { hour: '12:00', val: 88, kg: '64kg' },
-            { hour: '14:00', val: 45, kg: '28kg' },
-            { hour: '16:00', val: 95, kg: '72kg' },
-            { hour: '18:00', val: 70, kg: '50kg' },
-            { hour: '20:00', val: 40, kg: '25kg' },
-          ].map((bar, i) => (
-            <div key={i} className="flex-1 flex flex-col items-center h-full justify-end group">
-              <span className="text-[10px] font-mono font-bold text-emerald-800 mb-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                {bar.kg}
-              </span>
-              <div 
-                className="w-full bg-forest-800 group-hover:bg-emerald-600 rounded-t-xl transition-all shadow-sm"
-                style={{ height: `${bar.val}%` }}
-              ></div>
-              <span className="text-[10px] font-mono text-industrial-500 mt-2">
-                {bar.hour}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Recent Gate-In Handovers */}
-      <div className="bg-white rounded-2xl border border-paper-300 shadow-tactile overflow-hidden">
-        <div className="p-4 border-b border-paper-200 flex justify-between items-center">
-          <h3 className="font-display font-bold text-sm text-industrial-950">
-            Recent Gate-In Transactions
-          </h3>
-          <span className="text-xs text-industrial-500 font-mono">
-            {transactions.length} Total Settlements
-          </span>
-        </div>
-
-        <div className="divide-y divide-paper-200">
-          {transactions.map(t => {
-            const material = materials.find(m => m.id === t.materialId);
-
-            return (
-              <div key={t.id} className="p-4 flex items-center justify-between text-xs hover:bg-paper-50 transition-colors">
-                <div className="flex items-center gap-3">
-                  <MaterialBadge iconKey={material?.icon} category={material?.category} size="sm" />
-                  <div>
-                    <span className="font-bold text-industrial-950 block">{material?.name}</span>
-                    <span className="text-industrial-500 font-mono text-[11px]">Slip #{t.ticketNo}</span>
-                  </div>
-                </div>
-
-                <div className="text-right">
-                  <span className="font-mono font-bold text-industrial-900 block">
-                    {t.weight} kg Net (₹{t.amount})
-                  </span>
-                  <span className="text-[10px] text-emerald-800 font-mono font-semibold">
-                    {t.method} Settled ✓
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
     </div>
   );
 };
 
 export default Dashboard;
-

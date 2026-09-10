@@ -18,9 +18,6 @@ const Profile = React.lazy(() => import('./pages/collector/Profile'));
 const RecyclerDashboard = React.lazy(() => import('./pages/recycler/Dashboard'));
 const IncomingLots = React.lazy(() => import('./pages/recycler/IncomingLots'));
 const Traceability = React.lazy(() => import('./pages/recycler/Traceability'));
-const RecyclerOffers = React.lazy(() => import('./pages/recycler/Offers'));
-const RecyclerPrices = React.lazy(() => import('./pages/recycler/Prices'));
-const FacilitySettings = React.lazy(() => import('./pages/recycler/Settings'));
 
 function App() {
   return (
@@ -45,10 +42,7 @@ function App() {
             <Route path="/recycler" element={<RecyclerLayout />}>
               <Route index element={<RecyclerDashboard />} />
               <Route path="lots" element={<IncomingLots />} />
-              <Route path="offers" element={<RecyclerOffers />} />
               <Route path="traceability" element={<Traceability />} />
-              <Route path="prices" element={<RecyclerPrices />} />
-              <Route path="settings" element={<FacilitySettings />} />
               <Route path="*" element={<Navigate to="/recycler" replace />} />
             </Route>
 
