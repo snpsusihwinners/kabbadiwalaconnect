@@ -79,14 +79,14 @@ const CreateLot: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-full bg-[#fbf8f1] text-[#13261e] pb-10">
+    <div className="flex flex-col min-h-full bg-khata-paper text-khata-ink pb-10">
       
       {/* Top App Bar */}
-      <div className="bg-[#0b241a] text-white px-4 py-3.5 flex items-center justify-between shadow-md relative z-10">
+      <div className="bg-khata-paper text-white px-4 py-3.5 flex items-center justify-between shadow-md relative z-10">
         <div className="flex items-center space-x-2.5">
           <button 
             onClick={() => step > 1 ? setStep(step - 1) : navigate('/collector')}
-            className="p-1.5 rounded-xl bg-emerald-900/60 hover:bg-emerald-800 text-emerald-200 transition-colors"
+            className="p-1.5 rounded-none bg-khata-green/60 hover:bg-khata-green text-khata-green transition-colors"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
@@ -94,24 +94,24 @@ const CreateLot: React.FC = () => {
             <h1 className="text-base font-black tracking-tight leading-tight">
               {step === 1 ? 'फोटो स्कैन • STEP 1/3' : step === 2 ? 'वजन व श्रेणी • STEP 2/3' : 'अनुमानित भाव • STEP 3/3'}
             </h1>
-            <p className="text-[10px] font-mono text-emerald-300/80">
+            <p className="text-[10px] font-mono text-khata-green/80">
               CREATE NEW E-WASTE LOT
             </p>
           </div>
         </div>
 
         <div className="flex items-center space-x-1.5">
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-900 text-emerald-300 font-bold border border-emerald-700/50">
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-khata-green text-khata-green font-bold border border-khata-green/50">
             AI-SCANNER v2.4
           </span>
         </div>
       </div>
 
       {/* Step Navigation Progress Bar */}
-      <div className="bg-[#081a13] px-4 py-1.5 flex space-x-2">
-        <div className={`h-1.5 flex-1 rounded-full ${step >= 1 ? 'bg-emerald-400' : 'bg-emerald-950'}`} />
-        <div className={`h-1.5 flex-1 rounded-full ${step >= 2 ? 'bg-emerald-400' : 'bg-emerald-950'}`} />
-        <div className={`h-1.5 flex-1 rounded-full ${step >= 3 ? 'bg-emerald-400' : 'bg-emerald-950'}`} />
+      <div className="bg-khata-paper px-4 py-1.5 flex space-x-2">
+        <div className={`h-1.5 flex-1 rounded-full ${step >= 1 ? 'bg-khata-green' : 'bg-khata-green'}`} />
+        <div className={`h-1.5 flex-1 rounded-full ${step >= 2 ? 'bg-khata-green' : 'bg-khata-green'}`} />
+        <div className={`h-1.5 flex-1 rounded-full ${step >= 3 ? 'bg-khata-green' : 'bg-khata-green'}`} />
       </div>
 
       <div className="p-4 flex-1">
@@ -119,7 +119,7 @@ const CreateLot: React.FC = () => {
         {/* STEP 1: Industrial Camera Scanner Viewfinder */}
         {step === 1 && (
           <div className="space-y-4">
-            <div className="bg-white rounded-[28px] p-4 border border-[#e6decb] shadow-card-elevated space-y-4">
+            <div className="bg-white rounded-none p-4 border-2 border-khata-ink shadow-brutal space-y-4">
               <div className="text-center space-y-1">
                 <h2 className="text-lg font-black text-slate-900">ई-कचरे की फोटो लें</h2>
                 <p className="text-xs text-slate-500 font-medium">
@@ -128,30 +128,30 @@ const CreateLot: React.FC = () => {
               </div>
 
               {/* Viewfinder Frame */}
-              <div className="relative aspect-[4/3] bg-[#0c1e16] rounded-2xl overflow-hidden border-2 border-emerald-500/40 shadow-inner flex flex-col items-center justify-center">
+              <div className="relative aspect-[4/3] bg-khata-paper rounded-none overflow-hidden border-2 border-khata-green/40 shadow-inner flex flex-col items-center justify-center">
                 {/* Circuit Grid pattern */}
                 <div className="absolute inset-0 bg-circuit-pattern opacity-15 pointer-events-none" />
                 
                 {/* Viewfinder Corners */}
-                <div className="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-emerald-400" />
-                <div className="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-emerald-400" />
-                <div className="absolute bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 border-emerald-400" />
-                <div className="absolute bottom-3 right-3 w-6 h-6 border-b-2 border-r-2 border-emerald-400" />
+                <div className="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-khata-green" />
+                <div className="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-khata-green" />
+                <div className="absolute bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 border-khata-green" />
+                <div className="absolute bottom-3 right-3 w-6 h-6 border-b-2 border-r-2 border-khata-green" />
 
                 {analyzing ? (
-                  <div className="flex flex-col items-center space-y-3 z-10 text-emerald-300">
-                    <div className="w-14 h-14 border-4 border-emerald-400 border-t-transparent rounded-full animate-spin" />
+                  <div className="flex flex-col items-center space-y-3 z-10 text-khata-green">
+                    <div className="w-14 h-14 border-4 border-khata-green border-t-transparent rounded-full animate-spin" />
                     <p className="font-mono text-xs font-bold tracking-wider animate-pulse">
                       ANALYZING CIRCUIT SPECS...
                     </p>
-                    <div className="absolute inset-0 bg-emerald-500/20 animate-scan pointer-events-none h-1.5" />
+                    <div className="absolute inset-0 bg-khata-green/20 animate-scan pointer-events-none h-1.5" />
                   </div>
                 ) : (
                   <div className="flex flex-col items-center text-center p-6 space-y-2 z-10">
-                    <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400">
+                    <div className="w-16 h-16 rounded-none bg-khata-green/10 border border-khata-green/30 flex items-center justify-center text-khata-green">
                       <Camera className="w-8 h-8" />
                     </div>
-                    <span className="text-xs font-mono text-emerald-300 font-bold">
+                    <span className="text-xs font-mono text-khata-green font-bold">
                       OPTICAL SENSOR READY
                     </span>
                     <p className="text-[11px] text-slate-400 max-w-[200px]">
@@ -166,7 +166,7 @@ const CreateLot: React.FC = () => {
                 <button 
                   onClick={handleTakePhoto}
                   disabled={analyzing}
-                  className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-lg py-4 rounded-2xl shadow-tactile-green active:translate-y-1 transition-all flex items-center justify-center space-x-2"
+                  className="w-full bg-khata-ink hover:from-emerald-500 hover:to-teal-500 text-white font-black text-lg py-4 rounded-none shadow-brutal active:translate-y-1 transition-all flex items-center justify-center space-x-2"
                 >
                   <Camera className="w-6 h-6" />
                   <span>{analyzing ? 'स्कैनिंग चालू है...' : 'कैमरा चालू करें / TAKE PHOTO'}</span>
@@ -174,17 +174,17 @@ const CreateLot: React.FC = () => {
 
                 <button 
                   onClick={handleTakePhoto}
-                  className="w-full bg-[#f4ece0] hover:bg-[#ede3d3] text-slate-800 font-bold text-xs py-3 rounded-xl border border-[#dcd1be] transition-colors flex items-center justify-center space-x-1.5"
+                  className="w-full bg-khata-paper hover:bg-khata-paper text-slate-800 font-bold text-xs py-3 rounded-none border-2 border-khata-ink transition-colors flex items-center justify-center space-x-1.5"
                 >
-                  <Sparkles className="w-4 h-4 text-emerald-700" />
+                  <Sparkles className="w-4 h-4 text-khata-green" />
                   <span>डेमो फोटो इस्तेमाल करें (Sample PCB Board)</span>
                 </button>
               </div>
             </div>
 
             {/* Quick Tips */}
-            <div className="bg-emerald-950/20 border border-emerald-800/30 rounded-2xl p-3 flex items-start space-x-2.5 text-xs text-emerald-900">
-              <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+            <div className="bg-khata-green/20 border border-khata-green/30 rounded-none p-3 flex items-start space-x-2.5 text-xs text-khata-green">
+              <ShieldCheck className="w-4 h-4 text-khata-green shrink-0 mt-0.5" />
               <span>साफ रोशनी में फोटो लेने से AI 95% से अधिक शुद्धता से धातु पहचानता है।</span>
             </div>
           </div>
@@ -195,19 +195,19 @@ const CreateLot: React.FC = () => {
           <div className="space-y-4">
             
             {/* AI Identification Banner */}
-            <div className="bg-gradient-to-r from-[#0d3424] to-[#072418] text-white p-4 rounded-[24px] border border-emerald-500/40 shadow-md flex items-center justify-between">
+            <div className="bg-khata-ink text-white p-4 rounded-none border border-khata-green/40 shadow-md flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="text-3xl bg-emerald-400/20 p-2 rounded-2xl border border-emerald-400/30">
+                <div className="text-3xl bg-khata-green/20 p-2 rounded-none border border-khata-green/30">
                   {selectedMaterial.icon}
                 </div>
                 <div>
                   <div className="flex items-center space-x-1.5">
-                    <span className="text-[10px] font-mono font-bold bg-emerald-400/20 text-emerald-300 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] font-mono font-bold bg-khata-green/20 text-khata-green px-2 py-0.5 rounded-full">
                       AI RECOGNIZED • 92%
                     </span>
                   </div>
                   <h3 className="text-xl font-black text-white">{selectedMaterial.name}</h3>
-                  <p className="text-[11px] font-mono text-emerald-300">
+                  <p className="text-[11px] font-mono text-khata-green">
                     MANDI AVG: ₹{selectedMaterial.basePrice}/kg
                   </p>
                 </div>
@@ -215,14 +215,14 @@ const CreateLot: React.FC = () => {
               
               <button 
                 onClick={() => setStep(1)}
-                className="text-xs font-mono text-emerald-300 hover:text-white p-2 border border-emerald-700/50 rounded-xl"
+                className="text-xs font-mono text-khata-green hover:text-white p-2 border border-khata-green/50 rounded-none"
               >
                 बदलें ✎
               </button>
             </div>
 
             {/* Material Category Picker */}
-            <div className="bg-white rounded-[24px] p-4 border border-[#e6decb] shadow-card-elevated space-y-2.5">
+            <div className="bg-white rounded-none p-4 border-2 border-khata-ink shadow-brutal space-y-2.5">
               <label className="text-xs font-black text-slate-800 uppercase tracking-wider font-mono flex items-center justify-between">
                 <span>सामग्री की श्रेणी (Category)</span>
                 <span className="text-[10px] font-normal text-slate-500">चुनें</span>
@@ -233,9 +233,9 @@ const CreateLot: React.FC = () => {
                   <button
                     key={m.id}
                     onClick={() => setSelectedMaterial(m)}
-                    className={`p-2 rounded-xl border flex flex-col items-center justify-center transition-all ${
+                    className={`p-2 rounded-none border flex flex-col items-center justify-center transition-all ${
                       selectedMaterial.id === m.id
-                        ? 'bg-emerald-50 border-emerald-500 text-emerald-900 font-bold shadow-sm scale-105'
+                        ? 'bg-khata-green border-khata-green text-khata-green font-bold shadow-sm scale-105'
                         : 'bg-slate-50/70 border-slate-200 text-slate-600 hover:bg-slate-100'
                     }`}
                   >
@@ -249,25 +249,25 @@ const CreateLot: React.FC = () => {
             </div>
 
             {/* Digital Weighbridge Weight Input */}
-            <div className="bg-white rounded-[24px] p-4 border border-[#e6decb] shadow-card-elevated space-y-3">
+            <div className="bg-white rounded-none p-4 border-2 border-khata-ink shadow-brutal space-y-3">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-black text-slate-800 uppercase tracking-wider font-mono flex items-center">
-                  <Scale className="w-3.5 h-3.5 mr-1 text-emerald-600" />
+                  <Scale className="w-3.5 h-3.5 mr-1 text-khata-green" />
                   अनुमानित वजन (Approx Weight)
                 </label>
                 <span className="text-[11px] font-mono text-slate-500">किलोग्राम (KG)</span>
               </div>
 
               {/* Digital Scale Readout Display */}
-              <div className="flex items-center bg-[#0d2117] border-2 border-emerald-500/40 rounded-2xl p-3 shadow-inner">
+              <div className="flex items-center bg-khata-paper border-2 border-khata-green/40 rounded-none p-3 shadow-inner">
                 <input 
                   type="number"
                   step="0.1"
                   value={weight}
                   onChange={(e) => setWeight(e.target.value)}
-                  className="w-full bg-transparent text-emerald-400 font-mono text-4xl font-black focus:outline-none tracking-tight"
+                  className="w-full bg-transparent text-khata-green font-mono text-4xl font-black focus:outline-none tracking-tight"
                 />
-                <span className="text-emerald-500 font-mono text-xl font-bold px-3">
+                <span className="text-khata-green font-mono text-xl font-bold px-3">
                   KG
                 </span>
               </div>
@@ -278,7 +278,7 @@ const CreateLot: React.FC = () => {
                   <button
                     key={delta}
                     onClick={() => addWeight(delta)}
-                    className="flex-1 py-1.5 bg-[#f4ece0] hover:bg-[#ede3d3] border border-[#dcd1be] text-slate-800 font-mono text-xs font-bold rounded-xl active:scale-95 transition-all"
+                    className="flex-1 py-1.5 bg-khata-paper hover:bg-khata-paper border-2 border-khata-ink text-slate-800 font-mono text-xs font-bold rounded-none active:scale-95 transition-all"
                   >
                     +{delta} kg
                   </button>
@@ -287,7 +287,7 @@ const CreateLot: React.FC = () => {
             </div>
 
             {/* Condition Chips */}
-            <div className="bg-white rounded-[24px] p-4 border border-[#e6decb] shadow-card-elevated space-y-2">
+            <div className="bg-white rounded-none p-4 border-2 border-khata-ink shadow-brutal space-y-2">
               <label className="text-xs font-black text-slate-800 uppercase tracking-wider font-mono">
                 कंडीशन (Condition)
               </label>
@@ -296,9 +296,9 @@ const CreateLot: React.FC = () => {
                   <button
                     key={cond}
                     onClick={() => setCondition(cond)}
-                    className={`py-2 rounded-xl text-xs font-bold border transition-all ${
+                    className={`py-2 rounded-none text-xs font-bold border transition-all ${
                       condition === cond
-                        ? 'bg-emerald-600 text-white border-emerald-700 shadow-sm'
+                        ? 'bg-khata-green text-white border-khata-green shadow-sm'
                         : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
                     }`}
                   >
@@ -312,7 +312,7 @@ const CreateLot: React.FC = () => {
             <button 
               onClick={handleGetEstimate}
               disabled={!weight || parseFloat(weight) <= 0}
-              className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black text-lg py-4 rounded-2xl shadow-tactile-green active:translate-y-1 transition-all flex items-center justify-center space-x-2"
+              className="w-full bg-khata-ink text-white font-black text-lg py-4 rounded-none shadow-brutal active:translate-y-1 transition-all flex items-center justify-center space-x-2"
             >
               <span>पक्का भाव निकालें (Get Fair Valuation)</span>
               <ArrowRight className="w-5 h-5" />
@@ -325,25 +325,25 @@ const CreateLot: React.FC = () => {
           <div className="space-y-4">
             
             {/* Scrap Mandi Valuation Certificate Card */}
-            <div className="bg-white rounded-[28px] border-2 border-[#d6caba] p-5 shadow-card-elevated relative overflow-hidden">
-              <div className="text-center pb-4 border-b border-dashed border-[#e6decb] space-y-1">
-                <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+            <div className="bg-white rounded-none border-2 border-2 border-khata-ink p-5 shadow-brutal relative overflow-hidden">
+              <div className="text-center pb-4 border-b border-dashed border-2 border-khata-ink space-y-1">
+                <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-khata-green bg-khata-green px-2.5 py-0.5 rounded-full border border-khata-green">
                   ECOSETU MANDI VALUATION
                 </span>
                 <p className="text-xs text-slate-500 font-medium">पुणे अधिकृत रीसाइक्लिंग दर सूची आधारित</p>
                 
                 <div className="pt-2">
-                  <div className="text-4xl font-black text-slate-900 font-mono tracking-tight text-emerald-800">
+                  <div className="text-4xl font-black text-slate-900 font-mono tracking-tight text-khata-green">
                     ₹{(selectedMaterial.basePrice * parseFloat(weight) * 0.95).toFixed(0)} – ₹{(selectedMaterial.basePrice * parseFloat(weight) * 1.05).toFixed(0)}
                   </div>
-                  <p className="text-[11px] text-emerald-700 font-semibold mt-1">
+                  <p className="text-[11px] text-khata-green font-semibold mt-1">
                     ✓ न्यूनतम गारंटी दर: ₹{selectedMaterial.basePrice}/kg
                   </p>
                 </div>
               </div>
 
               {/* Manifest Item Details */}
-              <div className="py-4 space-y-2.5 text-xs font-mono border-b border-[#f0e9dc]">
+              <div className="py-4 space-y-2.5 text-xs font-mono border-b border-2 border-khata-ink">
                 <div className="flex justify-between">
                   <span className="text-slate-500">पहचानी गई सामग्री:</span>
                   <span className="font-bold text-slate-900">{selectedMaterial.icon} {selectedMaterial.name}</span>
@@ -358,12 +358,12 @@ const CreateLot: React.FC = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">सरकारी रीसाइक्लर रेट:</span>
-                  <span className="font-bold text-emerald-700">₹{selectedMaterial.basePrice} / KG</span>
+                  <span className="font-bold text-khata-green">₹{selectedMaterial.basePrice} / KG</span>
                 </div>
               </div>
 
               <div className="pt-3 flex items-center space-x-2 text-[11px] text-slate-500">
-                <Info className="w-4 h-4 text-emerald-600 shrink-0" />
+                <Info className="w-4 h-4 text-khata-green shrink-0" />
                 <span>रीसाइक्लर सीधे आपके गोदाम से पिकअप भी दे सकते हैं।</span>
               </div>
             </div>
@@ -372,7 +372,7 @@ const CreateLot: React.FC = () => {
             <div className="space-y-2 pt-2">
               <button 
                 onClick={handleViewOffers}
-                className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black text-lg py-4 rounded-2xl shadow-tactile-green active:translate-y-1 transition-all flex items-center justify-center space-x-2"
+                className="w-full bg-khata-ink text-white font-black text-lg py-4 rounded-none shadow-brutal active:translate-y-1 transition-all flex items-center justify-center space-x-2"
               >
                 <span>रीसाइक्लर ऑफर देखें (View Offers)</span>
                 <ArrowRight className="w-5 h-5" />
