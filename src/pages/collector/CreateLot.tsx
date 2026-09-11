@@ -356,7 +356,7 @@ const CreateLot: React.FC = () => {
                     <div
                       key={i}
                       className={`absolute border-2 rounded-lg transition-all duration-500 ${
-                        scanPhase === 'identified' 
+                        scanPhase === 'analyzing' 
                           ? 'border-emerald-400 shadow-[0_0_16px_4px_rgba(52,211,153,0.4)]' 
                           : 'border-emerald-400/70'
                       }`}
@@ -432,10 +432,10 @@ const CreateLot: React.FC = () => {
                           key={i}
                           className="absolute w-1 h-1 bg-emerald-400/60 rounded-full animate-ping"
                           style={{
-                            left: `${20 + Math.random() * 60}%`,
-                            top: `${20 + Math.random() * 60}%`,
+                            left: `${20 + (i * 11) % 60}%`,
+                            top: `${20 + (i * 17) % 60}%`,
                             animationDelay: `${i * 0.15}s`,
-                            animationDuration: `${0.8 + Math.random() * 0.5}s`
+                            animationDuration: `${0.8 + (i % 4) * 0.2}s`
                           }}
                         />
                       ))}
