@@ -4,10 +4,12 @@ import {
   Clock, 
   ShieldCheck, 
   Download,
-  Wallet
+  Wallet,
+  FileText
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { translations } from '../../utils/translations';
+import { DownloadPassbookModal } from '../../components/ui/DownloadPassbookModal';
 import type { Material } from '../../data/mockData';
 
 const Earnings: React.FC = () => {
@@ -15,6 +17,7 @@ const Earnings: React.FC = () => {
   const t = translations[language] || translations.en;
   
   const [filter, setFilter] = useState<'All' | 'Paid' | 'Pending'>('All');
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
 
   const filteredTransactions = transactions.filter(tr => filter === 'All' || tr.status === filter);
   
@@ -47,11 +50,12 @@ const Earnings: React.FC = () => {
           </div>
           
           <button 
-            onClick={() => alert('Receipt summary downloaded!')}
-            className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium border border-slate-200 flex items-center space-x-1"
+            onClick={() => setShowDownloadModal(true)}
+            className="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold border border-emerald-200 flex items-center space-x-1.5 transition-all shadow-sm active:scale-95"
             title="Download Statement"
           >
-            <Download className="w-4 h-4" />
+            <Download className="w-3.5 h-3.5" />
+            <span>PDF</span>
           </button>
         </div>
 
@@ -84,6 +88,32 @@ const Earnings: React.FC = () => {
             </span>
             <span className="text-lg font-bold text-slate-900">{transactions.length} {t.lotsCountSuffix}</span>
           </div>
+        </div>
+
+        {/* Passbook Audit Download Action Bar */}
+        <div className="pt-1">
+          <button
+            onClick={() => setShowDownloadModal(true)}
+            className="w-full py-2.5 px-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white text-xs font-bold flex items-center justify-between transition-all shadow-sm group"
+          >
+            <div className="flex items-center space-x-2.5">
+              <div className="w-6 h-6 rounded-lg bg-emerald-500 text-slate-950 flex items-center justify-center font-bold">
+                <FileText className="w-3.5 h-3.5" />
+              </div>
+              <span className="text-left">
+                <span className="block leading-tight text-white">
+                  {language === 'mr' ? 'पासबुक अहवाल डाउनलोड करा' : language === 'hi' ? 'पासबुक रिपोर्ट डाउनलोड करें' : 'Download Passbook Statement'}
+                </span>
+                <span className="text-[10px] text-slate-400 font-normal">
+                  {language === 'mr' ? '१ महिना किंवा १ वर्ष सांख्यिकी PDF' : language === 'hi' ? '1 महीना या 1 वर्ष सांख्यिकी PDF' : 'Past 1 Month / 1 Year Statistical PDF'}
+                </span>
+              </span>
+            </div>
+            <span className="text-emerald-400 group-hover:translate-x-0.5 transition-transform text-xs font-bold flex items-center space-x-1 bg-white/10 px-2 py-1 rounded-lg">
+              <span>PDF</span>
+              <Download className="w-3 h-3" />
+            </span>
+          </button>
         </div>
       </div>
 
@@ -170,6 +200,12 @@ const Earnings: React.FC = () => {
           {t.guaranteeFooter}
         </p>
       </div>
+
+      {/* Download Passbook Statistical Analysis Modal */}
+      <DownloadPassbookModal 
+        isOpen={showDownloadModal} 
+        onClose={() => setShowDownloadModal(false)} 
+      />
 
     </div>
   );
