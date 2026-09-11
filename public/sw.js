@@ -1,11 +1,10 @@
-// ECOSETU Service Worker v1.0.0
-const CACHE_NAME = 'ecosetu-v1.0.0';
+// ReGain Service Worker v1.0.0
+const CACHE_NAME = 'regain-v1.0.0';
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/manifest.webmanifest',
-  '/favicon.svg',
-  '/pwa-icon.svg',
+  '/logo.png',
   '/pwa-192x192.png',
   '/pwa-512x512.png',
   '/apple-touch-icon.png'
@@ -54,7 +53,7 @@ self.addEventListener('fetch', (event) => {
           const cached = await caches.match(event.request);
           if (cached) return cached;
           const fallback = await caches.match('/index.html');
-          return fallback || new Response('Offline - EcoSetu', {
+          return fallback || new Response('Offline - ReGain', {
             status: 200,
             headers: { 'Content-Type': 'text/html' }
           });
@@ -94,9 +93,9 @@ self.addEventListener('fetch', (event) => {
           }
           return networkResponse;
         }).catch(() => {
-          // If offline and image request fails, return empty svg/png
+          // If offline and image request fails, return cached logo
           if (event.request.destination === 'image') {
-            return caches.match('/pwa-icon.svg');
+            return caches.match('/logo.png');
           }
         });
       })

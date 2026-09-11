@@ -27,10 +27,10 @@ const RoleSelector: React.FC = () => {
     if ('speechSynthesis' in window) {
       setIsPlayingAudio(true);
       const text = language === 'hi' 
-        ? 'इकोसेतु में आपका स्वागत है। कबाड़ीवाला या अधिकृत रीसाइक्लर विकल्प चुनें।' 
+        ? 'ReGain में आपका स्वागत है। कबाड़ीवाला या अधिकृत रीसाइक्लर विकल्प चुनें।' 
         : language === 'mr'
-          ? 'इकोसेतू मध्ये आपले स्वागत आहे. कबाड़ीवाला किंवा अधिकृत रिसायकलर निवडा.'
-          : 'Welcome to EcoSetu. Choose Collector or Authorized Recycler to continue.';
+          ? 'ReGain मध्ये आपले स्वागत आहे. कबाड़ीवाला किंवा अधिकृत रिसायकलर निवडा.'
+          : 'Welcome to ReGain. Choose Collector or Authorized Recycler to continue.';
 
       const utterance = new SpeechSynthesisUtterance(text);
       if (language === 'hi') utterance.lang = 'hi-IN';
@@ -50,14 +50,20 @@ const RoleSelector: React.FC = () => {
         
         {/* Brand Header */}
         <div className="text-center space-y-3">
+          <div className="flex justify-center">
+            <div className="w-20 h-20 rounded-3xl overflow-hidden shadow-md bg-emerald-900 border-2 border-emerald-500/20">
+              <img src="/logo.png" alt="ReGain Logo" className="w-full h-full object-cover" />
+            </div>
+          </div>
+
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
             <Recycle className="w-3.5 h-3.5 text-emerald-600" />
             <span>Digital Bridge for E-Waste</span>
           </div>
 
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 flex items-center justify-center space-x-2">
-              <span className="text-emerald-600">ECO</span>SETU
+            <h1 className="text-3xl font-black tracking-tight text-slate-900 flex items-center justify-center">
+              <span className="text-emerald-600">Re</span><span>Gain</span>
             </h1>
             <p className="text-sm text-slate-500 mt-1 font-medium">
               {language === 'mr' ? 'कचरा वेचक व अधिकृत रिसायकलर जोडणी' : 

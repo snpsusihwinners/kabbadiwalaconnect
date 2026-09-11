@@ -123,7 +123,7 @@ const Dashboard: React.FC = () => {
               <h3 className="text-base font-bold text-slate-900">
                 7-Day Inbound Volume (KG)
               </h3>
-              <p className="text-xs text-slate-500">Verified scrap handovers through ECOSETU tokens</p>
+              <p className="text-xs text-slate-500">Verified scrap handovers through ReGain tokens</p>
             </div>
             <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
               +18.4% WoW

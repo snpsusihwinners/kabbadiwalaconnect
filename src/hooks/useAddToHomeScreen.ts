@@ -9,7 +9,7 @@ export interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
 }
 
-const DISMISS_KEY = 'ecosetu_a2hs_dismissed_at';
+const DISMISS_KEY = 'regain_a2hs_dismissed_at';
 const SNOOZE_HOURS = 24;
 
 const checkIsInstalled = (): boolean => {

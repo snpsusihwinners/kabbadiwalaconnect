@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { InstallAppButton } from '../../components/ui/AddToHomeScreenPrompt';
+import { Logo } from '../../components/ui/Logo';
 
 const RecyclerLayout: React.FC = () => {
   const navigate = useNavigate();
@@ -37,17 +38,7 @@ const RecyclerLayout: React.FC = () => {
         
         {/* Brand Header */}
         <div className="p-5 border-b border-slate-800">
-          <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center font-extrabold text-base shadow-sm">
-              ES
-            </div>
-            <div>
-              <h2 className="text-lg font-black tracking-tight text-white leading-none">ECOSETU</h2>
-              <p className="text-[11px] text-slate-400 mt-0.5 font-medium">
-                Recycler Operations
-              </p>
-            </div>
-          </div>
+          <Logo light={true} subtitle="Recycler Operations" />
         </div>
         
         {/* Nav items */}

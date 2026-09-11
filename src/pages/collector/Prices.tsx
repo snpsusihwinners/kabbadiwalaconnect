@@ -51,7 +51,7 @@ const Prices: React.FC = () => {
 
   const sharePrices = () => {
     navigator.clipboard.writeText(
-      `♻️ ECOSETU E-Waste Mandi Rates (${selectedCity}):\n` +
+      `♻️ ReGain E-Waste Mandi Rates (${selectedCity}):\n` +
       materials.map(m => `• ${getMaterialName(m)}: ₹${m.basePrice}/${m.unit}`).join('\n') +
       `\nVerified by CPCB Recyclers.`
     );

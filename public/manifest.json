@@ -1,6 +1,6 @@
 {
-  "name": "ECOSETU | e-Waste Circulation Network",
-  "short_name": "ECOSETU",
+  "name": "ReGain | e-Waste Circulation Network",
+  "short_name": "ReGain",
   "description": "Decentralized e-waste aggregation, live mandi valuation, and CPCB-authorized recycler exchange network.",
   "start_url": "/",
   "scope": "/",
@@ -14,6 +14,12 @@
   "lang": "en",
   "dir": "ltr",
   "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "500x500",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
     {
       "src": "/pwa-192x192.png",
       "sizes": "192x192",
@@ -31,12 +37,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
-    },
-    {
-      "src": "/pwa-icon.svg",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any"
     }
   ],
   "shortcuts": [
@@ -45,21 +45,21 @@
       "short_name": "New Lot",
       "description": "Scan and register a new scrap lot",
       "url": "/collector/create",
-      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/logo.png", "sizes": "500x500" }]
     },
     {
       "name": "Mandi Rates",
       "short_name": "Rates",
       "description": "Check live e-waste mandi market prices",
       "url": "/collector/prices",
-      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/logo.png", "sizes": "500x500" }]
     },
     {
       "name": "Recycler Portal",
       "short_name": "Recycler",
       "description": "Open industrial recycler operations dashboard",
       "url": "/recycler",
-      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/logo.png", "sizes": "500x500" }]
     }
   ]
 }

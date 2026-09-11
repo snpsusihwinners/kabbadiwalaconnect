@@ -66,17 +66,17 @@ export const AddToHomeScreenPrompt: React.FC<AddToHomeScreenPromptProps> = ({ cl
               <CheckCircle2 className="w-6 h-6 flex-shrink-0 animate-bounce" />
               <div>
                 <p className="text-sm font-bold text-white">{t.a2hsInstalled}</p>
-                <p className="text-xs text-slate-300">You can now open EcoSetu directly from your home screen.</p>
+                <p className="text-xs text-slate-300">You can now open ReGain directly from your home screen.</p>
               </div>
             </div>
           ) : (
             <div className="flex items-start justify-between gap-3">
               {/* App Icon */}
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 p-0.5 flex-shrink-0 shadow-md">
+              <div className="w-12 h-12 rounded-2xl overflow-hidden flex-shrink-0 shadow-md bg-emerald-950 border border-emerald-500/20">
                 <img 
-                  src="/pwa-icon.svg" 
-                  alt="EcoSetu Icon" 
-                  className="w-full h-full rounded-[10px] object-cover"
+                  src="/logo.png" 
+                  alt="ReGain Icon" 
+                  className="w-full h-full object-cover"
                 />
               </div>
 

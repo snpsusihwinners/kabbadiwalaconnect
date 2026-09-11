@@ -65,7 +65,7 @@
     <line x1="264" y1="248" x2="264" y2="254" stroke="#059669" stroke-width="3" stroke-linecap="round"/>
   </g>
 
-  <!-- ECOSETU Typography at Bottom -->
-  <text x="256" y="412" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="46" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="6">ECOSETU</text>
+  <!-- REGAIN Typography at Bottom -->
+  <text x="256" y="412" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="46" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="6">REGAIN</text>
   <text x="256" y="446" font-family="'Inter', system-ui, -apple-system, sans-serif" font-size="17" font-weight="600" fill="#a7f3d0" text-anchor="middle" letter-spacing="4">E-WASTE CIRCULATION</text>
 </svg>

@@ -56,7 +56,7 @@ const Handover: React.FC = () => {
 
   const handleShare = () => {
     navigator.clipboard.writeText(
-      `🧾 ECOSETU DIGITAL HANDOVER RECEIPT\n` +
+      `🧾 REGAIN DIGITAL HANDOVER RECEIPT\n` +
       `LOT ID: ${lot.id.toUpperCase()}\n` +
       `Material: ${getMaterialName(material)} (${lot.weight} kg)\n` +
       `Recycler: ${recycler.name}\n` +
@@ -193,7 +193,7 @@ const Handover: React.FC = () => {
           <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
             <div className="text-center pb-3 border-b border-dashed border-slate-200 space-y-0.5">
               <div className="text-base font-black text-slate-900">
-                ECOSETU DIGITAL RECEIPT
+                REGAIN DIGITAL RECEIPT
               </div>
               <p className="text-[11px] text-slate-500">
                 {t.govtRuleCompliance}

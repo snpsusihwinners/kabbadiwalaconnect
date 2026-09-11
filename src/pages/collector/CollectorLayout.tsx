@@ -14,6 +14,7 @@ import {
 import { useAppContext } from '../../context/AppContext';
 import { translations } from '../../utils/translations';
 import { InstallAppButton } from '../../components/ui/AddToHomeScreenPrompt';
+import { Logo } from '../../components/ui/Logo';
 
 const CollectorLayout: React.FC = () => {
   const { language, setLanguage, isOnline, setIsOnline, syncQueue } = useAppContext();
@@ -44,15 +45,7 @@ const CollectorLayout: React.FC = () => {
       {/* Desktop Demonstration Panel */}
       <div className="hidden lg:flex flex-col w-80 mr-8 shrink-0 space-y-4">
         <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-sm">
-              ES
-            </div>
-            <div>
-              <h2 className="font-bold text-slate-900 text-base">ECOSETU</h2>
-              <p className="text-xs text-slate-500">Collector Mobile App</p>
-            </div>
-          </div>
+          <Logo size="md" subtitle="Collector Mobile App" />
           
           <p className="text-xs text-slate-600 leading-relaxed">
             Vernacular, offline-first mobile interface designed for scrap aggregators and informal waste pickers.
@@ -114,19 +107,9 @@ const CollectorLayout: React.FC = () => {
         
         {/* Top Header Bar */}
         <header className="bg-white border-b border-slate-100 px-4 py-3 flex justify-between items-center z-20 shrink-0">
-          <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
-              ES
-            </div>
-            <div>
-              <div className="flex items-center space-x-1.5">
-                <h1 className="font-bold text-slate-900 text-base leading-tight">ECOSETU</h1>
-                <span className="w-2 h-2 rounded-full bg-emerald-500" title="Connected" />
-              </div>
-              <p className="text-[11px] text-slate-500 font-medium">
-                {t.scrapCollectorSub}
-              </p>
-            </div>
+          <div className="flex items-center space-x-2">
+            <Logo size="sm" subtitle={t.scrapCollectorSub} />
+            <span className="w-2 h-2 rounded-full bg-emerald-500 mb-auto mt-1" title="Connected" />
           </div>
 
           <div className="flex items-center space-x-1.5">

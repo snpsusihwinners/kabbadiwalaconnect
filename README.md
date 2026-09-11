@@ -1,13 +1,13 @@
-# KabaddiWala Connect (EcoSetu)
+# ReGain (KabaddiWala Connect)
 
 **Author:** Akash HG  
-**Project:** EcoSetu — Digitizing and connecting local scrap collectors (Kabaddiwalas) with recyclers.
+**Project:** ReGain — Digitizing and connecting local scrap collectors (Kabaddiwalas) with recyclers.
 
 ---
 
 ## 🌟 Overview
 
-**KabaddiWala Connect (EcoSetu)** is a comprehensive web platform designed to streamline and empower the informal waste collection and recycling ecosystem. It bridges the gap between grassroots scrap collectors (Kabaddiwalas) and certified industrial recyclers, enabling fair market pricing, digitized waste lots, QR-verified handovers, and end-to-end supply chain traceability.
+**ReGain** is a comprehensive web platform designed to streamline and empower the informal waste collection and recycling ecosystem. It bridges the gap between grassroots scrap collectors (Kabaddiwalas) and certified industrial recyclers, enabling fair market pricing, digitized waste lots, QR-verified handovers, and end-to-end supply chain traceability.
 
 ---
 
