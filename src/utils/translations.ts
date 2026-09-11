@@ -161,6 +161,18 @@ export const translations = {
     tapToListenSub: 'Tap to listen',
     switchRoleBtn: 'Switch Role / Sign Out',
 
+    // Add to Home Screen (PWA)
+    a2hsTitle: 'Install ECOSETU App',
+    a2hsSubtitle: 'Add to Home Screen for instant offline access & full-screen mandi rates.',
+    a2hsInstallBtn: 'Install App',
+    a2hsLaterBtn: 'Later',
+    a2hsInstalled: '✓ App Installed',
+    a2hsIosTitle: 'Add ECOSETU to Home Screen',
+    a2hsIosStep1: 'Tap the Share icon in Safari’s bottom toolbar',
+    a2hsIosStep2: 'Scroll down and select "Add to Home Screen"',
+    a2hsIosStep3: 'Tap "Add" in the top-right corner',
+    a2hsGotIt: 'Got It',
+
     // Speech synthesis text
     speakMandiIntro: (top3: string) => `Today's rates: ${top3}. Connect with authorized recyclers for fair prices.`,
   },
@@ -325,6 +337,18 @@ export const translations = {
     tapToListenSub: 'ऐकण्यासाठी दाबा',
     switchRoleBtn: 'भूमिका बदला / बाहेर पडा',
 
+    // Add to Home Screen (PWA)
+    a2hsTitle: 'ECOSETU ॲप इन्स्टॉल करा',
+    a2hsSubtitle: 'होम स्क्रीनवर जोडा - ऑफलाइन वापर आणि जलद बाजारभावांसाठी.',
+    a2hsInstallBtn: 'ॲप जोडा',
+    a2hsLaterBtn: 'नंतर',
+    a2hsInstalled: '✓ ॲप इन्स्टॉल केले',
+    a2hsIosTitle: 'iPhone वर ECOSETU ॲप कसे जोडायचे',
+    a2hsIosStep1: 'सफारीच्या तळाशी असलेल्या Share (शेअर) बटणावर टॅप करा',
+    a2hsIosStep2: 'खाली स्क्रोल करा आणि "Add to Home Screen" निवडा',
+    a2hsIosStep3: 'वर उजव्या कोपऱ्यातील "Add" वर टॅप करा',
+    a2hsGotIt: 'समजले',
+
     speakMandiIntro: (top3: string) => `आजचे बाजार भाव: ${top3}. अधिकृत रिसायकलर्सकडून खात्रीशीर दर मिळवा.`,
   },
 
@@ -487,6 +511,18 @@ export const translations = {
     safetyRulesTitle: 'सुरक्षा दिशानिर्देश',
     tapToListenSub: 'सुनने के लिए टैप करें',
     switchRoleBtn: 'भूमिका बदलें / साइन आउट',
+
+    // Add to Home Screen (PWA)
+    a2hsTitle: 'ECOSETU ऐप इंस्टॉल करें',
+    a2hsSubtitle: 'होम स्क्रीन पर जोड़ें - बिना इंटरनेट तेज पहुंच और लाइव मंडी भाव के लिए।',
+    a2hsInstallBtn: 'ऐप जोड़ें',
+    a2hsLaterBtn: 'बाद में',
+    a2hsInstalled: '✓ ऐप इंस्टॉल हो गया',
+    a2hsIosTitle: 'iPhone पर ECOSETU ऐप कैसे जोड़ें',
+    a2hsIosStep1: 'Safari के नीचे दिए गए Share (शेयर) आइकन पर टैप करें',
+    a2hsIosStep2: 'नीचे स्क्रॉल करें और "Add to Home Screen" चुनें',
+    a2hsIosStep3: 'ऊपर दाईं ओर "Add" पर टैप करें',
+    a2hsGotIt: 'समझ गया',
 
     speakMandiIntro: (top3: string) => `आज के मंडी भाव: ${top3}. अधिकृत रीसाइक्लर्स से सही दाम प्राप्त करें.`,
   }

@@ -11,6 +11,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
+import { InstallAppButton } from '../../components/ui/AddToHomeScreenPrompt';
 
 const RecyclerLayout: React.FC = () => {
   const navigate = useNavigate();
@@ -116,6 +117,8 @@ const RecyclerLayout: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-3">
+            <InstallAppButton variant="button" />
+
             <div className="text-right hidden sm:block">
               <p className="text-xs font-bold text-slate-900">GreenCycle Recycling Solutions</p>
               <span className="inline-flex items-center text-[11px] text-emerald-700 font-semibold">

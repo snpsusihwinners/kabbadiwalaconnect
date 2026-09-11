@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { translations } from '../../utils/translations';
+import { InstallAppButton } from '../../components/ui/AddToHomeScreenPrompt';
 
 const CollectorLayout: React.FC = () => {
   const { language, setLanguage, isOnline, setIsOnline, syncQueue } = useAppContext();
@@ -85,6 +86,10 @@ const CollectorLayout: React.FC = () => {
               </span>
               <span className="text-[10px] text-emerald-700 font-bold">Switch</span>
             </button>
+
+            <div className="pt-1">
+              <InstallAppButton variant="menu-item" />
+            </div>
           </div>
 
           <div className="pt-2">
@@ -124,7 +129,10 @@ const CollectorLayout: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1.5">
+            {/* Install App Quick Badge */}
+            <InstallAppButton variant="badge" />
+
             {/* Quick Language Chip */}
             <button 
               onClick={toggleLanguage}

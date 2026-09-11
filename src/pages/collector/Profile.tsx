@@ -8,6 +8,7 @@ import {
 import { useAppContext } from '../../context/AppContext';
 import { translations } from '../../utils/translations';
 import { useNavigate } from 'react-router-dom';
+import { InstallAppButton } from '../../components/ui/AddToHomeScreenPrompt';
 
 const Profile: React.FC = () => {
   const { setRole, language } = useAppContext();
@@ -97,6 +98,9 @@ const Profile: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Add to Home Screen Option */}
+      <InstallAppButton variant="menu-item" />
 
       {/* Safety Education Section */}
       <div className="space-y-2.5">

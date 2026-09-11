@@ -1,0 +1,65 @@
+{
+  "name": "ECOSETU | e-Waste Circulation Network",
+  "short_name": "ECOSETU",
+  "description": "Decentralized e-waste aggregation, live mandi valuation, and CPCB-authorized recycler exchange network.",
+  "start_url": "/",
+  "scope": "/",
+  "id": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#059669",
+  "categories": ["business", "utilities", "productivity"],
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/pwa-icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Create Scrap Lot",
+      "short_name": "New Lot",
+      "description": "Scan and register a new scrap lot",
+      "url": "/collector/create",
+      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Mandi Rates",
+      "short_name": "Rates",
+      "description": "Check live e-waste mandi market prices",
+      "url": "/collector/prices",
+      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Recycler Portal",
+      "short_name": "Recycler",
+      "description": "Open industrial recycler operations dashboard",
+      "url": "/recycler",
+      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}

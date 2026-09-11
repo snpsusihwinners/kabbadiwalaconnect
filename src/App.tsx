@@ -4,6 +4,7 @@ import { AppProvider } from './context/AppContext';
 import RoleSelector from './pages/shared/RoleSelector';
 import CollectorLayout from './pages/collector/CollectorLayout';
 import RecyclerLayout from './pages/recycler/RecyclerLayout';
+import { AddToHomeScreenPrompt } from './components/ui/AddToHomeScreenPrompt';
 
 // Collector Pages Placeholder
 const CollectorHome = React.lazy(() => import('./pages/collector/Home'));
@@ -23,6 +24,7 @@ function App() {
   return (
     <AppProvider>
       <Router>
+        <AddToHomeScreenPrompt />
         <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
           <Routes>
             <Route path="/" element={<RoleSelector />} />
