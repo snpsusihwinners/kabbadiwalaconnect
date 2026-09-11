@@ -5,17 +5,22 @@ import {
   MapPin, 
   Share2, 
   ShieldCheck, 
-  ChevronLeft
+  ChevronLeft,
+  Download,
+  FileText,
+  ExternalLink,
+  Copy
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useAppContext } from '../../context/AppContext';
 import { translations } from '../../utils/translations';
+import { generateBillPdf } from '../../utils/generateBillPdf';
 import type { Material } from '../../data/mockData';
 
 const Handover: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { lots, recyclers, materials, updateLot, addTransaction, language } = useAppContext();
+  const { lots, recyclers, materials, transactions, updateLot, addTransaction, language } = useAppContext();
   const t = translations[language] || translations.en;
   
   const lot = lots.find(l => l.id === id) || lots[0];
@@ -24,10 +29,15 @@ const Handover: React.FC = () => {
 
   const [step, setStep] = useState<'qr' | 'success'>('qr');
   const [copied, setCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   if (!lot) {
     return <div className="p-8 text-center text-slate-500">Lot not found</div>;
   }
+
+  const billUrl = `${window.location.origin}/bill/${lot.id}`;
+  const existingTxn = transactions.find(tr => tr.lotId === lot.id);
 
   const getMaterialName = (m?: Material) => {
     if (!m) return '';
@@ -35,6 +45,32 @@ const Handover: React.FC = () => {
   };
 
   const finalAmount = lot.finalPrice || Math.round(lot.weight * (recycler.offers[material.id] || 230));
+
+  const handleDownloadPdf = async () => {
+    try {
+      setIsDownloading(true);
+      await new Promise(resolve => setTimeout(resolve, 300));
+      await generateBillPdf({
+        lot,
+        material,
+        recycler,
+        transaction: existingTxn,
+        billUrl
+      });
+    } catch (err) {
+      console.error('Failed to download Bill PDF:', err);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const handleCopyBillLink = async () => {
+    try {
+      await navigator.clipboard.writeText(billUrl);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2500);
+    } catch {}
+  };
 
   const handleConfirmHandover = () => {
     updateLot(lot.id, { 
@@ -61,6 +97,7 @@ const Handover: React.FC = () => {
       `Material: ${getMaterialName(material)} (${lot.weight} kg)\n` +
       `Recycler: ${recycler.name}\n` +
       `Total Cash Received: ₹${finalAmount}\n` +
+      `Official Bill: ${billUrl}\n` +
       `Status: CPCB Verified Traceability Completed`
     );
     setCopied(true);
@@ -113,25 +150,53 @@ const Handover: React.FC = () => {
               </p>
             </div>
 
-            {/* Clean QR Code Container */}
-            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 inline-block mx-auto shadow-inner">
-              <div className="p-3 bg-white rounded-xl shadow-sm border border-slate-200">
+            {/* Clean QR Code Container with Live Web Bill URL */}
+            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 inline-block mx-auto shadow-inner max-w-xs w-full">
+              <div className="p-3 bg-white rounded-xl shadow-sm border border-slate-200 inline-block">
                 <QRCodeSVG 
-                  value={JSON.stringify({ 
-                    lotId: lot.id, 
-                    collectorId: lot.collectorId || 'COL-1028',
-                    recyclerId: recycler.id,
-                    weight: lot.weight,
-                    price: finalAmount,
-                    ts: new Date().toISOString()
-                  })} 
+                  value={billUrl} 
                   size={190}
                   level="H"
                 />
               </div>
-              <div className="mt-2 text-[10px] text-slate-500 font-bold uppercase tracking-wider">
-                {t.secureTokenBadge}
+              <div className="mt-2.5 text-[11px] text-slate-700 font-bold uppercase tracking-wider flex items-center justify-center space-x-1">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Scan with Camera to Open Bill</span>
               </div>
+              <p className="text-[10px] text-slate-500 mt-0.5">
+                Opens official ReGain Tax Invoice & Handover Bill
+              </p>
+
+              {/* Action Buttons Right In QR Stage */}
+              <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-slate-200">
+                <button
+                  onClick={handleDownloadPdf}
+                  disabled={isDownloading}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-[11px] py-2 px-2.5 rounded-xl transition-all flex items-center justify-center space-x-1.5 shadow-sm disabled:opacity-50"
+                  title="Download Tax Invoice PDF"
+                >
+                  <Download className="w-3.5 h-3.5 shrink-0" />
+                  <span>{isDownloading ? 'Generating...' : 'Download PDF'}</span>
+                </button>
+
+                <button
+                  onClick={() => window.open(billUrl, '_blank')}
+                  className="w-full bg-white hover:bg-slate-100 active:scale-95 text-slate-800 font-bold text-[11px] py-2 px-2.5 rounded-xl border border-slate-300 transition-all flex items-center justify-center space-x-1 shadow-sm"
+                  title="Open Live Bill in new tab"
+                >
+                  <FileText className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>Open Bill</span>
+                  <ExternalLink className="w-2.5 h-2.5 text-slate-400 shrink-0" />
+                </button>
+              </div>
+
+              <button
+                onClick={handleCopyBillLink}
+                className="w-full text-center text-[10px] text-slate-500 hover:text-emerald-700 font-semibold mt-2 flex items-center justify-center space-x-1"
+              >
+                <Copy className="w-3 h-3" />
+                <span>{linkCopied ? 'Bill Link Copied ✓' : 'Copy Public Bill Link'}</span>
+              </button>
             </div>
 
             {/* Manifest Details */}
@@ -193,7 +258,7 @@ const Handover: React.FC = () => {
           <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
             <div className="text-center pb-3 border-b border-dashed border-slate-200 space-y-0.5">
               <div className="text-base font-black text-slate-900">
-                REGAIN DIGITAL RECEIPT
+                REGAIN DIGITAL RECEIPT & TAX INVOICE
               </div>
               <p className="text-[11px] text-slate-500">
                 {t.govtRuleCompliance}
@@ -250,8 +315,28 @@ const Handover: React.FC = () => {
             </div>
           </div>
 
-          {/* Navigation CTAs */}
+          {/* Navigation & Action CTAs */}
           <div className="space-y-2 pt-1">
+            <div className="grid grid-cols-2 gap-2">
+              <button 
+                onClick={handleDownloadPdf}
+                disabled={isDownloading}
+                className="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs py-3 rounded-xl transition-all flex items-center justify-center space-x-1.5 shadow-sm disabled:opacity-50"
+              >
+                <Download className="w-4 h-4" />
+                <span>{isDownloading ? 'Generating...' : 'Download Bill (PDF)'}</span>
+              </button>
+
+              <button 
+                onClick={() => window.open(billUrl, '_blank')}
+                className="w-full bg-white hover:bg-slate-50 active:scale-95 text-slate-800 font-bold text-xs py-3 rounded-xl border border-slate-200 transition-all flex items-center justify-center space-x-1.5 shadow-sm"
+              >
+                <FileText className="w-4 h-4 text-emerald-600" />
+                <span>View Live Bill</span>
+                <ExternalLink className="w-3 h-3 text-slate-400" />
+              </button>
+            </div>
+
             <button 
               onClick={handleShare}
               className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-3 rounded-xl transition-all flex items-center justify-center space-x-2"

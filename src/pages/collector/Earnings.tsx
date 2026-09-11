@@ -161,9 +161,22 @@ const Earnings: React.FC = () => {
                   <p className="text-xs text-slate-500 font-medium">
                     {tr.weight} KG • {new Date(tr.date).toLocaleDateString(language === 'en' ? 'en-IN' : (language === 'hi' ? 'hi-IN' : 'mr-IN'), { day: '2-digit', month: 'short', year: 'numeric' })}
                   </p>
-                  <span className="text-[10px] text-slate-400">
-                    ID: #{tr.id.toUpperCase()}
-                  </span>
+                  <div className="flex items-center space-x-2 pt-1">
+                    <span className="text-[10px] text-slate-400 font-mono">
+                      #{tr.id.toUpperCase()}
+                    </span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.open(`/bill/${tr.lotId || tr.id}`, '_blank');
+                      }}
+                      className="text-[10px] font-bold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-1.5 py-0.5 rounded-md border border-emerald-200 transition-all flex items-center space-x-1"
+                      title="Open Official Tax Invoice & Bill"
+                    >
+                      <FileText className="w-2.5 h-2.5" />
+                      <span>Bill PDF</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 

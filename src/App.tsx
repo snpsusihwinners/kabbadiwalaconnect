@@ -20,6 +20,9 @@ const RecyclerDashboard = React.lazy(() => import('./pages/recycler/Dashboard'))
 const IncomingLots = React.lazy(() => import('./pages/recycler/IncomingLots'));
 const Traceability = React.lazy(() => import('./pages/recycler/Traceability'));
 
+// Shared Pages
+const TransactionBill = React.lazy(() => import('./pages/shared/TransactionBill'));
+
 function App() {
   return (
     <AppProvider>
@@ -28,6 +31,9 @@ function App() {
         <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
           <Routes>
             <Route path="/" element={<RoleSelector />} />
+            
+            {/* Public Digital Bill & Tax Invoice Route */}
+            <Route path="/bill/:id" element={<TransactionBill />} />
             
             {/* Collector Routes */}
             <Route path="/collector" element={<CollectorLayout />}>
