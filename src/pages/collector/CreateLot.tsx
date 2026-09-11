@@ -4,7 +4,6 @@ import {
   Camera, 
   ArrowRight, 
   CheckCircle2, 
-  RefreshCcw, 
   Sparkles, 
   Scale, 
   ShieldCheck,
@@ -12,30 +11,30 @@ import {
   Info
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
+import { translations } from '../../utils/translations';
 import type { Material } from '../../data/mockData';
 
 const CreateLot: React.FC = () => {
   const navigate = useNavigate();
   const { materials, addLot, isOnline, addToSyncQueue, language } = useAppContext();
+  const t = translations[language] || translations.en;
   
   const [step, setStep] = useState(1);
-  const [photoTaken, setPhotoTaken] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState<Material>(
     materials.find(m => m.id === 'm3') || materials[0]
   );
   const [weight, setWeight] = useState<string>('8.2');
   const [condition, setCondition] = useState('Used');
-  const [source, setSource] = useState('Shop Scrap');
+  const [source] = useState('Shop Scrap');
 
   const handleTakePhoto = () => {
-    setPhotoTaken(true);
     setAnalyzing(true);
     setTimeout(() => {
       setAnalyzing(false);
       setSelectedMaterial(materials.find(m => m.id === 'm3') || materials[0]);
       setStep(2);
-    }, 1400);
+    }, 1200);
   };
 
   const handleGetEstimate = () => {
@@ -64,7 +63,11 @@ const CreateLot: React.FC = () => {
       navigate('/collector/recyclers', { state: { lotId: newLot.id } });
     } else {
       addToSyncQueue({ type: 'ADD_LOT', payload: newLot });
-      alert('लॉट ऑफलाईन सेव्ह झाला! इंटरनेट आल्यावर आपोआप सिंक होईल.');
+      alert(language === 'mr' 
+        ? 'लॉट ऑफलाईन सेव्ह झाला! इंटरनेट आल्यावर आपोआप सिंक होईल.'
+        : language === 'hi'
+        ? 'लॉट ऑफ़लाइन सेव हो गया! इंटरनेट मिलने पर अपने आप सिंक होगा।'
+        : 'Lot saved offline! Will automatically sync when reconnected.');
       navigate('/collector');
     }
   };
@@ -73,6 +76,10 @@ const CreateLot: React.FC = () => {
     const current = parseFloat(weight) || 0;
     const updated = Math.max(0.1, Math.round((current + delta) * 10) / 10);
     setWeight(updated.toString());
+  };
+
+  const getMaterialName = (m: Material) => {
+    return (t.materials as Record<string, string>)[m.id] || m.name;
   };
 
   return (
@@ -89,18 +96,18 @@ const CreateLot: React.FC = () => {
           </button>
           <div>
             <h2 className="text-base font-extrabold text-slate-900 leading-tight">
-              {step === 1 ? 'फोटो स्कॅन • पायरी १/३' : 
-               step === 2 ? 'वजन व श्रेणी • पायरी २/३' : 
-               'मूल्यांकन पावती • पायरी ३/३'}
+              {step === 1 ? t.step1Title : 
+               step === 2 ? t.step2Title : 
+               t.step3Title}
             </h2>
             <p className="text-[11px] text-slate-500 font-medium">
-              Create New Scrap Lot
+              {t.createLotHeaderSub}
             </p>
           </div>
         </div>
 
         <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-          Smart Valuation
+          {t.smartValuationBadge}
         </span>
       </div>
 
@@ -117,10 +124,10 @@ const CreateLot: React.FC = () => {
           <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-4">
             <div className="text-center space-y-1">
               <h3 className="text-base font-bold text-slate-900">
-                ई-कचऱ्याचा फोटो घ्या (Capture Photo)
+                {t.capturePhotoTitle}
               </h3>
               <p className="text-xs text-slate-500">
-                कॅमेरा PCB, बॅटरी किंवा तांबे आपोआप ओळखेल
+                {t.capturePhotoSubtitle}
               </p>
             </div>
 
@@ -130,7 +137,7 @@ const CreateLot: React.FC = () => {
                 <div className="flex flex-col items-center space-y-3 z-10 text-white">
                   <div className="w-12 h-12 border-4 border-emerald-400 border-t-transparent rounded-full animate-spin" />
                   <p className="text-xs font-bold tracking-wider text-emerald-300">
-                    माल तपासणी सुरू आहे (Analyzing)...
+                    {t.analyzingScrap}
                   </p>
                 </div>
               ) : (
@@ -139,10 +146,10 @@ const CreateLot: React.FC = () => {
                     <Camera className="w-8 h-8 text-emerald-400" />
                   </div>
                   <span className="text-xs font-bold text-white">
-                    कॅमेरा तयार आहे
+                    {t.cameraReady}
                   </span>
                   <p className="text-[11px] text-slate-400 max-w-[220px]">
-                    स्क्रीनच्या मध्यभागी ई-कचरा ठेवा
+                    {t.cameraHint}
                   </p>
                 </div>
               )}
@@ -156,7 +163,7 @@ const CreateLot: React.FC = () => {
                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-base py-3.5 rounded-xl shadow-sm transition-all flex items-center justify-center space-x-2 active:scale-[0.99]"
               >
                 <Camera className="w-5 h-5" />
-                <span>{analyzing ? 'तपासणी सुरू...' : 'फोटो घ्या (Take Photo)'}</span>
+                <span>{analyzing ? t.analyzingScrap : t.takePhotoBtn}</span>
               </button>
 
               <button 
@@ -164,14 +171,14 @@ const CreateLot: React.FC = () => {
                 className="w-full py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-200 flex items-center justify-center space-x-1.5 transition-colors"
               >
                 <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                <span>डेमो फोटो वापरा (Sample PCB Board)</span>
+                <span>{t.samplePhotoBtn}</span>
               </button>
             </div>
           </div>
 
           <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-start space-x-2 text-xs text-emerald-800">
             <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-            <span>चांगल्या प्रकाशात फोटो घेतल्यास अचूक भाव ठरवणे सोपे जाते.</span>
+            <span>{t.goodLightingTip}</span>
           </div>
         </div>
       )}
@@ -188,11 +195,11 @@ const CreateLot: React.FC = () => {
               </div>
               <div>
                 <span className="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-full inline-block">
-                  AI ओळखले • 95% Match
+                  {t.aiIdentifiedBadge}
                 </span>
-                <h3 className="text-lg font-bold leading-tight mt-0.5">{selectedMaterial.name}</h3>
+                <h3 className="text-lg font-bold leading-tight mt-0.5">{getMaterialName(selectedMaterial)}</h3>
                 <p className="text-xs text-emerald-100">
-                  मंडी दर: ₹{selectedMaterial.basePrice}/kg
+                  {t.mandiRateLabel} ₹{selectedMaterial.basePrice}/kg
                 </p>
               </div>
             </div>
@@ -201,15 +208,15 @@ const CreateLot: React.FC = () => {
               onClick={() => setStep(1)}
               className="text-xs font-semibold bg-white/10 hover:bg-white/20 text-white px-2.5 py-1.5 rounded-lg transition-colors"
             >
-              बदला
+              {t.changeBtn}
             </button>
           </div>
 
           {/* Material Category Picker */}
           <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-2.5">
             <label className="text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center justify-between">
-              <span>सामग्री निवडा (Scrap Type)</span>
-              <span className="text-[11px] font-normal text-slate-400">८ प्रकार</span>
+              <span>{t.selectScrapCategory}</span>
+              <span className="text-[11px] font-normal text-slate-400">{t.scrapTypesCount}</span>
             </label>
             
             <div className="grid grid-cols-4 gap-2">
@@ -225,7 +232,7 @@ const CreateLot: React.FC = () => {
                 >
                   <span className="text-xl mb-0.5">{m.icon}</span>
                   <span className="text-[10px] truncate max-w-full text-center leading-tight">
-                    {m.name}
+                    {getMaterialName(m)}
                   </span>
                 </button>
               ))}
@@ -237,9 +244,9 @@ const CreateLot: React.FC = () => {
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center">
                 <Scale className="w-3.5 h-3.5 mr-1 text-emerald-600" />
-                <span>अंदाजे वजन (Weight in KG)</span>
+                <span>{t.approxWeightLabel}</span>
               </label>
-              <span className="text-xs font-semibold text-emerald-700">किलो (KG)</span>
+              <span className="text-xs font-semibold text-emerald-700">{t.kilogramsUnit}</span>
             </div>
 
             {/* Readout Display */}
@@ -273,7 +280,7 @@ const CreateLot: React.FC = () => {
           {/* Condition Selector */}
           <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-2">
             <label className="text-xs font-bold text-slate-700 uppercase tracking-wide">
-              स्थिती (Condition)
+              {t.conditionLabel}
             </label>
             <div className="grid grid-cols-4 gap-2">
               {['Used', 'Good', 'Damaged', 'Mixed'].map((cond) => (
@@ -298,7 +305,7 @@ const CreateLot: React.FC = () => {
             disabled={!weight || parseFloat(weight) <= 0}
             className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-base py-3.5 rounded-xl shadow-sm transition-all flex items-center justify-center space-x-2"
           >
-            <span>खरा भाव काढा (Get Valuation)</span>
+            <span>{t.calculateValuationBtn}</span>
             <ArrowRight className="w-5 h-5" />
           </button>
         </div>
@@ -311,16 +318,16 @@ const CreateLot: React.FC = () => {
           <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
             <div className="text-center pb-4 border-b border-dashed border-slate-200 space-y-1">
               <span className="text-[10px] font-bold tracking-wider uppercase text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                ECOSETU MANDI VALUATION
+                {t.mandiValuationHeader}
               </span>
-              <p className="text-xs text-slate-500">पुणे अधिकृत दरसूचीनुसार अंदाजित किंमत</p>
+              <p className="text-xs text-slate-500">{t.mandiValuationSub}</p>
               
               <div className="pt-2">
                 <div className="text-3xl font-black text-emerald-700">
                   ₹{Math.round(selectedMaterial.basePrice * parseFloat(weight) * 0.95).toLocaleString()} – ₹{Math.round(selectedMaterial.basePrice * parseFloat(weight) * 1.05).toLocaleString()}
                 </div>
                 <p className="text-xs text-slate-500 font-medium mt-1">
-                  किमान हमी भाव: ₹{selectedMaterial.basePrice}/kg
+                  {t.guaranteedFloorRate} ₹{selectedMaterial.basePrice}/kg
                 </p>
               </div>
             </div>
@@ -328,26 +335,26 @@ const CreateLot: React.FC = () => {
             {/* Manifest Summary */}
             <div className="py-2 space-y-2 text-xs border-b border-slate-100">
               <div className="flex justify-between">
-                <span className="text-slate-500">सामग्री:</span>
-                <span className="font-bold text-slate-900">{selectedMaterial.icon} {selectedMaterial.name}</span>
+                <span className="text-slate-500">{t.materialSummaryLabel}</span>
+                <span className="font-bold text-slate-900">{selectedMaterial.icon} {getMaterialName(selectedMaterial)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">वजन:</span>
+                <span className="text-slate-500">{t.recordedWeightLabel}</span>
                 <span className="font-bold text-slate-900">{weight} KG</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">स्थिती:</span>
-                <span className="font-bold text-slate-900">{condition} Scrap</span>
+                <span className="text-slate-500">{t.conditionSummaryLabel}</span>
+                <span className="font-bold text-slate-900">{condition}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">सरकारी हमी दर:</span>
+                <span className="text-slate-500">{t.authorizedRateLabel}</span>
                 <span className="font-bold text-emerald-700">₹{selectedMaterial.basePrice} / KG</span>
               </div>
             </div>
 
             <div className="flex items-center space-x-2 text-xs text-slate-500">
               <Info className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>खरेदीदार थेट आपल्या दुकानातून पिकअप देऊ शकतात.</span>
+              <span>{t.pickupNotice}</span>
             </div>
           </div>
 
@@ -357,7 +364,7 @@ const CreateLot: React.FC = () => {
               onClick={handleViewOffers}
               className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-base py-3.5 rounded-xl shadow-sm transition-all flex items-center justify-center space-x-2"
             >
-              <span>खरेदीदार शोधा (View Buyers)</span>
+              <span>{t.viewBuyersBtn}</span>
               <ArrowRight className="w-5 h-5" />
             </button>
 
@@ -365,7 +372,7 @@ const CreateLot: React.FC = () => {
               onClick={() => setStep(2)}
               className="w-full py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 text-center"
             >
-              ← वजन किंवा श्रेणी बदला
+              {t.editWeightCategoryBtn}
             </button>
           </div>
 

@@ -7,35 +7,41 @@ import {
   Volume2,
   Share2,
   Check,
-  Search,
-  Sparkles
+  Search
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
+import { translations } from '../../utils/translations';
+import type { Material } from '../../data/mockData';
 
 const Prices: React.FC = () => {
   const { materials, language } = useAppContext();
+  const t = translations[language] || translations.en;
+  
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedCity, setSelectedCity] = useState('Pune');
   const [copied, setCopied] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
+  const getMaterialName = (m: Material) => {
+    return (t.materials as Record<string, string>)[m.id] || m.name;
+  };
+
   const getTrend = (index: number) => {
     if (index % 3 === 0) return { icon: TrendingUp, label: '+₹15/kg', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' };
     if (index % 3 === 1) return { icon: TrendingDown, label: '-₹5/kg', color: 'text-red-700 bg-red-50 border-red-200' };
-    return { icon: Minus, label: 'स्थिर (Stable)', color: 'text-slate-600 bg-slate-100 border-slate-200' };
+    return { icon: Minus, label: t.stableTrend, color: 'text-slate-600 bg-slate-100 border-slate-200' };
   };
 
   const listenToPrices = () => {
     if ('speechSynthesis' in window) {
       setIsPlaying(true);
-      const top3 = materials.slice(0, 4).map(m => `${m.name} ${m.basePrice} रुपये प्रति किलो`).join(', ');
-      const text = language === 'mr'
-        ? `आजचे बाजार भाव: ${top3}. अधिकृत रिसायकलर्सकडून खात्रीशीर दर मिळवा.`
-        : `आज के मंडी भाव: ${top3}. रीसाइक्लर्स से सही दाम प्राप्त करें.`;
+      const top3 = materials.slice(0, 4).map(m => `${getMaterialName(m)} ₹${m.basePrice} per ${m.unit}`).join(', ');
+      const text = t.speakMandiIntro(top3);
 
       const utterance = new SpeechSynthesisUtterance(text);
       if (language === 'mr') utterance.lang = 'mr-IN';
-      else utterance.lang = 'hi-IN';
+      else if (language === 'hi') utterance.lang = 'hi-IN';
+      else utterance.lang = 'en-IN';
 
       utterance.onend = () => setIsPlaying(false);
       utterance.onerror = () => setIsPlaying(false);
@@ -46,7 +52,7 @@ const Prices: React.FC = () => {
   const sharePrices = () => {
     navigator.clipboard.writeText(
       `♻️ ECOSETU E-Waste Mandi Rates (${selectedCity}):\n` +
-      materials.map(m => `• ${m.name}: ₹${m.basePrice}/${m.unit}`).join('\n') +
+      materials.map(m => `• ${getMaterialName(m)}: ₹${m.basePrice}/${m.unit}`).join('\n') +
       `\nVerified by CPCB Recyclers.`
     );
     setCopied(true);
@@ -54,6 +60,7 @@ const Prices: React.FC = () => {
   };
 
   const filteredMaterials = materials.filter(m => 
+    getMaterialName(m).toLowerCase().includes(searchQuery.toLowerCase()) ||
     m.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -66,12 +73,10 @@ const Prices: React.FC = () => {
           <div>
             <div className="flex items-center space-x-1.5 text-xs font-semibold text-emerald-700">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>LIVE MANDI BOARD</span>
+              <span>{t.liveMandiBadge}</span>
             </div>
             <h2 className="text-xl font-black text-slate-900 mt-0.5">
-              {language === 'mr' ? 'आजचे ई-कचरा बाजार भाव' : 
-               language === 'hi' ? 'आज के ई-कचरा मंडी भाव' : 
-               'Today\'s Scrap Rates'}
+              {t.todaysRatesTitle}
             </h2>
           </div>
 
@@ -82,10 +87,10 @@ const Prices: React.FC = () => {
               onChange={(e) => setSelectedCity(e.target.value)}
               className="bg-transparent font-bold focus:outline-none cursor-pointer text-slate-900"
             >
-              <option value="Pune">पुणे (Pune)</option>
-              <option value="Mumbai">मुंबई (Mumbai)</option>
-              <option value="Nagpur">नागपूर (Nagpur)</option>
-              <option value="Nashik">नाशिक (Nashik)</option>
+              <option value="Pune">Pune (पुणे)</option>
+              <option value="Mumbai">Mumbai (मुंबई)</option>
+              <option value="Nagpur">Nagpur (नागपूर)</option>
+              <option value="Nashik">Nashik (नाशिक)</option>
             </select>
           </div>
         </div>
@@ -101,7 +106,7 @@ const Prices: React.FC = () => {
             }`}
           >
             <Volume2 className="w-4 h-4 text-emerald-600" />
-            <span>{isPlaying ? 'वाचत आहे (Playing...)' : (language === 'mr' ? 'भाव ऐका (Listen)' : 'भाव सुनें')}</span>
+            <span>{isPlaying ? t.playingRatesBtn : t.listenRatesBtn}</span>
           </button>
 
           <button
@@ -109,7 +114,7 @@ const Prices: React.FC = () => {
             className="py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-200 flex items-center space-x-1.5 transition-colors"
           >
             {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4 text-slate-600" />}
-            <span>{copied ? 'Copied' : 'Share'}</span>
+            <span>{copied ? t.copiedBtn : t.shareBtn}</span>
           </button>
         </div>
       </div>
@@ -119,7 +124,7 @@ const Prices: React.FC = () => {
         <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
         <input 
           type="text"
-          placeholder={language === 'mr' ? 'माल शोधा (उदा. PCB, बॅटरी)...' : 'Search scrap material...'}
+          placeholder={t.searchMaterialPlaceholder}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full pl-10 pr-4 py-2.5 bg-white rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400 text-slate-900 shadow-sm"
@@ -142,9 +147,9 @@ const Prices: React.FC = () => {
                   {m.icon}
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900 text-sm">{m.name}</h3>
+                  <h3 className="font-bold text-slate-900 text-sm">{getMaterialName(m)}</h3>
                   <p className="text-xs text-slate-500">
-                    अंदाजे भाव: ₹{Math.round(m.basePrice * 0.95)} - ₹{Math.round(m.basePrice * 1.05)}
+                    {t.estRangeLabel} ₹{Math.round(m.basePrice * 0.95)} - ₹{Math.round(m.basePrice * 1.05)}
                   </p>
                 </div>
               </div>

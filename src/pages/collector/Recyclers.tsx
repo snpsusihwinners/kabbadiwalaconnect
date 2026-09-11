@@ -1,26 +1,34 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Building2,
   MapPin, 
   Star, 
   ShieldCheck, 
-  Truck,
-  Phone,
-  ArrowRight,
-  Sparkles
+  Truck, 
+  Phone, 
+  ArrowRight, 
+  Sparkles 
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
+import { translations } from '../../utils/translations';
+import type { Material } from '../../data/mockData';
 
 const Recyclers: React.FC = () => {
   const navigate = useNavigate();
   const { recyclers, materials, lots, updateLot, language } = useAppContext();
+  const t = translations[language] || translations.en;
+  
   const [filterType, setFilterType] = useState<'rate'|'distance'|'pickup'>('rate');
 
   const pendingLots = lots.filter(l => l.status === 'Created');
   const currentLot = pendingLots.length > 0 ? pendingLots[0] : null;
   const currentMaterial = currentLot ? materials.find(m => m.id === currentLot.materialId) : materials[0];
   const materialId = currentLot ? currentLot.materialId : 'm3';
+
+  const getMaterialName = (m?: Material) => {
+    if (!m) return '';
+    return (t.materials as Record<string, string>)[m.id] || m.name;
+  };
 
   const sortedRecyclers = [...recyclers].sort((a, b) => {
     if (filterType === 'rate') return (b.offers[materialId] || 0) - (a.offers[materialId] || 0);
@@ -50,15 +58,13 @@ const Recyclers: React.FC = () => {
       <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-2">
         <div className="flex items-center space-x-2 text-xs font-semibold text-emerald-700">
           <ShieldCheck className="w-4 h-4" />
-          <span>CPCB AUTHORIZED BUYERS</span>
+          <span>{t.cpcbBadge}</span>
         </div>
         <h2 className="text-xl font-black text-slate-900 leading-tight">
-          {language === 'mr' ? 'जवळचे अधिकृत खरेदीदार' : 
-           language === 'hi' ? 'निकटतम अधिकृत खरीदार' : 
-           'Authorized Recyclers'}
+          {t.recyclersHeaderTitle}
         </h2>
         <p className="text-xs text-slate-500">
-          सर्व खरेदीदार सरकारमान्य असून वजन काट्याची व त्वरित पेमेंटची खात्री देतात.
+          {t.recyclersHeaderSub}
         </p>
 
         {currentLot && (
@@ -66,12 +72,12 @@ const Recyclers: React.FC = () => {
             <div className="flex items-center space-x-2">
               <span className="text-xl">{currentMaterial?.icon}</span>
               <div>
-                <p className="text-xs font-bold text-slate-900">{currentLot.weight} KG {currentMaterial?.name}</p>
-                <p className="text-[10px] text-emerald-700 font-medium">लॉट #{currentLot.id.toUpperCase()}</p>
+                <p className="text-xs font-bold text-slate-900">{currentLot.weight} KG {getMaterialName(currentMaterial)}</p>
+                <p className="text-[10px] text-emerald-700 font-medium">#{currentLot.id.toUpperCase()}</p>
               </div>
             </div>
             <span className="text-xs font-bold text-emerald-800 bg-white px-2 py-1 rounded-lg border border-emerald-200">
-              Matching Buyer
+              {t.matchingScrapBadge}
             </span>
           </div>
         )}
@@ -80,9 +86,9 @@ const Recyclers: React.FC = () => {
       {/* Filter Tabs */}
       <div className="flex space-x-2">
         {[
-          { id: 'rate', label: language === 'mr' ? 'उत्तम भाव (Best Rate)' : 'Best Rate' },
-          { id: 'distance', label: language === 'mr' ? 'जवळचे (Nearest)' : 'Nearest' },
-          { id: 'pickup', label: language === 'mr' ? 'पिकअप (Pickup)' : 'Pickup' },
+          { id: 'rate', label: t.filterBestRate },
+          { id: 'distance', label: t.filterNearest },
+          { id: 'pickup', label: t.filterPickup },
         ].map((f) => (
           <button
             key={f.id}
@@ -126,7 +132,7 @@ const Recyclers: React.FC = () => {
                     <div className="flex items-center space-x-3 text-xs text-slate-500 mt-1">
                       <span className="flex items-center">
                         <MapPin className="w-3.5 h-3.5 mr-1 text-slate-400" />
-                        {r.distance} KM अंतर
+                        {r.distance} {t.distanceLabel}
                       </span>
                       <span className="flex items-center text-amber-600 font-semibold">
                         <Star className="w-3.5 h-3.5 mr-0.5 fill-amber-400 text-amber-500" />
@@ -138,7 +144,7 @@ const Recyclers: React.FC = () => {
                   {isTopMatch && (
                     <span className="bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center space-x-1">
                       <Sparkles className="w-3 h-3" />
-                      <span>Best Offer</span>
+                      <span>{t.filterBestRate}</span>
                     </span>
                   )}
                 </div>
@@ -151,15 +157,15 @@ const Recyclers: React.FC = () => {
                 <div className="flex flex-wrap gap-1.5 text-[11px]">
                   {r.pickup ? (
                     <span className="inline-flex items-center px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium">
-                      <Truck className="w-3 h-3 mr-1 text-emerald-600" /> वाहन पिकअप उपलब्ध
+                      <Truck className="w-3 h-3 mr-1 text-emerald-600" /> {t.vehiclePickupBadge}
                     </span>
                   ) : (
                     <span className="inline-flex items-center px-2 py-0.5 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 font-medium">
-                      स्वतः आणून देणे (Self Drop)
+                      {t.selfDropBadge}
                     </span>
                   )}
                   <span className="inline-flex items-center px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 font-medium">
-                    रोख / UPI
+                    {t.cashUpiBadge}
                   </span>
                 </div>
               </div>
@@ -168,13 +174,13 @@ const Recyclers: React.FC = () => {
               <div className="bg-slate-50 px-4 py-3 border-t border-slate-100 flex items-center justify-between">
                 <div>
                   <span className="text-[10px] text-slate-500 uppercase font-bold">
-                    ऑफर भाव ({currentMaterial?.name || 'PCB'})
+                    {t.offerRateLabel} ({getMaterialName(currentMaterial)})
                   </span>
                   <div className="flex items-baseline space-x-1">
                     <span className="text-2xl font-black text-emerald-700">
                       ₹{offerPerKg}
                     </span>
-                    <span className="text-xs text-slate-500 font-medium">/किलो</span>
+                    <span className="text-xs text-slate-500 font-medium">/kg</span>
                   </div>
                 </div>
 
@@ -182,7 +188,7 @@ const Recyclers: React.FC = () => {
                   <a
                     href="tel:9876543210"
                     className="p-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors bg-white shadow-sm"
-                    title="फोन करा"
+                    title={t.callBuyerTitle}
                   >
                     <Phone className="w-4 h-4" />
                   </a>
@@ -191,7 +197,7 @@ const Recyclers: React.FC = () => {
                     onClick={() => handleAcceptOffer(r)}
                     className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-sm transition-all flex items-center space-x-1.5"
                   >
-                    <span>{currentLot ? 'ऑफर स्वीकारा' : 'लॉट जोडा'}</span>
+                    <span>{currentLot ? t.acceptOfferBtn : t.createLotFirstBtn}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>

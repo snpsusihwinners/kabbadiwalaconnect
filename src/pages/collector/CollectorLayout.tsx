@@ -9,25 +9,26 @@ import {
   Wifi,
   Languages,
   ArrowLeftRight,
-  ShieldCheck,
-  Bell
+  ShieldCheck
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
+import { translations } from '../../utils/translations';
 
 const CollectorLayout: React.FC = () => {
   const { language, setLanguage, isOnline, setIsOnline, syncQueue } = useAppContext();
   const location = useLocation();
   const navigate = useNavigate();
+  const t = translations[language] || translations.en;
 
   const navItems = [
-    { id: 'home', path: '/collector', icon: Home, labelEn: 'Home', labelHi: 'मुख्य' },
-    { id: 'prices', path: '/collector/prices', icon: TrendingUp, labelEn: 'Rates', labelHi: 'भाव' },
-    { id: 'recyclers', path: '/collector/recyclers', icon: Building2, labelEn: 'Buyers', labelHi: 'खरेदीदार' },
-    { id: 'earnings', path: '/collector/earnings', icon: Wallet, labelEn: 'Passbook', labelHi: 'खाते' },
+    { id: 'home', path: '/collector', icon: Home, label: t.navHome },
+    { id: 'prices', path: '/collector/prices', icon: TrendingUp, label: t.navRates },
+    { id: 'recyclers', path: '/collector/recyclers', icon: Building2, label: t.navBuyers },
+    { id: 'earnings', path: '/collector/earnings', icon: Wallet, label: t.navPassbook },
   ];
 
   const toggleLanguage = () => {
-    setLanguage(language === 'mr' ? 'hi' : (language === 'hi' ? 'en' : 'mr'));
+    setLanguage(language === 'en' ? 'hi' : (language === 'hi' ? 'mr' : 'en'));
   };
 
   const getLangName = () => {
@@ -118,7 +119,7 @@ const CollectorLayout: React.FC = () => {
                 <span className="w-2 h-2 rounded-full bg-emerald-500" title="Connected" />
               </div>
               <p className="text-[11px] text-slate-500 font-medium">
-                {language === 'mr' ? 'कचरा संकलन केंद्र' : 'Scrap Collector'}
+                {t.scrapCollectorSub}
               </p>
             </div>
           </div>
@@ -148,11 +149,11 @@ const CollectorLayout: React.FC = () => {
           <div className="bg-amber-500 text-white px-3 py-1.5 text-xs font-semibold flex items-center justify-between z-30">
             <div className="flex items-center space-x-1.5">
               <WifiOff className="w-3.5 h-3.5" />
-              <span>ऑफलाईन मोड (Offline Mode active)</span>
+              <span>{t.offlineModeActive}</span>
             </div>
             {syncQueue.length > 0 && (
               <span className="bg-amber-700 px-2 py-0.5 rounded text-[10px] font-bold">
-                {syncQueue.length} Pending
+                {syncQueue.length} {t.pendingSync}
               </span>
             )}
           </div>
@@ -179,7 +180,7 @@ const CollectorLayout: React.FC = () => {
               >
                 <item.icon className={`w-5 h-5 mb-0.5 ${isActive ? 'stroke-[2.5]' : 'stroke-2'}`} />
                 <span className="text-[11px] font-medium tracking-tight">
-                  {language === 'en' ? item.labelEn : item.labelHi}
+                  {item.label}
                 </span>
               </button>
             );

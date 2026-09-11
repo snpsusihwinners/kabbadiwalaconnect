@@ -4,19 +4,27 @@ import {
   Clock, 
   ShieldCheck, 
   Download,
-  Wallet,
-  ArrowUpRight
+  Wallet
 } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
+import { translations } from '../../utils/translations';
+import type { Material } from '../../data/mockData';
 
 const Earnings: React.FC = () => {
   const { transactions, materials, language } = useAppContext();
+  const t = translations[language] || translations.en;
+  
   const [filter, setFilter] = useState<'All' | 'Paid' | 'Pending'>('All');
 
-  const filteredTransactions = transactions.filter(t => filter === 'All' || t.status === filter);
+  const filteredTransactions = transactions.filter(tr => filter === 'All' || tr.status === filter);
   
-  const totalEarned = transactions.filter(t => t.status === 'Paid').reduce((sum, t) => sum + t.amount, 0);
-  const totalPending = transactions.filter(t => t.status === 'Pending').reduce((sum, t) => sum + t.amount, 0);
+  const totalEarned = transactions.filter(tr => tr.status === 'Paid').reduce((sum, tr) => sum + tr.amount, 0);
+  const totalPending = transactions.filter(tr => tr.status === 'Pending').reduce((sum, tr) => sum + tr.amount, 0);
+
+  const getMaterialName = (m?: Material) => {
+    if (!m) return '';
+    return (t.materials as Record<string, string>)[m.id] || m.name;
+  };
 
   return (
     <div className="p-4 space-y-4 pb-8">
@@ -30,10 +38,10 @@ const Earnings: React.FC = () => {
             </div>
             <div>
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
-                {language === 'mr' ? 'डिजिटल पासबुक' : 'Digital Passbook'}
+                {t.digitalPassbookBadge}
               </span>
               <h2 className="text-xl font-extrabold text-slate-900 leading-tight">
-                {language === 'mr' ? 'खाते व कमाई' : 'Ledger & Earnings'}
+                {t.ledgerHeaderTitle}
               </h2>
             </div>
           </div>
@@ -51,10 +59,10 @@ const Earnings: React.FC = () => {
         <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
           <div className="flex items-center justify-between mb-1">
             <span className="text-xs font-semibold text-slate-500">
-              {language === 'mr' ? 'एकूण जमा रक्कम (Total Received)' : 'Total Received'}
+              {t.totalSettledAmount}
             </span>
             <span className="inline-flex items-center text-xs font-bold text-emerald-700 bg-emerald-100/70 px-2 py-0.5 rounded-full">
-              <CheckCircle2 className="w-3 h-3 mr-1" /> Verified
+              <CheckCircle2 className="w-3 h-3 mr-1" /> {t.verifiedPill}
             </span>
           </div>
           <div className="text-3xl font-black text-slate-900 tracking-tight">
@@ -66,15 +74,15 @@ const Earnings: React.FC = () => {
         <div className="grid grid-cols-2 gap-3 pt-1">
           <div className="p-3 bg-amber-50/70 rounded-xl border border-amber-100">
             <span className="text-[11px] font-semibold text-amber-800 block">
-              {language === 'mr' ? 'येणे बाकी (Pending):' : 'Pending Payment:'}
+              {t.pendingPaymentLabel}
             </span>
             <span className="text-lg font-bold text-amber-950">₹{totalPending.toLocaleString()}</span>
           </div>
           <div className="p-3 bg-slate-100 rounded-xl border border-slate-200">
             <span className="text-[11px] font-semibold text-slate-600 block">
-              {language === 'mr' ? 'एकूण व्यवहार (Lots):' : 'Completed Lots:'}
+              {t.completedLotsLabel}
             </span>
-            <span className="text-lg font-bold text-slate-900">{transactions.length} व्यवहार</span>
+            <span className="text-lg font-bold text-slate-900">{transactions.length} {t.lotsCountSuffix}</span>
           </div>
         </div>
       </div>
@@ -82,9 +90,9 @@ const Earnings: React.FC = () => {
       {/* Filter Tabs */}
       <div className="flex space-x-2">
         {[
-          { id: 'All', label: language === 'mr' ? 'सर्व (All)' : 'All' },
-          { id: 'Paid', label: language === 'mr' ? 'जमा (Paid)' : 'Paid' },
-          { id: 'Pending', label: language === 'mr' ? 'बाकी (Pending)' : 'Pending' },
+          { id: 'All', label: t.filterAll },
+          { id: 'Paid', label: t.filterPaid },
+          { id: 'Pending', label: t.filterPending },
         ].map((f) => (
           <button
             key={f.id}
@@ -102,13 +110,13 @@ const Earnings: React.FC = () => {
 
       {/* Transaction Records List */}
       <div className="space-y-2.5">
-        {filteredTransactions.map((t) => {
-          const material = materials.find(m => m.id === t.materialId);
-          const isPaid = t.status === 'Paid';
+        {filteredTransactions.map((tr) => {
+          const material = materials.find(m => m.id === tr.materialId);
+          const isPaid = tr.status === 'Paid';
 
           return (
             <div 
-              key={t.id}
+              key={tr.id}
               className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center justify-between group hover:border-emerald-300 transition-all"
             >
               <div className="flex items-center space-x-3">
@@ -119,19 +127,19 @@ const Earnings: React.FC = () => {
                 </div>
 
                 <div>
-                  <h4 className="font-bold text-slate-900 text-sm">{material?.name}</h4>
+                  <h4 className="font-bold text-slate-900 text-sm">{getMaterialName(material)}</h4>
                   <p className="text-xs text-slate-500 font-medium">
-                    {t.weight} KG • {new Date(t.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    {tr.weight} KG • {new Date(tr.date).toLocaleDateString(language === 'en' ? 'en-IN' : (language === 'hi' ? 'hi-IN' : 'mr-IN'), { day: '2-digit', month: 'short', year: 'numeric' })}
                   </p>
                   <span className="text-[10px] text-slate-400">
-                    ID: #{t.id.toUpperCase()}
+                    ID: #{tr.id.toUpperCase()}
                   </span>
                 </div>
               </div>
 
               <div className="text-right flex flex-col items-end space-y-1">
                 <span className="text-lg font-black text-slate-900">
-                  ₹{t.amount.toLocaleString()}
+                  ₹{tr.amount.toLocaleString()}
                 </span>
                 
                 <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
@@ -140,12 +148,12 @@ const Earnings: React.FC = () => {
                   {isPaid ? (
                     <>
                       <CheckCircle2 className="w-3 h-3 mr-1 text-emerald-600" />
-                      {t.method || 'Cash'}
+                      {tr.method || 'Cash'}
                     </>
                   ) : (
                     <>
                       <Clock className="w-3 h-3 mr-1 text-amber-600" />
-                      {language === 'mr' ? 'हँडओव्हर बाकी' : 'Pending'}
+                      {t.pendingStatus}
                     </>
                   )}
                 </span>
@@ -159,7 +167,7 @@ const Earnings: React.FC = () => {
       <div className="bg-slate-100 rounded-xl p-3.5 border border-slate-200 flex items-center space-x-3 text-xs text-slate-600">
         <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
         <p className="leading-relaxed">
-          ECOSETU हमी: सर्व व्यवहार CPCB अधिकृत रिसायकलर्सकडून थेट रोख किंवा त्वरित UPI द्वारे पूर्ण होतात.
+          {t.guaranteeFooter}
         </p>
       </div>
 
