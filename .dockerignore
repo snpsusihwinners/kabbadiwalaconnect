@@ -1,0 +1,10 @@
+node_modules
+dist
+.git
+.github
+*.md
+test-output.css
+vite_output.log
+.env*
+.vscode
+.idea
